@@ -1,0 +1,60 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Scientific and production data
+*.nc
+*.nc4
+*.cdf
+*.h5
+*.hdf
+*.hdf5
+*.grib
+*.grb
+*.grib2
+*.webp
+dev-data/
+data/
+storage/
+
+# Java and build output
+target/
+build/
+.gradle/
+*.class
+*.jar
+*.war
+*.log
+
+# Node/frontend
+node_modules/
+dist/
+.vite/
+coverage/
+
+# Python tooling
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# IDE and OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local runtime state
+logs/
+tmp/
+*.pid
+docker-data/
+
