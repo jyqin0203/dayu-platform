@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: dayu-platform-backend
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+
+dayu:
+  indexing:
+    enabled: false
+    interval: 15m
+  preview:
+    dpi: 500

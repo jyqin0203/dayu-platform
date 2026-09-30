@@ -1,0 +1,36 @@
+@startuml
+title Identity：身份与登录模块（skeleton）
+skinparam classAttributeIconSize 0
+
+package "api" {
+  interface IdentityService {
+    +register(command)
+    +login(command, client)
+    +getCurrentUser()
+    +logout()
+  }
+  interface UserAdminService {
+    +changeUserStatus(command, actor)
+    +changeUserRole(command, actor)
+  }
+  class RegisterCommand <<record>>
+  class LoginCommand <<record>>
+  class AuthenticatedUser <<record>>
+  class UserSummary <<record>>
+  class UserStatus <<enum>>
+}
+package "application" {
+  class MockIdentity <<skeleton mock>>
+}
+
+MockIdentity ..|> IdentityService
+MockIdentity ..|> UserAdminService
+MockIdentity ..> AuthenticatedUser : 登录/注册结果
+MockIdentity ..> UserSummary : 管理用户结果
+UserSummary --> UserStatus
+
+note bottom
+当前 Mock 在内存保存账号和明文测试密码。
+真实实现必须使用密码哈希、数据库、Session 与 Spring Security。
+end note
+@enduml

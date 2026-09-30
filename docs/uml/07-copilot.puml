@@ -1,0 +1,31 @@
+@startuml
+title Copilot：AI 辅助查询模块（skeleton）
+skinparam classAttributeIconSize 0
+
+package "api" {
+  interface CopilotService {
+    +query(command, actor)
+  }
+  class CopilotCommand <<record>>
+  class InterpretedCriteria <<record>>
+  class CopilotResponse <<record>>
+  class SuggestedAction <<record>>
+}
+package "application" {
+  class MockCopilot <<skeleton mock>>
+}
+interface "CatalogQueryService\n(Catalog API)" as Catalog
+interface "DiscoveryQueryService\n(Discovery API)" as Discovery
+
+MockCopilot ..|> CopilotService
+MockCopilot --> Catalog : 查询产品目录
+MockCopilot --> Discovery : 查询真实索引结果
+MockCopilot ..> CopilotResponse
+CopilotResponse --> InterpretedCriteria
+CopilotResponse --> SuggestedAction
+
+note bottom
+Copilot 只能调用 Catalog 和 Discovery 的 API。
+它不能直接访问数据库、Redis、硬盘、下载或管理员能力。
+end note
+@enduml

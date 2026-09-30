@@ -1,0 +1,33 @@
+@startuml
+title Discovery：数据发现与查询模块（skeleton）
+skinparam classAttributeIconSize 0
+
+package "api" {
+  interface DiscoveryQueryService {
+    +listPreviewFrames(query)
+    +listForecastCycles(query)
+    +searchScientificAssets(query)
+    +findDownloadCandidatesForPreview(query)
+    +getProductAvailability(query)
+  }
+  class PreviewQuery <<record>>
+  class PreviewFrame <<record>>
+  class ScientificAssetQuery <<record>>
+  class ScientificAssetSummary <<record>>
+}
+package "application" {
+  class MockDiscovery <<skeleton mock>>
+}
+interface "CatalogQueryService\n(Catalog API)" as CatalogQuery
+interface "AssetQueryService\n(AssetIndex API)" as AssetQuery
+
+MockDiscovery ..|> DiscoveryQueryService
+MockDiscovery --> CatalogQuery : 确认产品已发布
+MockDiscovery --> AssetQuery : 查询文件索引
+MockDiscovery ..> PreviewFrame : 预览结果
+MockDiscovery ..> ScientificAssetSummary : NC 查询结果
+
+note bottom
+Discovery 只查询索引，不扫描硬盘、不执行下载。
+end note
+@enduml

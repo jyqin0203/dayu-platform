@@ -1,0 +1,37 @@
+@startuml
+title Download：下载授权与审计模块（skeleton）
+skinparam classAttributeIconSize 0
+
+package "api" {
+  interface DownloadAuthorizationService {
+    +authorizeDownload(command, actor, client)
+  }
+  interface DownloadAuditQueryService {
+    +searchDownloadAudits(query)
+    +getDownloadStatistics(query)
+  }
+  interface DeliveryResultRecorder {
+    +recordDeliveryResult(command)
+  }
+  class DownloadCommand <<record>>
+  class DownloadGrant <<record>>
+  class DownloadAuditSummary <<record>>
+  class DownloadStatistics <<record>>
+}
+package "application" {
+  class MockDownload <<skeleton mock>>
+}
+interface "DownloadAssetLookup\n(AssetIndex API)" as AssetLookup
+
+MockDownload ..|> DownloadAuthorizationService
+MockDownload ..|> DownloadAuditQueryService
+MockDownload ..|> DeliveryResultRecorder
+MockDownload --> AssetLookup : 按 assetId 查询可下载资产
+MockDownload ..> DownloadGrant : 授权结果
+MockDownload ..> DownloadAuditSummary : 审计记录
+
+note bottom
+当前只模拟“授权”，不会实际发送 NetCDF 文件。
+生产环境由 Nginx 根据内部路径传输文件。
+end note
+@enduml

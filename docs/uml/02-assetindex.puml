@@ -1,0 +1,47 @@
+@startuml
+title AssetIndex：文件索引模块（skeleton）
+skinparam classAttributeIconSize 0
+
+package "api" {
+  interface AssetIndexCommandService {
+    +runInitialFullScan()
+    +runIncrementalScan(trigger)
+  }
+  interface AssetQueryService {
+    +listPreviewAssets(criteria)
+    +searchNetcdfAssets(criteria)
+    +findNetcdfCandidates(criteria)
+  }
+  interface DownloadAssetLookup {
+    +findDownloadableAsset(assetId)
+  }
+  interface AssetAdminQueryService {
+    +getLatestScanResult()
+    +searchScanHistory(query)
+  }
+  class IndexedAssetView <<record>>
+  class DownloadableAsset <<record>>
+  class AssetScanResult <<record>>
+}
+
+package "domain" {
+  class DataAsset <<record>>
+}
+package "application" {
+  class MockAssetIndex <<skeleton mock>>
+}
+interface "CatalogQueryService\n(Catalog API)" as CatalogQuery
+
+MockAssetIndex ..|> AssetIndexCommandService
+MockAssetIndex ..|> AssetQueryService
+MockAssetIndex ..|> DownloadAssetLookup
+MockAssetIndex ..|> AssetAdminQueryService
+MockAssetIndex --> CatalogQuery : 文件族对应哪些产品
+MockAssetIndex ..> IndexedAssetView : 返回索引视图
+MockAssetIndex ..> DownloadableAsset : 返回下载受限视图
+MockAssetIndex ..> AssetScanResult : 返回扫描结果
+
+note bottom
+当前 Mock 不扫描硬盘；真实实现会扫描正式目录并维护文件索引。
+end note
+@enduml

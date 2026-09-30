@@ -4,7 +4,7 @@
 
 ## 当前阶段
 
-项目处于 MS1 架构阶段。当前目标是先稳定系统边界、模块接口、关键数据模型和主流程，再进入具体业务实现。
+项目处于 MS1 可编译空骨架阶段。后端已经用公开接口、核心 DTO、`skeleton` Mock 和 ArchUnit 测试固定七个业务模块的边界；数据库、Redis、真实文件索引、下载传输与 AI 模型尚未接入。
 
 ## 系统边界
 
@@ -40,6 +40,15 @@ Copilot
 ```
 
 详细决策见 `docs/`。
+
+## 后端验证
+
+```powershell
+cd backend
+.\mvnw.cmd clean verify
+```
+
+更多说明见 `backend/README.md`。
 
 ## 数据目录
 

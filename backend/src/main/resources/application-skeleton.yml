@@ -1,0 +1,11 @@
+spring:
+  config:
+    activate:
+      on-profile: skeleton
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+dayu:
+  skeleton:
+    notice: "Mock data only; no database, Redis, filesystem, Nginx, or AI provider is connected."

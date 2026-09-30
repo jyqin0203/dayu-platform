@@ -1,0 +1,37 @@
+@startuml
+title Catalog：产品目录模块（skeleton）
+skinparam classAttributeIconSize 0
+
+package "api" {
+  interface CatalogQueryService {
+    +listPublishedProducts()
+    +findProduct(code)
+    +listManagedProducts(query)
+    +resolveProductsForAssetFamily(familyCode)
+  }
+  interface CatalogAdminService {
+    +createProduct(command, actor)
+    +updateProduct(command, actor)
+    +publishProduct(productId, actor)
+    +disableProduct(productId, actor)
+  }
+  class ProductSummary <<record>>
+  class ProductDetail <<record>>
+  class ProductStatus <<enum>>
+}
+
+package "application" {
+  class MockCatalog <<skeleton mock>>
+}
+
+MockCatalog ..|> CatalogQueryService
+MockCatalog ..|> CatalogAdminService
+MockCatalog ..> ProductDetail : 保存 Mock 产品
+ProductDetail --> ProductSummary
+ProductSummary --> ProductStatus
+
+note right of MockCatalog
+当前实现把产品保存在内存 Map 中。
+将来可替换为数据库实现。
+end note
+@enduml

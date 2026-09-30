@@ -1,0 +1,40 @@
+@startuml
+title Operations：管理员运维编排模块（skeleton）
+skinparam classAttributeIconSize 0
+
+package "api" {
+  interface OperationsService {
+    +getDashboard(query, actor)
+    +getProductHealth(query, actor)
+    +triggerIncrementalScan(actor)
+    +searchDownloadAudits(query, actor)
+    +changeUserStatus(command, actor)
+  }
+  class DashboardSummary <<record>>
+  class ProductHealth <<record>>
+}
+package "application" {
+  class MockOperations <<skeleton mock>>
+}
+interface "CatalogQueryService" as Catalog
+interface "AssetIndexCommandService" as AssetCommands
+interface "AssetAdminQueryService" as AssetAdmin
+interface "DiscoveryQueryService" as Discovery
+interface "DownloadAuditQueryService" as Download
+interface "UserAdminService" as Identity
+
+MockOperations ..|> OperationsService
+MockOperations --> Catalog
+MockOperations --> AssetCommands
+MockOperations --> AssetAdmin
+MockOperations --> Discovery
+MockOperations --> Download
+MockOperations --> Identity
+MockOperations ..> DashboardSummary
+MockOperations ..> ProductHealth
+
+note bottom
+Operations 只负责管理员视角的编排，
+不复制其他模块的内部业务规则。
+end note
+@enduml

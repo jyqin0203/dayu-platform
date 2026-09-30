@@ -1,0 +1,39 @@
+@startuml
+title 大禹平台：七个业务模块依赖总览（当前空骨架）
+left to right direction
+skinparam packageStyle rectangle
+
+package "Catalog\n产品定义" as Catalog
+package "Identity\n身份与登录" as Identity
+package "AssetIndex\n文件索引" as AssetIndex
+package "Discovery\n数据查询" as Discovery
+package "Download\n下载授权与审计" as Download
+package "Copilot\nAI 辅助查询" as Copilot
+package "Operations\n管理员运维编排" as Operations
+package "Shared Kernel\n共用基础类型" as Shared
+
+AssetIndex --> Catalog : 只调用 API
+Discovery --> Catalog : 只调用 API
+Discovery --> AssetIndex : 只调用 API
+Download --> AssetIndex : 只调用 API
+Copilot --> Catalog : 只调用 API
+Copilot --> Discovery : 只调用 API
+Operations --> Catalog : 编排
+Operations --> AssetIndex : 编排
+Operations --> Discovery : 编排
+Operations --> Identity : 编排
+Operations --> Download : 编排
+
+Catalog --> Shared
+Identity --> Shared
+AssetIndex --> Shared
+Discovery --> Shared
+Download --> Shared
+Copilot --> Shared
+Operations --> Shared
+
+note bottom
+箭头表示“依赖/调用”。
+业务模块只能调用目标模块的 api 包，不能调用其 application、domain 或 infrastructure。
+end note
+@enduml
