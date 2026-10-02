@@ -11,6 +11,7 @@ import cn.edu.fudan.dayu.download.api.DownloadAuditSummary;
 import cn.edu.fudan.dayu.download.api.DownloadAuthorizationService;
 import cn.edu.fudan.dayu.download.api.DownloadCommand;
 import cn.edu.fudan.dayu.download.api.DownloadGrant;
+import cn.edu.fudan.dayu.download.api.DownloadGrantAccess;
 import cn.edu.fudan.dayu.download.api.DownloadStatistics;
 import cn.edu.fudan.dayu.download.api.DownloadStatisticsQuery;
 import cn.edu.fudan.dayu.download.api.DownloadStatus;
@@ -25,6 +26,7 @@ import cn.edu.fudan.dayu.shared.kernel.UserId;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.context.annotation.Profile;
@@ -38,11 +40,14 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Profile("skeleton")
-class MockDownload implements DownloadAuthorizationService, DownloadAuditQueryService, DeliveryResultRecorder {
+class MockDownload implements DownloadAuthorizationService, DownloadGrantAccess,
+        DownloadAuditQueryService, DeliveryResultRecorder {
     private static final Instant AUTHORIZED_AT = Instant.parse("2026-09-29T02:20:00Z");
     private final DownloadAssetLookup assets;
     private final AtomicLong eventSequence = new AtomicLong(50_000);
     private final List<DownloadAuditSummary> audits = new ArrayList<>();
+    private final Map<DownloadEventId, DownloadGrant> grants = new HashMap<>();
+    private final Map<DownloadEventId, UserId> grantOwners = new HashMap<>();
 
     MockDownload(DownloadAssetLookup assets) {
         this.assets = assets;
@@ -66,8 +71,21 @@ class MockDownload implements DownloadAuthorizationService, DownloadAuditQuerySe
         audits.add(new DownloadAuditSummary(eventId, actor.userId(), actor.organization(), asset.assetId(),
                 asset.products(), asset.fileName(), asset.fileSize(), command.purpose(), AUTHORIZED_AT,
                 DownloadStatus.AUTHORIZED));
-        return new DownloadGrant(eventId, asset.fileName(), "application/x-netcdf", asset.fileSize(),
-                "/internal-netcdf/" + asset.relativePath().replace('\\', '/'));
+        DownloadGrant grant = new DownloadGrant(eventId, asset.fileName(), "application/x-netcdf", asset.fileSize(),
+                "/internal-netcdf/" + asset.relativePath().replace('\\', '/'), Instant.now());
+        grants.put(eventId, grant);
+        grantOwners.put(eventId, actor.userId());
+        return grant;
+    }
+
+    @Override
+    public DownloadGrant getAuthorizedGrant(DownloadEventId eventId, ActorContext actor) {
+        DownloadGrant grant = grants.get(eventId);
+        if (grant == null) throw new BusinessException(ErrorCode.NOT_FOUND, "下载授权不存在");
+        if (!actor.userId().equals(grantOwners.get(eventId))) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "不能使用其他用户的下载授权");
+        }
+        return grant;
     }
 
     @Override
@@ -85,7 +103,8 @@ class MockDownload implements DownloadAuthorizationService, DownloadAuditQuerySe
     public DownloadStatistics getDownloadStatistics(DownloadStatisticsQuery query) {
         long authorized = audits.stream().filter(a -> a.status() == DownloadStatus.AUTHORIZED).count();
         long denied = audits.stream().filter(a -> a.status() == DownloadStatus.DENIED).count();
-        return new DownloadStatistics(audits.size(), authorized, denied,
+        long uniqueAssets = audits.stream().map(DownloadAuditSummary::assetId).distinct().count();
+        return new DownloadStatistics(audits.size(), authorized, denied, uniqueAssets,
                 Map.of("PRECIP", authorized), Map.of("复旦大学", authorized), Map.of("1", authorized));
     }
 

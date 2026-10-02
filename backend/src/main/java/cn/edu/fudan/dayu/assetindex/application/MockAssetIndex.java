@@ -89,7 +89,7 @@ class MockAssetIndex implements AssetIndexCommandService, AssetQueryService, Dow
 
     @Override
     public List<ForecastCycleSummary> listForecastCycles(AssetForecastCycleCriteria criteria) {
-        boolean exists = assets.stream().anyMatch(a -> a.assetType() == AssetType.NETCDF
+        boolean exists = assets.stream().anyMatch(a -> a.assetType() == criteria.assetType()
                 && a.products().contains(criteria.productCode()) && a.dataMode() == DataMode.FORECAST);
         return exists ? List.of(new ForecastCycleSummary(CYCLE, FORECAST_VALID, FORECAST_VALID, Set.of(120), true))
                 : List.of();
@@ -116,6 +116,13 @@ class MockAssetIndex implements AssetIndexCommandService, AssetQueryService, Dow
         return assets.stream().filter(a -> a.assetId().equals(assetId) && a.assetType() == AssetType.NETCDF)
                 .findFirst().map(a -> new DownloadableAsset(a.assetId(), a.assetType(), a.status(), a.products(),
                         "netcdf-science", "forecast/202609020600/" + a.fileName(), a.fileName(), a.fileSize()));
+    }
+
+    @Override
+    public Optional<DownloadableAsset> findByStoragePath(String storageKey, String relativePath) {
+        return assets.stream().filter(a -> a.assetType() == AssetType.NETCDF)
+                .filter(a -> ("forecast/202609020600/" + a.fileName()).equals(relativePath))
+                .findFirst().flatMap(a -> findDownloadableAsset(a.assetId()));
     }
 
     @Override

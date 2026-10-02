@@ -10,11 +10,13 @@ import cn.edu.fudan.dayu.identity.api.RegisterCommand;
 import cn.edu.fudan.dayu.identity.api.UserAdminService;
 import cn.edu.fudan.dayu.identity.api.UserStatus;
 import cn.edu.fudan.dayu.identity.api.UserSummary;
+import cn.edu.fudan.dayu.identity.api.UserQuery;
 import cn.edu.fudan.dayu.shared.kernel.ActorContext;
 import cn.edu.fudan.dayu.shared.kernel.BusinessException;
 import cn.edu.fudan.dayu.shared.kernel.ErrorCode;
 import cn.edu.fudan.dayu.shared.kernel.UserId;
 import cn.edu.fudan.dayu.shared.kernel.UserRole;
+import cn.edu.fudan.dayu.shared.kernel.PageResult;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -81,6 +83,19 @@ class MockIdentity implements IdentityService, UserAdminService {
     @Override
     public void logout() {
         currentUser = null;
+    }
+
+    @Override
+    public PageResult<UserSummary> searchUsers(UserQuery query, ActorContext actor) {
+        requireAdmin(actor);
+        var found = accounts.values().stream().map(MockAccount::summary)
+                .filter(user -> query.email() == null || user.email().contains(query.email()))
+                .filter(user -> query.organization() == null
+                        || user.organization().contains(query.organization()))
+                .filter(user -> query.role() == null || user.role() == query.role())
+                .filter(user -> query.status() == null || user.status() == query.status())
+                .toList();
+        return new PageResult<>(found, query.pageRequest().page(), query.pageRequest().size(), found.size());
     }
 
     @Override

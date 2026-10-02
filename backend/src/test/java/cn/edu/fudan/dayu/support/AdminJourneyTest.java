@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cn.edu.fudan.dayu.catalog.api.CatalogAdminService;
 import cn.edu.fudan.dayu.catalog.api.CreateProductCommand;
+import cn.edu.fudan.dayu.catalog.api.ConfigureProductModeCommand;
 import cn.edu.fudan.dayu.catalog.api.ProductStatus;
 import cn.edu.fudan.dayu.download.api.DownloadAuditQuery;
 import cn.edu.fudan.dayu.identity.api.ClientIdentity;
@@ -14,9 +15,11 @@ import cn.edu.fudan.dayu.operations.api.OperationsQuery;
 import cn.edu.fudan.dayu.operations.api.OperationsService;
 import cn.edu.fudan.dayu.shared.kernel.ActorContext;
 import cn.edu.fudan.dayu.shared.kernel.BusinessException;
+import cn.edu.fudan.dayu.shared.kernel.DataMode;
 import cn.edu.fudan.dayu.shared.kernel.ErrorCode;
 import cn.edu.fudan.dayu.shared.kernel.PageRequest;
 import cn.edu.fudan.dayu.shared.kernel.ProductCode;
+import java.time.Duration;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +58,9 @@ class AdminJourneyTest {
                 .isInstanceOfSatisfying(BusinessException.class,
                         error -> assertThat(error.errorCode()).isEqualTo(ErrorCode.CONFLICT));
 
+        catalogAdmin.configureProductMode(new ConfigureProductModeCommand(
+                draft.summary().id(), DataMode.REALTIME,
+                true, Duration.ofMinutes(90)), actor);
         var published = catalogAdmin.publishProduct(draft.summary().id(), actor);
         assertThat(published.summary().status()).isEqualTo(ProductStatus.PUBLISHED);
 

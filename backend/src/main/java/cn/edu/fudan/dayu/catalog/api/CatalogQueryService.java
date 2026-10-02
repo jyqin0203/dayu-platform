@@ -20,6 +20,14 @@ public interface CatalogQueryService {
     List<ProductSummary> listPublishedProducts();
 
     /**
+     * 查询公开产品的完整展示资料和已配置模式。
+     * HTTP 产品目录使用该批量接口，避免逐个产品查询造成 N+1 次数据库访问。
+     *
+     * @return 按显示顺序排列的已发布产品详情
+     */
+    List<ProductDetail> listPublishedProductDetails();
+
+    /**
      * 根据稳定的产品编码查找产品详情。
      * 调用方仍需根据产品状态判断它是否已经发布。
      *

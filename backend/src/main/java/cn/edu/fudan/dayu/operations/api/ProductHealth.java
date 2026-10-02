@@ -10,5 +10,5 @@ import java.time.Instant;
  */
 public record ProductHealth(
         ProductCode productCode, DataMode dataMode, long webpCount, long netcdfCount,
-        Instant latestValidTime, ProductHealthStatus status
+        Instant latestValidTime, ProductHealthStatus status, long staleAfterMinutes
 ) {}

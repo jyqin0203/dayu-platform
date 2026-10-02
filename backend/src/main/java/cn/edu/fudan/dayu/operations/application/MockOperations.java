@@ -85,9 +85,15 @@ class MockOperations implements OperationsService {
     public List<ProductHealth> getProductHealth(ProductHealthQuery query, ActorContext actor) {
         requireAdmin(actor);
         return discovery.listProductAvailability(new ProductAvailabilityListQuery(query.productCodes(), query.dataMode()))
-                .stream().map(a -> new ProductHealth(a.productCode(), a.dataMode(),
-                        a.previewAvailable() ? 1 : 0, a.downloadAvailable() ? 1 : 0,
-                        a.latestValidTime(), a.health())).toList();
+                .stream().map(a -> {
+                    long staleAfter = catalog.findProduct(a.productCode()).stream()
+                            .flatMap(product -> product.modePolicies().stream())
+                            .filter(mode -> mode.dataMode() == a.dataMode())
+                            .findFirst().map(mode -> mode.staleAfter().toMinutes()).orElse(1L);
+                    return new ProductHealth(a.productCode(), a.dataMode(),
+                            a.previewAvailable() ? 1 : 0, a.downloadAvailable() ? 1 : 0,
+                            a.latestValidTime(), a.health(), staleAfter);
+                }).toList();
     }
 
     @Override

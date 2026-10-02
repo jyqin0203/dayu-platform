@@ -1,11 +1,14 @@
 package cn.edu.fudan.dayu.identity.api;
 
 import cn.edu.fudan.dayu.shared.kernel.ActorContext;
+import cn.edu.fudan.dayu.shared.kernel.PageResult;
 
 /**
  * Identity 模块提供给管理员的账号状态和角色管理接口。
  */
 public interface UserAdminService {
+    PageResult<UserSummary> searchUsers(UserQuery query, ActorContext actor);
+
     /** 修改目标用户的启用或禁用状态。 */
     UserSummary changeUserStatus(ChangeUserStatusCommand command, ActorContext actor);
 
