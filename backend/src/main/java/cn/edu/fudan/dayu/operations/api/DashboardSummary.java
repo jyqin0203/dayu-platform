@@ -1,6 +1,6 @@
 package cn.edu.fudan.dayu.operations.api;
 
-import cn.edu.fudan.dayu.assetindex.api.AssetScanResult;
+import cn.edu.fudan.dayu.assetindex.api.ScanRunView;
 import cn.edu.fudan.dayu.download.api.DownloadStatistics;
 
 /**
@@ -9,5 +9,5 @@ import cn.edu.fudan.dayu.download.api.DownloadStatistics;
 public record DashboardSummary(
         long publishedProducts, long previewAvailableProducts,
         long downloadAvailableProducts, long missingProducts, long staleProducts,
-        AssetScanResult latestScan, DownloadStatistics downloads
+        ScanRunView latestScan, DownloadStatistics downloads
 ) {}
