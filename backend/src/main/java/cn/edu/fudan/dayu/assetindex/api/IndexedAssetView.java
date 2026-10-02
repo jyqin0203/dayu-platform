@@ -15,9 +15,20 @@ import java.util.Set;
 public record IndexedAssetView(
         AssetId assetId, AssetType assetType, Set<ProductCode> products, DataMode dataMode,
         Instant cycleTime, Instant validTime, Integer leadMinutes, String fileName,
-        long fileSize, Integer dpi, AssetStatus status
+        long fileSize, Integer dpi, AssetStatus status, String previewRelativePath
 ) {
     public IndexedAssetView {
         products = Set.copyOf(products);
+        if (assetType != AssetType.WEBP && previewRelativePath != null) {
+            throw new IllegalArgumentException("Scientific asset paths must not be exposed");
+        }
+    }
+
+    /** 兼容骨架调用；真实 WebP 查询增加公开媒体相对路径，NC 始终为空。 */
+    public IndexedAssetView(AssetId assetId, AssetType assetType, Set<ProductCode> products,
+            DataMode dataMode, Instant cycleTime, Instant validTime, Integer leadMinutes,
+            String fileName, long fileSize, Integer dpi, AssetStatus status) {
+        this(assetId, assetType, products, dataMode, cycleTime, validTime, leadMinutes,
+                fileName, fileSize, dpi, status, null);
     }
 }
