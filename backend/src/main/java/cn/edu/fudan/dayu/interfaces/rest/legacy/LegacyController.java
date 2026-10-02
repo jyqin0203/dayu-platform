@@ -6,7 +6,11 @@ import cn.edu.fudan.dayu.identity.api.ClientIdentity;
 import cn.edu.fudan.dayu.identity.api.IdentityService;
 import cn.edu.fudan.dayu.identity.api.LoginCommand;
 import cn.edu.fudan.dayu.identity.api.RegisterCommand;
+import cn.edu.fudan.dayu.interfaces.rest.SessionAuthentication;
+import cn.edu.fudan.dayu.shared.kernel.BusinessException;
+import cn.edu.fudan.dayu.shared.kernel.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -25,10 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class LegacyController {
     private final CatalogQueryService catalog;
     private final IdentityService identity;
+    private final SessionAuthentication sessions;
 
-    public LegacyController(CatalogQueryService catalog, IdentityService identity) {
+    public LegacyController(CatalogQueryService catalog, IdentityService identity, SessionAuthentication sessions) {
         this.catalog = catalog;
         this.identity = identity;
+        this.sessions = sessions;
     }
 
     @GetMapping("/api/products.php")
@@ -43,30 +49,66 @@ public class LegacyController {
     }
 
     @GetMapping(value = "/api/auth.php", params = {"action=status"})
-    public ResponseEntity<Map<String, Object>> status(CsrfToken csrfToken) {
+    public ResponseEntity<Map<String, Object>> status(HttpServletRequest request, HttpServletResponse servletResponse) {
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("ok", true);
         response.put("authenticated", identity.getCurrentUser().isPresent());
         response.put("user", identity.getCurrentUser().map(LegacyController::legacyUser).orElse(null));
-        response.put("csrf_token", csrfToken.getToken());
+        response.put("csrf_token", sessions.token(request, servletResponse));
         return noStore(response);
     }
 
-    @PostMapping("/api/auth.php")
+    @PostMapping(value = "/api/auth.php", consumes = "application/json")
     public ResponseEntity<Map<String, Object>> auth(
-            @RequestParam String action, @RequestBody Map<String, String> body,
-            HttpServletRequest request, CsrfToken csrfToken) {
+            @RequestParam String action, @RequestBody LegacyAuthRequest body,
+            HttpServletRequest request, HttpServletResponse response) {
+        var fields = new LinkedHashMap<String, String>();
+        fields.put("email", body.email()); fields.put("password", body.password()); fields.put("organization", body.organization());
+        return authenticate(action, fields, request, response);
+    }
+
+    private ResponseEntity<Map<String, Object>> authenticate(String action, Map<String, String> body,
+            HttpServletRequest request, HttpServletResponse response) {
         if ("logout".equals(action)) {
             identity.logout();
-            return status(csrfToken);
+            sessions.clear(request, response);
+            return status(request, response);
         }
+        if (!"register".equals(action) && !"login".equals(action))
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "未知认证操作");
         var user = "register".equals(action)
                 ? identity.register(new RegisterCommand(
                         body.get("email"), body.get("password"), body.get("organization")))
                 : identity.login(new LoginCommand(body.get("email"), body.get("password")),
                         new ClientIdentity(request.getRemoteAddr(), request.getHeader("User-Agent")));
         return noStore(Map.of("ok", true, "authenticated", true,
-                "user", legacyUser(user), "csrf_token", csrfToken.getToken()));
+                "user", legacyUser(user), "csrf_token", sessions.establish(user, request, response)));
+    }
+
+    @PostMapping(value = "/api/auth.php", consumes = "application/x-www-form-urlencoded")
+    public ResponseEntity<Map<String, Object>> authForm(@RequestParam Map<String, String> body,
+            HttpServletRequest request, HttpServletResponse response) {
+        return authenticate(body.get("action"), body, request, response);
+    }
+
+    /** Prevent MVC debug logs from revealing submitted credentials. */
+    public record LegacyAuthRequest(String email, String password, String organization, String csrf_token) {
+        @Override public String toString() { return "LegacyAuthRequest[redacted]"; }
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(BusinessException.class)
+    public ResponseEntity<Map<String, Object>> authFailure(BusinessException exception) {
+        int status = switch (exception.errorCode()) {
+            case UNAUTHENTICATED -> 401;
+            case FORBIDDEN -> 403;
+            case CONFLICT -> 409;
+            case RATE_LIMITED -> 429;
+            case VALIDATION_FAILED -> 422;
+            default -> 500;
+        };
+        var response = ResponseEntity.status(status).header("Cache-Control", "no-store");
+        if (status == 429) response.header("Retry-After", String.valueOf(exception.details().getOrDefault("retryAfterSeconds", 900)));
+        return response.body(Map.of("ok", false, "message", exception.getMessage()));
     }
 
     @GetMapping({"/api/admin.php", "/api/admin_products.php"})
@@ -101,7 +143,10 @@ public class LegacyController {
     }
 
     private static ResponseEntity<Map<String, Object>> noStore(Map<String, Object> body) {
-        return ResponseEntity.ok().header("Cache-Control", "no-store").body(body);
+        Map<String, Object> redacted = new LinkedHashMap<>(body) {
+            @Override public String toString() { return "LegacyAuthenticationResponse[redacted]"; }
+        };
+        return ResponseEntity.ok().header("Cache-Control", "no-store").body(redacted);
     }
 
     private static ResponseEntity<Map<String, Object>> retired() {

@@ -17,6 +17,10 @@ public class CurrentActorProvider {
     }
 
     public Optional<ActorContext> optional() {
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || !(authentication.getPrincipal() instanceof cn.edu.fudan.dayu.identity.api.AuthenticatedUser))
+            return Optional.empty();
         return identity.getCurrentUser().map(user ->
                 new ActorContext(user.id(), user.organization(), user.role()));
     }
