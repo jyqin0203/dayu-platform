@@ -109,6 +109,21 @@ class HttpFoundationContractTest {
     }
 
     @Test
+    void rejectsNonnumericPagingWithoutEchoingItsValue() throws Exception {
+        mockMvc.perform(get("/api/v1/test/page").param("page", "private-input"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("MALFORMED_REQUEST"))
+                .andExpect(jsonPath("$.details").doesNotExist());
+    }
+
+    @Test
+    void returnValueValidationIsServerError() throws Exception {
+        mockMvc.perform(get("/api/v1/test/invalid-result"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code").value("INTERNAL_ERROR"));
+    }
+
+    @Test
     void hidesUnexpectedExceptionDetails() throws Exception {
         mockMvc.perform(get("/api/v1/test/unexpected"))
                 .andExpect(status().isInternalServerError())
@@ -145,6 +160,12 @@ class HttpFoundationContractTest {
         @GetMapping("/api/v1/test/unexpected")
         void unexpected() {
             throw new IllegalStateException("sensitive internal detail");
+        }
+
+        @GetMapping("/api/v1/test/invalid-result")
+        @Min(1)
+        int invalidResult() {
+            return 0;
         }
     }
 

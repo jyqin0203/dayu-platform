@@ -25,7 +25,7 @@ public class TraceIdFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !request.getRequestURI().startsWith("/api/");
+        return !request.getRequestURI().substring(request.getContextPath().length()).startsWith("/api/");
     }
 
     @Override
@@ -34,17 +34,22 @@ public class TraceIdFilter extends OncePerRequestFilter {
         String traceId = acceptedOrGenerated(request.getHeader(HEADER_NAME));
         request.setAttribute(ATTRIBUTE_NAME, traceId);
         response.setHeader(HEADER_NAME, traceId);
+        String previous = MDC.get("traceId");
         MDC.put("traceId", traceId);
         try {
             filterChain.doFilter(request, response);
         } finally {
-            MDC.remove("traceId");
+            if (previous == null) MDC.remove("traceId");
+            else MDC.put("traceId", previous);
         }
     }
 
     static String from(HttpServletRequest request) {
         Object value = request.getAttribute(ATTRIBUTE_NAME);
-        return value instanceof String traceId ? traceId : generated();
+        if (value instanceof String traceId) return traceId;
+        String traceId = generated();
+        request.setAttribute(ATTRIBUTE_NAME, traceId);
+        return traceId;
     }
 
     private static String acceptedOrGenerated(String candidate) {

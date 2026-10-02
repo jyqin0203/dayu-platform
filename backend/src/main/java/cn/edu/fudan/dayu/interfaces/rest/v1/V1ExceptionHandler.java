@@ -35,6 +35,10 @@ public class V1ExceptionHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     ResponseEntity<ApiErrorResponse> handleBinding(BindException error, HttpServletRequest request) {
+        if (error.getBindingResult().getFieldErrors().stream()
+                .anyMatch(org.springframework.validation.FieldError::isBindingFailure)) {
+            return handleMalformed(error, request);
+        }
         Map<String, String> fields = new LinkedHashMap<>();
         error.getBindingResult().getFieldErrors()
                 .forEach(item -> fields.putIfAbsent(item.getField(), item.getDefaultMessage()));
@@ -56,6 +60,8 @@ public class V1ExceptionHandler {
     @ExceptionHandler(HandlerMethodValidationException.class)
     ResponseEntity<ApiErrorResponse> handleMethodValidation(
             HandlerMethodValidationException error, HttpServletRequest request) {
+        // Returning an invalid server value is a server defect, not a bad client request.
+        if (error.isForReturnValue()) return handleUnexpected(error, request);
         List<String> violations = error.getAllErrors().stream()
                 .map(item -> item.getDefaultMessage() == null ? "invalid value" : item.getDefaultMessage())
                 .toList();
@@ -76,7 +82,8 @@ public class V1ExceptionHandler {
     @ExceptionHandler(Exception.class)
     ResponseEntity<ApiErrorResponse> handleUnexpected(Exception error, HttpServletRequest request) {
         String traceId = TraceIdFilter.from(request);
-        log.error("Unhandled API error, traceId={}", traceId, error);
+        // Exception messages may contain SQL, credentials or rejected request values.
+        log.error("Unhandled API error, traceId={}, type={}", traceId, error.getClass().getName());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiErrorResponse(ErrorCode.INTERNAL_ERROR.name(),
                         "服务暂时不可用", traceId, Map.of()));
@@ -85,7 +92,7 @@ public class V1ExceptionHandler {
     private static ResponseEntity<ApiErrorResponse> response(
             HttpStatus status, ErrorCode code, String message,
             Map<String, Object> details, HttpServletRequest request) {
-        return ResponseEntity.status(status)
+        return ResponseEntity.status(status).header("Cache-Control", "no-store")
                 .body(new ApiErrorResponse(code.name(), message,
                         TraceIdFilter.from(request), details));
     }
