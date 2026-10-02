@@ -44,6 +44,9 @@ public interface CatalogQueryService {
      */
     List<ProductSummary> listManagedProducts(ManagedProductQuery query);
 
+    /** 批量查询管理详情及全部模式，按 sortOrder、id 稳定排序，避免管理列表 N+1 查询。 */
+    List<ProductDetail> listManagedProductDetails(ManagedProductQuery query);
+
     /**
      * 查询一个文件族应关联哪些产品，供 AssetIndex 建立文件与产品的关系。
      * 例如 BT 文件族可以关联多个亮温产品。

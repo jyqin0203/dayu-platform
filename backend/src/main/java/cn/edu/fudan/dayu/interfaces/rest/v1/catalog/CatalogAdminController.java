@@ -14,6 +14,11 @@ import cn.edu.fudan.dayu.shared.kernel.ProductCode;
 import cn.edu.fudan.dayu.shared.kernel.ProductId;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import cn.edu.fudan.dayu.shared.kernel.BusinessException;
+import cn.edu.fudan.dayu.shared.kernel.ErrorCode;
+import cn.edu.fudan.dayu.shared.kernel.UserRole;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
@@ -53,10 +58,12 @@ public class CatalogAdminController {
             @RequestParam(required = false) String family,
             @RequestParam(required = false) ProductStatus status,
             @RequestParam(required = false) String code) {
-        actors.required();
-        return queries.listManagedProducts(new ManagedProductQuery(
+        if (actors.required().role() != UserRole.ADMIN)
+            throw new BusinessException(ErrorCode.FORBIDDEN, "需要管理员权限");
+        if (code != null && !code.matches("^[A-Z][A-Z0-9_]{1,63}$"))
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "产品编码不合法");
+        return queries.listManagedProductDetails(new ManagedProductQuery(
                         family, status, code == null ? null : new ProductCode(code))).stream()
-                .map(summary -> queries.findProduct(summary.code()).orElseThrow())
                 .map(CatalogAdminController::response)
                 .toList();
     }
@@ -74,7 +81,7 @@ public class CatalogAdminController {
     @PutMapping("/{productId}")
     public Map<String, Object> update(@PathVariable long productId, @Valid @RequestBody UpdateRequest body) {
         return response(commands.updateProduct(new UpdateProductCommand(
-                new ProductId(productId), body.nameZh(), body.nameEn(), body.unit(),
+                validatedProductId(productId), body.nameZh(), body.nameEn(), body.unit(),
                 body.descriptionZh(), body.descriptionEn(), body.producer(), body.algorithmName(),
                 body.sourceDescription(), body.officialSourceUrl(), body.colorbarRequired(),
                 body.colorbarPath(), body.sortOrder()), actors.required()));
@@ -84,7 +91,7 @@ public class CatalogAdminController {
     public Map<String, Object> mode(@PathVariable long productId, @PathVariable DataMode dataMode,
                                     @Valid @RequestBody ModeRequest body) {
         var mode = commands.configureProductMode(new ConfigureProductModeCommand(
-                new ProductId(productId), dataMode, body.enabled(),
+                validatedProductId(productId), dataMode, body.enabled(),
                 Duration.ofMinutes(body.staleAfterMinutes())), actors.required());
         return Map.of("dataMode", mode.dataMode(), "enabled", mode.enabled(),
                 "staleAfterMinutes", mode.staleAfter().toMinutes());
@@ -92,12 +99,18 @@ public class CatalogAdminController {
 
     @PostMapping("/{productId}/publish")
     public Map<String, Object> publish(@PathVariable long productId) {
-        return response(commands.publishProduct(new ProductId(productId), actors.required()));
+        return response(commands.publishProduct(validatedProductId(productId), actors.required()));
     }
 
     @PostMapping("/{productId}/disable")
     public Map<String, Object> disable(@PathVariable long productId) {
-        return response(commands.disableProduct(new ProductId(productId), actors.required()));
+        return response(commands.disableProduct(validatedProductId(productId), actors.required()));
+    }
+
+    /** 在构造领域 ID 前转为明确的 HTTP 422；不让非法 path 参数泄露为 500。 */
+    private static ProductId validatedProductId(long value) {
+        if (value < 1) throw new BusinessException(ErrorCode.VALIDATION_FAILED, "产品编号必须大于零");
+        return new ProductId(value);
     }
 
     private static Map<String, Object> response(ProductDetail detail) {
@@ -111,7 +124,8 @@ public class CatalogAdminController {
         result.put("officialSourceUrl", p.officialSourceUrl());
         result.put("descriptionZh", detail.descriptionZh()); result.put("descriptionEn", detail.descriptionEn());
         result.put("colorbarRequired", detail.colorbarRequired());
-        result.put("colorbarPath", detail.colorbarPath()); result.put("sortOrder", p.sortOrder());
+        result.put("colorbarUrl", CatalogController.publicColorbarUrl(detail.colorbarPath()));
+        result.put("sortOrder", p.sortOrder());
         result.put("status", p.status()); result.put("publishedAt", detail.publishedAt());
         result.put("createdAt", detail.createdAt()); result.put("updatedAt", detail.updatedAt());
         result.put("modes", detail.modePolicies().stream().map(mode -> Map.of(
@@ -121,17 +135,20 @@ public class CatalogAdminController {
     }
 
     public record CreateRequest(
-            @NotBlank String code, @NotBlank String family,
-            @Size(min = 2, max = 255) String nameZh, @Size(min = 2, max = 255) String nameEn,
-            String unit, String descriptionZh, String descriptionEn,
-            @NotBlank String producer, String algorithmName, @NotBlank String sourceDescription,
-            URI officialSourceUrl, boolean colorbarRequired, String colorbarPath, int sortOrder) {}
+            @NotBlank @Pattern(regexp = "^[A-Z][A-Z0-9_]{1,63}$") String code,
+            @NotBlank @Size(max = 64) String family,
+            @NotNull @Size(min = 2, max = 255) String nameZh, @NotNull @Size(min = 2, max = 255) String nameEn,
+            @Size(max = 64) String unit, @NotNull String descriptionZh, @NotNull String descriptionEn,
+            @NotBlank @Size(max = 255) String producer, @Size(max = 255) String algorithmName,
+            @NotNull String sourceDescription, URI officialSourceUrl,
+            @NotNull Boolean colorbarRequired, @Size(max = 512) String colorbarPath, @NotNull Integer sortOrder) {}
     public record UpdateRequest(
-            @Size(min = 2, max = 255) String nameZh, @Size(min = 2, max = 255) String nameEn,
-            String unit, String descriptionZh, String descriptionEn,
-            @NotBlank String producer, String algorithmName, @NotBlank String sourceDescription,
-            URI officialSourceUrl, boolean colorbarRequired, String colorbarPath, int sortOrder) {}
+            @NotNull @Size(min = 2, max = 255) String nameZh, @NotNull @Size(min = 2, max = 255) String nameEn,
+            @Size(max = 64) String unit, @NotNull String descriptionZh, @NotNull String descriptionEn,
+            @NotBlank @Size(max = 255) String producer, @Size(max = 255) String algorithmName,
+            @NotNull String sourceDescription, URI officialSourceUrl,
+            @NotNull Boolean colorbarRequired, @Size(max = 512) String colorbarPath, @NotNull Integer sortOrder) {}
     public record ModeRequest(
-            boolean enabled,
-            @Min(10) @Max(10080) long staleAfterMinutes) {}
+            @NotNull Boolean enabled,
+            @NotNull @Min(10) @Max(10080) Long staleAfterMinutes) {}
 }

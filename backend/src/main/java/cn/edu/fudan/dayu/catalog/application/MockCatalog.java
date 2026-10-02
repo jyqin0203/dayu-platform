@@ -111,6 +111,13 @@ class MockCatalog implements CatalogQueryService, CatalogAdminService {
     }
 
     @Override
+    public List<ProductDetail> listManagedProductDetails(ManagedProductQuery query) {
+        return listManagedProducts(query).stream().map(p -> products.get(p.code()))
+                .sorted(Comparator.comparingInt((ProductDetail p) -> p.summary().sortOrder())
+                        .thenComparingLong(p -> p.summary().id().value())).toList();
+    }
+
+    @Override
     public ProductDetail createProduct(CreateProductCommand command, ActorContext actor) {
         // 所有管理操作都先检查当前操作人是否为管理员。
         requireAdmin(actor);
