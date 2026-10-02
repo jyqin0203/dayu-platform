@@ -29,7 +29,8 @@ public interface CatalogAdminService {
     ProductDetail updateProduct(UpdateProductCommand command, ActorContext actor);
 
     /**
-     * 发布一个产品，使其可以出现在普通用户的产品目录中。
+     * 发布草稿产品或重新发布已停用产品，使其可以出现在普通用户的产品目录中。
+     * 重新发布不会覆盖产品的首次发布时间。
      *
      * @param productId 要发布的产品编号
      * @param actor 当前已认证的操作人

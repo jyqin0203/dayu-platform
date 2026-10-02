@@ -151,24 +151,25 @@ class MockCatalog implements CatalogQueryService, CatalogAdminService {
 
     @Override
     public ProductDetail publishProduct(ProductId productId, ActorContext actor) {
-        return changeStatus(productId, actor, ProductStatus.DRAFT, ProductStatus.PUBLISHED);
+        return changeStatus(productId, actor, Set.of(ProductStatus.DRAFT, ProductStatus.DISABLED),
+                ProductStatus.PUBLISHED);
     }
 
     @Override
     public ProductDetail disableProduct(ProductId productId, ActorContext actor) {
-        return changeStatus(productId, actor, ProductStatus.PUBLISHED, ProductStatus.DISABLED);
+        return changeStatus(productId, actor, Set.of(ProductStatus.PUBLISHED), ProductStatus.DISABLED);
     }
 
     /**
      * 按已确认的生命周期改变产品状态，同时保留产品的其他资料。
-     * 第一版只允许 DRAFT → PUBLISHED → DISABLED；重新启用需要未来新增显式用例。
+     * 草稿可以首次发布，已停用产品可以重新发布，只有已发布产品可以停用。
      */
     private ProductDetail changeStatus(ProductId id, ActorContext actor,
-                                       ProductStatus expectedStatus, ProductStatus targetStatus) {
+                                       Set<ProductStatus> allowedCurrentStatuses, ProductStatus targetStatus) {
         requireAdmin(actor);
         ProductDetail existing = byId(id);
         ProductSummary old = existing.summary();
-        if (old.status() != expectedStatus) {
+        if (!allowedCurrentStatuses.contains(old.status())) {
             throw new BusinessException(ErrorCode.CONFLICT,
                     "产品状态不允许从" + old.status() + "变更为" + targetStatus);
         }
@@ -178,10 +179,11 @@ class MockCatalog implements CatalogQueryService, CatalogAdminService {
                 old.unit(), old.producer(), old.algorithmName(), old.sourceDescription(), old.officialSourceUrl(),
                 targetStatus, old.sortOrder());
 
-        // 发布时记录发布时间；停用时保留原来的发布时间。
+        // 首次发布时记录发布时间；重新发布和停用都保留第一次的发布时间。
         ProductDetail result = new ProductDetail(updated, existing.descriptionZh(), existing.descriptionEn(),
                 existing.colorbarRequired(), existing.colorbarPath(), existing.modePolicies(),
-                targetStatus == ProductStatus.PUBLISHED ? FIXED_NOW : existing.publishedAt(),
+                targetStatus == ProductStatus.PUBLISHED && existing.publishedAt() == null
+                        ? FIXED_NOW : existing.publishedAt(),
                 existing.createdAt(), FIXED_NOW);
         products.put(old.code(), result);
         return result;

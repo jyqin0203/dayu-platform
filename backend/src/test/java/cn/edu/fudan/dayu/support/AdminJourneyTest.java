@@ -62,9 +62,17 @@ class AdminJourneyTest {
         assertThatThrownBy(() -> catalogAdmin.publishProduct(draft.summary().id(), actor))
                 .isInstanceOfSatisfying(BusinessException.class,
                         error -> assertThat(error.errorCode()).isEqualTo(ErrorCode.CONFLICT));
-        assertThat(catalogAdmin.disableProduct(draft.summary().id(), actor).summary().status())
-                .isEqualTo(ProductStatus.DISABLED);
+        var disabled = catalogAdmin.disableProduct(draft.summary().id(), actor);
+        assertThat(disabled.summary().status()).isEqualTo(ProductStatus.DISABLED);
         assertThatThrownBy(() -> catalogAdmin.disableProduct(draft.summary().id(), actor))
+                .isInstanceOfSatisfying(BusinessException.class,
+                        error -> assertThat(error.errorCode()).isEqualTo(ErrorCode.CONFLICT));
+
+        // 停用产品可以重新发布，但必须保留第一次发布时间。
+        var republished = catalogAdmin.publishProduct(draft.summary().id(), actor);
+        assertThat(republished.summary().status()).isEqualTo(ProductStatus.PUBLISHED);
+        assertThat(republished.publishedAt()).isEqualTo(published.publishedAt());
+        assertThatThrownBy(() -> catalogAdmin.publishProduct(draft.summary().id(), actor))
                 .isInstanceOfSatisfying(BusinessException.class,
                         error -> assertThat(error.errorCode()).isEqualTo(ErrorCode.CONFLICT));
 

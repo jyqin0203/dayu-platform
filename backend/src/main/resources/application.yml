@@ -1,6 +1,15 @@
 spring:
   application:
     name: dayu-platform-backend
+  datasource:
+    url: ${DAYU_DB_URL:jdbc:mariadb://localhost:3306/dayu}
+    username: ${DAYU_DB_USER:dayu}
+    password: ${DAYU_DB_PASSWORD:}
+    driver-class-name: org.mariadb.jdbc.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    validate-migration-naming: true
 
 server:
   servlet:
