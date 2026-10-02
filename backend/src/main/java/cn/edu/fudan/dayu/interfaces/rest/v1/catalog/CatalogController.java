@@ -78,12 +78,18 @@ public class CatalogController {
                 .toList();
     }
 
-    private static URI publicColorbarUrl(String path) {
+    static URI publicColorbarUrl(String path) {
         if (path == null || path.isBlank()) return null;
-        String normalized = path.replace('\\', '/');
-        if (normalized.startsWith("/") || normalized.contains("../") || normalized.equals("..")) {
+        if (path.startsWith("/") || path.contains("\\") || path.contains(":") || path.contains("%")
+                || path.chars().anyMatch(Character::isISOControl)
+                || java.util.Arrays.stream(path.split("/", -1))
+                .anyMatch(segment -> segment.isEmpty() || segment.equals(".") || segment.equals(".."))) {
             throw new BusinessException(ErrorCode.INTERNAL_ERROR, "产品色标配置不可用");
         }
-        return URI.create("/" + normalized);
+        try {
+            return new URI(null, null, "/" + path, null);
+        } catch (java.net.URISyntaxException e) {
+            throw new BusinessException(ErrorCode.INTERNAL_ERROR, "产品色标配置不可用");
+        }
     }
 }

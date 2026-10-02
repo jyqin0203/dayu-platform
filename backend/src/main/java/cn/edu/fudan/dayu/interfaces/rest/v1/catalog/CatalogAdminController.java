@@ -14,6 +14,11 @@ import cn.edu.fudan.dayu.shared.kernel.ProductCode;
 import cn.edu.fudan.dayu.shared.kernel.ProductId;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import cn.edu.fudan.dayu.shared.kernel.BusinessException;
+import cn.edu.fudan.dayu.shared.kernel.ErrorCode;
+import cn.edu.fudan.dayu.shared.kernel.UserRole;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
@@ -53,10 +58,10 @@ public class CatalogAdminController {
             @RequestParam(required = false) String family,
             @RequestParam(required = false) ProductStatus status,
             @RequestParam(required = false) String code) {
-        actors.required();
-        return queries.listManagedProducts(new ManagedProductQuery(
+        if (actors.required().role() != UserRole.ADMIN)
+            throw new BusinessException(ErrorCode.FORBIDDEN, "需要管理员权限");
+        return queries.listManagedProductDetails(new ManagedProductQuery(
                         family, status, code == null ? null : new ProductCode(code))).stream()
-                .map(summary -> queries.findProduct(summary.code()).orElseThrow())
                 .map(CatalogAdminController::response)
                 .toList();
     }
@@ -111,7 +116,8 @@ public class CatalogAdminController {
         result.put("officialSourceUrl", p.officialSourceUrl());
         result.put("descriptionZh", detail.descriptionZh()); result.put("descriptionEn", detail.descriptionEn());
         result.put("colorbarRequired", detail.colorbarRequired());
-        result.put("colorbarPath", detail.colorbarPath()); result.put("sortOrder", p.sortOrder());
+        result.put("colorbarUrl", CatalogController.publicColorbarUrl(detail.colorbarPath()));
+        result.put("sortOrder", p.sortOrder());
         result.put("status", p.status()); result.put("publishedAt", detail.publishedAt());
         result.put("createdAt", detail.createdAt()); result.put("updatedAt", detail.updatedAt());
         result.put("modes", detail.modePolicies().stream().map(mode -> Map.of(
@@ -121,17 +127,20 @@ public class CatalogAdminController {
     }
 
     public record CreateRequest(
-            @NotBlank String code, @NotBlank String family,
-            @Size(min = 2, max = 255) String nameZh, @Size(min = 2, max = 255) String nameEn,
-            String unit, String descriptionZh, String descriptionEn,
-            @NotBlank String producer, String algorithmName, @NotBlank String sourceDescription,
-            URI officialSourceUrl, boolean colorbarRequired, String colorbarPath, int sortOrder) {}
+            @NotBlank @Pattern(regexp = "^[A-Z][A-Z0-9_]{1,63}$") String code,
+            @NotBlank @Size(max = 64) String family,
+            @NotNull @Size(min = 2, max = 255) String nameZh, @NotNull @Size(min = 2, max = 255) String nameEn,
+            @Size(max = 64) String unit, @NotNull String descriptionZh, @NotNull String descriptionEn,
+            @NotBlank @Size(max = 255) String producer, @Size(max = 255) String algorithmName,
+            @NotNull String sourceDescription, URI officialSourceUrl,
+            @NotNull Boolean colorbarRequired, @Size(max = 512) String colorbarPath, @NotNull Integer sortOrder) {}
     public record UpdateRequest(
-            @Size(min = 2, max = 255) String nameZh, @Size(min = 2, max = 255) String nameEn,
-            String unit, String descriptionZh, String descriptionEn,
-            @NotBlank String producer, String algorithmName, @NotBlank String sourceDescription,
-            URI officialSourceUrl, boolean colorbarRequired, String colorbarPath, int sortOrder) {}
+            @NotNull @Size(min = 2, max = 255) String nameZh, @NotNull @Size(min = 2, max = 255) String nameEn,
+            @Size(max = 64) String unit, @NotNull String descriptionZh, @NotNull String descriptionEn,
+            @NotBlank @Size(max = 255) String producer, @Size(max = 255) String algorithmName,
+            @NotNull String sourceDescription, URI officialSourceUrl,
+            @NotNull Boolean colorbarRequired, @Size(max = 512) String colorbarPath, @NotNull Integer sortOrder) {}
     public record ModeRequest(
-            boolean enabled,
-            @Min(10) @Max(10080) long staleAfterMinutes) {}
+            @NotNull Boolean enabled,
+            @NotNull @Min(10) @Max(10080) Long staleAfterMinutes) {}
 }
