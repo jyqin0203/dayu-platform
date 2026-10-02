@@ -1,6 +1,5 @@
 package cn.edu.fudan.dayu.interfaces.rest;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -52,22 +51,29 @@ class RemainingHttpContractTest {
     @Test
     void identityAdminCopilotAndDownloadFlowCanBeCalledThroughHttp() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        mockMvc.perform(get("/api/v1/session").session(session))
+        String anonymousResponse = mockMvc.perform(get("/api/v1/session").session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.authenticated").value(false))
-                .andExpect(jsonPath("$.csrfToken").isNotEmpty());
+                .andExpect(jsonPath("$.csrfToken").isNotEmpty())
+                .andReturn().getResponse().getContentAsString();
+        var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        String anonymousToken = mapper.readTree(anonymousResponse).path("csrfToken").asText();
 
-        mockMvc.perform(post("/api/v1/session").session(session).with(csrf())
+        String loginResponse = mockMvc.perform(post("/api/v1/session").session(session).header("X-CSRF-TOKEN", anonymousToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"admin@example.test\",\"password\":\"admin-password\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.user.role").value("ADMIN"));
+                .andExpect(jsonPath("$.user.role").value("ADMIN"))
+                .andReturn().getResponse().getContentAsString();
+        String authenticatedToken = mapper.readTree(loginResponse).path("csrfToken").asText();
+        mockMvc.perform(get("/api/v1/session").session(new MockHttpSession()))
+                .andExpect(jsonPath("$.authenticated").value(false));
 
         mockMvc.perform(get("/api/v1/admin/dashboard").session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.publishedProducts").value(3));
 
-        mockMvc.perform(post("/api/v1/copilot/queries").session(session).with(csrf())
+        mockMvc.perform(post("/api/v1/copilot/queries").session(session).header("X-CSRF-TOKEN", authenticatedToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"message":"查询降水预报","displayZone":"Asia/Shanghai",
@@ -76,7 +82,7 @@ class RemainingHttpContractTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.suggestedActions").isArray());
 
-        String authorization = mockMvc.perform(post("/api/v1/downloads").session(session).with(csrf())
+        String authorization = mockMvc.perform(post("/api/v1/downloads").session(session).header("X-CSRF-TOKEN", authenticatedToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"assetId":92002,"purpose":"用于HTTP下载契约集成测试"}
