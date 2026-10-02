@@ -7,8 +7,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import cn.edu.fudan.dayu.copilot.api.*;
 import cn.edu.fudan.dayu.interfaces.rest.v1.CurrentActorProvider;
 import cn.edu.fudan.dayu.interfaces.rest.v1.V1ExceptionHandler;
+import cn.edu.fudan.dayu.shared.kernel.BusinessException;
+import cn.edu.fudan.dayu.shared.kernel.ErrorCode;
 import cn.edu.fudan.dayu.shared.kernel.ProductCode;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,5 +46,14 @@ class CopilotControllerContractTest {
             mvc.perform(post("/api/v1/copilot/queries").contentType(MediaType.APPLICATION_JSON).content(body))
                     .andExpect(status().isUnprocessableEntity());
         verifyNoInteractions(copilot);
+    }
+    @Test void rateLimitReturns429RetryAfterAndSafeDetails() throws Exception {
+        when(copilot.query(any(), any())).thenThrow(new BusinessException(ErrorCode.RATE_LIMITED,
+                "AI 请求过于频繁，请稍后重试", Map.of("retryAfterSeconds", 23)));
+        mvc.perform(post("/api/v1/copilot/queries").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"message\":\"query\",\"displayZone\":\"UTC\",\"recentMessages\":[]}"))
+                .andExpect(status().isTooManyRequests()).andExpect(header().string("Retry-After", "23"))
+                .andExpect(jsonPath("$.code").value("RATE_LIMITED"))
+                .andExpect(jsonPath("$.details.retryAfterSeconds").value(23));
     }
 }
