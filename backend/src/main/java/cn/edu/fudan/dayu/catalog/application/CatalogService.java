@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class CatalogService implements CatalogQueryService, CatalogAdminService {
     private final CatalogRepository repository;
     private final ColorbarVerifier colorbars;
+    private final ApplicationEventPublisher events;
 
-    public CatalogService(CatalogRepository repository, ColorbarVerifier colorbars) {
+    public CatalogService(CatalogRepository repository, ColorbarVerifier colorbars, ApplicationEventPublisher events) {
         this.repository = repository;
         this.colorbars = colorbars;
+        this.events = events;
     }
 
     @Override public List<ProductSummary> listPublishedProducts() {
@@ -58,6 +61,7 @@ public class CatalogService implements CatalogQueryService, CatalogAdminService 
         ProductId id = repository.insert(c, actor.userId(), now);
         ProductDetail result = locked(id);
         repository.audit(null, result, "CREATE", actor.userId(), now);
+        changed(result.summary().code());
         return result;
     }
 
@@ -131,7 +135,9 @@ public class CatalogService implements CatalogQueryService, CatalogAdminService 
     private void save(ProductDetail before, ProductDetail after, String action, ActorContext actor) {
         repository.update(after, actor.userId());
         repository.audit(before, after, action, actor.userId(), after.updatedAt());
+        changed(after.summary().code());
     }
+    private void changed(ProductCode code) { events.publishEvent(new CatalogChanged(code)); }
     private ProductDetail locked(ProductId id) {
         if (id == null) throw invalid("产品编号不能为空");
         return repository.lock(id).orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "产品不存在"));
