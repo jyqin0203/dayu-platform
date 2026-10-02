@@ -4,6 +4,8 @@ import cn.edu.fudan.dayu.copilot.api.CopilotCommand;
 import cn.edu.fudan.dayu.copilot.api.CopilotResponse;
 import cn.edu.fudan.dayu.copilot.api.CopilotService;
 import cn.edu.fudan.dayu.copilot.api.PageContext;
+import cn.edu.fudan.dayu.copilot.api.InterpretedCriteria;
+import cn.edu.fudan.dayu.copilot.api.SuggestedAction;
 import cn.edu.fudan.dayu.interfaces.rest.v1.CurrentActorProvider;
 import cn.edu.fudan.dayu.shared.kernel.ProductCode;
 import cn.edu.fudan.dayu.shared.kernel.BusinessException;
@@ -13,10 +15,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.zone.ZoneRulesException;
 import java.util.List;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,37 +34,26 @@ public class CopilotController {
     }
 
     @PostMapping("/queries")
-    public Map<String, Object> query(@Valid @RequestBody QueryRequest body) {
+    public QueryResponse query(@Valid @RequestBody QueryRequest body) {
         ZoneId zone = zone(body.displayZone());
         PageContext context = body.pageContext() == null ? null : new PageContext(
                 body.pageContext().selectedProduct() == null ? null
                         : new ProductCode(body.pageContext().selectedProduct()),
                 body.pageContext().visibleTime(),
-                zone(body.pageContext().displayZone()));
+                body.pageContext().displayZone() == null ? zone : zone(body.pageContext().displayZone()));
+        if (context != null && !context.displayZone().equals(zone))
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "页面时区与请求显示时区必须一致");
         CopilotResponse response = copilot.query(new CopilotCommand(
                 body.message(), zone, context, body.recentMessages()), actors.optional());
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put("understanding", response.understanding());
-        if (response.criteria() == null) result.put("criteria", null);
-        else {
-            Map<String, Object> criteria = new LinkedHashMap<>();
-            criteria.put("productCode", response.criteria().productCode() == null
-                    ? null : response.criteria().productCode().value());
-            criteria.put("dataMode", response.criteria().dataMode());
-            criteria.put("from", response.criteria().from()); criteria.put("to", response.criteria().to());
-            criteria.put("queryKind", response.criteria().queryKind());
-            result.put("criteria", criteria);
-        }
-        result.put("answer", response.answer());
-        result.put("suggestedActions", response.suggestedActions());
-        result.put("degraded", response.degraded());
-        return result;
+        return new QueryResponse(response.understanding(), CriteriaResponse.from(response.criteria()), response.answer(),
+                response.suggestedActions(), response.degraded());
     }
 
     private static ZoneId zone(String value) {
         try {
+            if (!ZoneId.getAvailableZoneIds().contains(value)) throw new IllegalArgumentException();
             return ZoneId.of(value);
-        } catch (ZoneRulesException | NullPointerException error) {
+        } catch (java.time.DateTimeException | IllegalArgumentException | NullPointerException error) {
             throw new BusinessException(ErrorCode.VALIDATION_FAILED, "invalid IANA time zone");
         }
     }
@@ -73,12 +61,23 @@ public class CopilotController {
     public record QueryRequest(
             @NotBlank @Size(max = 2000) String message,
             @NotBlank String displayZone,
-            PageContextRequest pageContext,
-            @Size(max = 6) List<@Size(max = 2000) String> recentMessages) {
+            @Valid PageContextRequest pageContext,
+            @Size(max = 6) List<@jakarta.validation.constraints.NotNull @Size(max = 2000) String> recentMessages) {
         public QueryRequest {
-            recentMessages = recentMessages == null ? List.of() : List.copyOf(recentMessages);
+            recentMessages = recentMessages == null ? List.of()
+                    : java.util.Collections.unmodifiableList(new java.util.ArrayList<>(recentMessages));
         }
+        @Override public String toString() { return "CopilotQueryRequest[redacted]"; }
     }
     public record PageContextRequest(
-            String selectedProduct, Instant visibleTime, String displayZone) {}
+            @Size(max = 64) String selectedProduct, Instant visibleTime, @Size(max = 100) String displayZone) {}
+    public record CriteriaResponse(String productCode, cn.edu.fudan.dayu.shared.kernel.DataMode dataMode,
+            Instant from, Instant to, String queryKind, Instant cycleTime, Integer leadMinutes) {
+        static CriteriaResponse from(InterpretedCriteria criteria) {
+            return criteria == null ? null : new CriteriaResponse(criteria.productCode() == null ? null : criteria.productCode().value(),
+                    criteria.dataMode(), criteria.from(), criteria.to(), criteria.queryKind(), criteria.cycleTime(), criteria.leadMinutes());
+        }
+    }
+    public record QueryResponse(String understanding, CriteriaResponse criteria, String answer,
+            List<SuggestedAction> suggestedActions, boolean degraded) {}
 }

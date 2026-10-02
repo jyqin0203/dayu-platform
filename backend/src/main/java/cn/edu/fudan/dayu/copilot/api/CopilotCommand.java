@@ -10,6 +10,8 @@ public record CopilotCommand(
         String message, ZoneId displayZone, PageContext pageContext, List<String> recentMessages
 ) {
     public CopilotCommand {
-        recentMessages = List.copyOf(recentMessages);
+        recentMessages = recentMessages == null ? List.of()
+                : java.util.Collections.unmodifiableList(new java.util.ArrayList<>(recentMessages));
     }
+    @Override public String toString() { return "CopilotCommand[redacted]"; }
 }
