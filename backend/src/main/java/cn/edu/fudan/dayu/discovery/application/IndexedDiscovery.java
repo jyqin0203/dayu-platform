@@ -121,6 +121,7 @@ public class IndexedDiscovery implements DiscoveryQueryService {
                 : product.modePolicies().stream().filter(p -> p.dataMode() == mode && p.enabled()).findFirst();
         if (product == null || product.summary().status() != ProductStatus.PUBLISHED || policy.isEmpty())
             return new ProductAvailability(code, mode, false, false, null, null, ProductHealthStatus.DISABLED);
+        if (mode == DataMode.FORECAST) return forecastAvailability(code, policy.get());
         var preview = assets.listPreviewAssets(new AssetPreviewCriteria(code, mode,
                 clock.instant().minus(window), null, null, null, 200));
         var nc = assets.searchNetcdfAssets(new AssetSearchCriteria(code, mode, null, null,
@@ -135,6 +136,23 @@ public class IndexedDiscovery implements DiscoveryQueryService {
         boolean stale = freshnessTime.plus(policy.get().staleAfter()).isBefore(clock.instant());
         return new ProductAvailability(code, mode, !preview.isEmpty(), !nc.isEmpty(),
                 a.validTime(), a.cycleTime(), stale ? ProductHealthStatus.STALE : ProductHealthStatus.HEALTHY);
+    }
+
+    /** 按起报批次判断新鲜度；旧批次的较长时效不能遮住新批次的较短时效。 */
+    private ProductAvailability forecastAvailability(ProductCode code, ProductModePolicy policy) {
+        Instant cutoff = clock.instant().minus(window);
+        var preview = assets.listForecastCycles(new AssetForecastCycleCriteria(code, AssetType.WEBP, null, null))
+                .stream().filter(c -> !c.lastValidTime().isBefore(cutoff)).toList();
+        var nc = assets.listForecastCycles(new AssetForecastCycleCriteria(code, AssetType.NETCDF, null, null));
+        var newest = java.util.stream.Stream.concat(preview.stream(), nc.stream())
+                .max(Comparator.comparing(cn.edu.fudan.dayu.assetindex.api.ForecastCycleSummary::cycleTime)
+                        .thenComparing(cn.edu.fudan.dayu.assetindex.api.ForecastCycleSummary::lastValidTime));
+        if (newest.isEmpty()) return new ProductAvailability(code, DataMode.FORECAST, false, false,
+                null, null, ProductHealthStatus.MISSING);
+        var cycle = newest.get();
+        boolean stale = cycle.cycleTime().plus(policy.staleAfter()).isBefore(clock.instant());
+        return new ProductAvailability(code, DataMode.FORECAST, !preview.isEmpty(), !nc.isEmpty(),
+                cycle.lastValidTime(), cycle.cycleTime(), stale ? ProductHealthStatus.STALE : ProductHealthStatus.HEALTHY);
     }
 
     private void requireProduct(ProductCode code, DataMode mode) {

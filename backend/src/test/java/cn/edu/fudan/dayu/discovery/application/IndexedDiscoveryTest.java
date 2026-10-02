@@ -67,13 +67,24 @@ class IndexedDiscoveryTest {
     }
 
     @Test void forecastHealthUsesCycleTimeRatherThanFutureValidTime() {
-        when(assets.listPreviewAssets(any())).thenReturn(List.of());
         // Effective time lies in future, but cycle is two hours old and policy is one hour.
-        when(assets.searchNetcdfAssets(any())).thenReturn(new PageResult<>(List.of(
-                new IndexedAssetView(new AssetId(1), AssetType.NETCDF, Set.of(code), DataMode.FORECAST,
-                        now.minusSeconds(7200), now.plusSeconds(7200),240,"test.nc",1,null,AssetStatus.AVAILABLE)),1,1,1));
+        when(assets.listForecastCycles(argThat(q -> q.assetType()==AssetType.NETCDF))).thenReturn(List.of(
+                new cn.edu.fudan.dayu.assetindex.api.ForecastCycleSummary(now.minusSeconds(7200),
+                        now.plusSeconds(7200),now.plusSeconds(7200),Set.of(240),false)));
         assertThat(service.getProductAvailability(new ProductAvailabilityQuery(code,DataMode.FORECAST)).health())
                 .isEqualTo(ProductHealthStatus.STALE);
+    }
+
+    @Test void newerCycleWinsEvenWhenOlderCycleHasLaterValidTime() {
+        when(assets.listForecastCycles(argThat(q -> q.assetType()==AssetType.NETCDF))).thenReturn(List.of(
+                new cn.edu.fudan.dayu.assetindex.api.ForecastCycleSummary(now.minusSeconds(7200),
+                        now.plusSeconds(7200),now.plusSeconds(7200),Set.of(240),false),
+                new cn.edu.fudan.dayu.assetindex.api.ForecastCycleSummary(now.minusSeconds(60),
+                        now.plusSeconds(3540),now.plusSeconds(3540),Set.of(60),false)));
+        var health = service.getProductAvailability(new ProductAvailabilityQuery(code,DataMode.FORECAST));
+        assertThat(health.health()).isEqualTo(ProductHealthStatus.HEALTHY);
+        assertThat(health.latestCycleTime()).isEqualTo(now.minusSeconds(60));
+        assertThat(health.downloadAvailable()).isTrue();
     }
 
     @Test void rejectsPreviewPathEscapesInsteadOfLeakingThem() {
