@@ -68,6 +68,8 @@ WebP/<配置DPI目录>/forecast/<12位起报时间>/<产品>
 
 适配器将路径转换成 productCode/dataMode/cycleTime 后调用 Discovery。结果按有效时间正序，截取最新 N 帧。
 
+预报帧可以晚于当前时刻；不能用“截至现在”的实况窗口过滤未来预报。预览保留窗口与 `dayu.preview.retention` 一致。
+
 ~~~json
 {"files":["WebP/WebP_V2_Dpi500_4KM/realtime/BT855/example.webp"]}
 ~~~
@@ -106,6 +108,10 @@ WebP 请求调用预览查询，NC 请求调用科学资产查询；dir 包含�
 ~~~
 
 times 无时区后缀但明确表示 UTC。非法目录、时间或产品返回三个空数组；type 不是 multi 时返回旧式 422。NC 的 files 字段只供旧下载表单回传，Nginx 仍禁止直接访问 /netcdf/。
+
+实现通过内部分页/时间分段收集结果，共享同一个 NC 的产品按 assetId 去重。文件大小使用真实字节数除以 1024²，显示两位小数 MB。为避免旧版无分页响应无限占用资源，`dayu.legacy.max-search-results` 默认 2000；超过上限明确返回旧式 422，提示缩小范围，不静默截断。这个上限不影响 `/api/v1` 的分页检索。
+
+另有单请求内部分页/分段调用预算 `dayu.legacy.max-internal-queries`，默认 100；即使极大时间范围只产生空结果也受此预算保护，超限返回 422，不继续无界查询。
 
 ## 6. GET/POST /api/auth.php
 
@@ -151,7 +157,7 @@ purpose
 → 限制在 netcdf 逻辑存储空间
 → AssetIndex 通过 storageKey + relativePath 查找 assetId
 → Download 按统一规则授权并写审计
-→ Legacy Controller 立即通过 X-Accel-Redirect 返回文件
+→ 统一内容服务再次校验授权并返回文件（LOCAL 流式；NGINX 使用 X-Accel-Redirect）
 ~~~
 
 该接口不使用 /api/v1 的两阶段响应，以保持旧网页“新标签页直接下载”的行为。路径不存在、不是 NC、资产不可用或发生路径逃逸时拒绝；用途仍为 10～2000 字符。

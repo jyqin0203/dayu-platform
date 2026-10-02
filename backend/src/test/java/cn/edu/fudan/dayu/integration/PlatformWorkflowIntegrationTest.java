@@ -19,13 +19,14 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.*;
 import org.springframework.test.web.servlet.*;
 import org.testcontainers.containers.MariaDBContainer;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * 主 Agent 的整体验收：全部真实业务服务 + 临时 MariaDB + 合成文件 + HTTP Session。
+ * 主 Agent 的整体验收：全部真实业务服务 + 临时 MariaDB/Redis + 合成文件 + HTTP Session。
  * 不导入任何 Mock 业务 bean，不调用模型服务，不接生产目录。
  */
 @Testcontainers
@@ -36,6 +37,8 @@ class PlatformWorkflowIntegrationTest {
     @Container static final MariaDBContainer<?> DATABASE = new MariaDBContainer<>("mariadb:10.6")
             .withTmpFs(Map.of("/var/lib/mysql", "rw"))
             .withStartupTimeout(Duration.ofMinutes(5));
+    @Container static final GenericContainer<?> REDIS = new GenericContainer<>("redis:7.4-alpine")
+            .withExposedPorts(6379).withStartupTimeout(Duration.ofMinutes(3));
     static final Path ROOT = temporaryRoot();
     static final Path NC = ROOT.resolve("netcdf");
     static final Path WEBP = ROOT.resolve("webp");
@@ -48,7 +51,9 @@ class PlatformWorkflowIntegrationTest {
         r.add("dayu.indexing.roots.webp-preview", WEBP::toString);
         r.add("dayu.indexing.enabled", () -> "false");
         r.add("dayu.copilot.enabled", () -> "false");
-        r.add("dayu.cache.enabled", () -> "false");
+        r.add("spring.data.redis.host", REDIS::getHost);
+        r.add("spring.data.redis.port", () -> REDIS.getMappedPort(6379));
+        r.add("dayu.cache.enabled", () -> "true");
         r.add("dayu.download.transfer-mode", () -> "LOCAL");
     }
 
@@ -65,9 +70,14 @@ class PlatformWorkflowIntegrationTest {
         Browser visitor = anonymous();
         http.perform(get("/api/v1/admin/dashboard").session(visitor.session))
                 .andExpect(status().isUnauthorized());
+        // Cache the empty catalog first: later publication must invalidate it after commit.
+        http.perform(get("/api/v1/products")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
 
         createProduct(administrator, "PRECIP");
         createProduct(administrator, "PLP");
+        http.perform(get("/api/v1/products")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
         Instant valid = Instant.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES).minusSeconds(120);
         String compact = DateTimeFormatter.ofPattern("uuuuMMddHHmm").withZone(ZoneOffset.UTC).format(valid);
         byte[] bytes = "synthetic scientific content for integration".getBytes(java.nio.charset.StandardCharsets.UTF_8);
@@ -75,6 +85,11 @@ class PlatformWorkflowIntegrationTest {
         Files.createDirectories(WEBP.resolve("realtime/PRECIP"));
         Files.write(NC.resolve("realtime/FY4B_AGRI_REPPIC_PRECIP_" + compact + ".nc"), bytes);
         Files.writeString(WEBP.resolve("realtime/PRECIP/FY4B_AGRI_PRECIP_" + compact + "_Dpi500.webp"), "synthetic-preview");
+        String from = valid.minusSeconds(60).toString(), to = valid.plusSeconds(60).toString();
+        // Cache an empty timeline before the scan: AssetIndexChanged must invalidate it.
+        http.perform(get("/api/v1/preview-frames").param("productCode", "PRECIP").param("dataMode", "REALTIME")
+                        .param("from", from).param("to", to))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.items.length()").value(0));
         JsonNode task = body(http.perform(post("/api/v1/admin/index-scans").session(administrator.session)
                 .header("X-CSRF-TOKEN", administrator.token)).andExpect(status().isAccepted()).andReturn());
         long taskId = task.path("scanRunId").asLong();
@@ -89,7 +104,6 @@ class PlatformWorkflowIntegrationTest {
         assertThat(finished.path("createdAssets").asLong()).isEqualTo(2);
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM data_asset_products", Long.class)).isEqualTo(3);
 
-        String from = valid.minusSeconds(60).toString(), to = valid.plusSeconds(60).toString();
         JsonNode results = body(http.perform(get("/api/v1/scientific-assets")
                         .param("productCode", "PRECIP").param("dataMode", "REALTIME")
                         .param("from", from).param("to", to))
@@ -113,20 +127,33 @@ class PlatformWorkflowIntegrationTest {
         String url = grant.path("downloadUrl").asText();
         http.perform(get(url).session(user.session)).andExpect(status().isOk())
                 .andExpect(content().bytes(bytes)).andExpect(header().doesNotExist("X-Accel-Redirect"));
+        // Both product links must appear as one physical NC in Legacy search, then use the same secure transfer.
+        DateTimeFormatter oldTime = DateTimeFormatter.ofPattern("uuuuMMddHHmm").withZone(ZoneOffset.UTC);
+        JsonNode oldSearch = body(http.perform(get("/api/search.php").param("type", "multi")
+                        .param("dir", "netcdf/realtime").param("start", oldTime.format(Instant.parse(from)))
+                        .param("end", oldTime.format(Instant.parse(to))))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.files.length()").value(1)).andReturn());
+        http.perform(get("/api/files.php").param("path", "WebP/WebP_V2_Dpi500_4KM/realtime/PRECIP"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.files.length()").value(1));
+        http.perform(post("/api/download.php").session(user.session)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED).param("csrf_token", user.token)
+                        .param("file_path", oldSearch.path("files").get(0).asText())
+                        .param("purpose", "用于旧版接口真实下载全链路验收"))
+                .andExpect(status().isOk()).andExpect(content().bytes(bytes));
         Browser other = register(anonymous(), "workflow-other@example.test");
         http.perform(get(url).session(other.session)).andExpect(status().isForbidden());
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM download_events WHERE status='AUTHORIZED'", Long.class))
-                .isEqualTo(1);
-        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM download_event_products", Long.class)).isEqualTo(2);
+                .isEqualTo(2);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM download_event_products", Long.class)).isEqualTo(4);
         http.perform(get("/api/v1/admin/download-statistics").session(administrator.session))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.authorizedRequests").value(1))
+                .andExpect(jsonPath("$.authorizedRequests").value(2))
                 .andExpect(jsonPath("$.uniqueAssets").value(1))
                 .andExpect(jsonPath("$.uniqueUsers").value(1));
         http.perform(get("/api/v1/admin/dashboard").session(administrator.session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.latestScan.scanRunId").value(taskId))
-                .andExpect(jsonPath("$.downloads.authorizedRequests").value(1));
+                .andExpect(jsonPath("$.downloads.authorizedRequests").value(2));
         long userId = jdbc.queryForObject("SELECT id FROM users WHERE email='workflow-user@example.test'", Long.class);
         http.perform(put("/api/v1/admin/users/" + userId + "/status").session(administrator.session)
                         .header("X-CSRF-TOKEN", administrator.token).contentType(MediaType.APPLICATION_JSON)

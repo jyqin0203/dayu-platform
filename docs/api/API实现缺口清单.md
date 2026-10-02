@@ -1,128 +1,46 @@
-# 大禹系统 API 实现缺口清单
+# 大禹系统 API 实现状态与剩余验收
 
-> 状态：由已确认的 /api/v1 与 Legacy 契约倒推
-> 日期：2026-10-02
-> 用途：说明当前空骨架距离 HTTP 契约还缺什么，不表示这些能力已经完成。
+日期：2026-10-02。本文替代仅有 HTTP 空骨架时的缺口清单，不再把已实现的真实服务写为“待实现”。
 
-## 1. 当前已有
+## 当前实现
 
-- 七个业务模块的公开 API、DTO、Mock 主流程和 ArchUnit 约束；
-- MariaDB/Flyway 首版结构；
-- Session、CSRF、产品、资产、下载和扫描的领域方向；
-- interfaces/rest/v1 与 interfaces/rest/legacy 空接入层位置。
+`/api/v1` 的 24 条路径、28 个操作，以及 6 个保留的 Legacy 路由和 2 个 410 退役路由，均有协议适配器。**有路由不等于业务已经验证**：对应的真实服务及证据如下。
 
-当前 24 条 /api/v1 路径（28 个操作）和 8 个 Legacy 路由均已有 Controller 映射；
-Repository、真实 Spring Security 登录、文件扫描、Nginx 下载和 AI Provider 仍未实现。
+| 模块 | 真实实现 | 验证入口 |
+| --- | --- | --- |
+| 公共接入 | 参数、分页、UTC、错误码、traceId、Session/CSRF、ADMIN 授权 | HTTP 契约、安全及 ArchUnit 测试 |
+| Catalog | MariaDB Repository、事务审计、模式配置、发布/停用/重新发布、色标边界 | `docs/reviews/catalog.md` |
+| AssetIndex | 只读元数据扫描、文件名解析、幂等索引、缺失处理、真实异步任务与错误记录 | `docs/reviews/asset-index.md` |
+| Discovery | 近期 WebP、历史 NC 分页、预报批次、预览下载候选、按起报时间判断预报新鲜度 | `IndexedDiscoveryTest`、`PlatformWorkflowIntegrationTest` |
+| Identity | MariaDB 用户、密码哈希、每 Session 隔离、注册提交后认证、登录限流、用户状态/角色保护 | `docs/reviews/identity.md` |
+| Download | 持久授权/拒绝审计、用户与 TTL 绑定、受控路径、本地流式内容、Nginx internal 转发、聚合统计 | `docs/reviews/download.md` |
+| Operations | 公开模块 API 编排、真实扫描 ID/状态/历史、健康与下载统计、用户管理 | `docs/reviews/operations.md` |
+| Copilot | 可替换 ChatClient/AiClient、Qwen HTTP、结构化输出校验、只读查询、固定动作、超时/降级 | `docs/reviews/copilot.md` |
 
-## 2. 公共接入能力
+Redis 热点元数据缓存、Legacy 最终兼容性及 Copilot 每分钟/在途调用限制已通过收尾 PR 补齐，分别记录在 `reviews/cache.md`、`reviews/legacy.md`、`reviews/copilot-limits.md`。最终组合测试结果见 [整体验收报告](../后端并行开发与整体验收报告.md)。
 
-| 状态 | 能力 | 后续实现或结果 | 最低验证 |
-| --- | --- | --- | --- |
-| 已完成 | 统一错误响应 | BusinessException、400/422、未知异常和 traceId | 7 个 MVC 契约测试 |
-| 部分完成 | 参数与 UTC 校验 | Bean Validation 已接入；时间组合规则随各 Controller 实现 | 各接口 400/422 测试 |
-| 已完成 | 分页上限 | page 默认 1，pageSize 默认 20、最大 100 | MVC 契约测试 |
-| 待实现 | Session/CSRF | 匿名 Session Token、认证 Session | 安全集成测试 |
-| 待实现 | 管理员授权 | URL 与方法权限 | USER/ADMIN 测试 |
-| 待实现 | 接入层 DTO | 模块 DTO 到 JSON 的显式映射 | JSON 契约测试 |
+## 已明确的行为边界
 
-公共 HTTP 基础当前实现于 interfaces/rest/v1，包括 ApiErrorResponse、V1ExceptionHandler、TraceIdFilter 和 PageParameters。Session Cookie 名称已配置为 DAYUSESSID；这不代表真实认证已经完成。
+- 发布目录与模式决定公开检索；数据库统一 UTC，显示时区由前端提供/转换。
+- WebP 默认检索近期 3 天，可配置；预报有效时间可以位于未来。NC 历史检索不受图片保留窗口限制。
+- 一个 NC 可以关联多个产品。RePPIC NC 同时关联 PLP、PRECIP；预览找不到 NC 时正常显示但不伪造下载地址。
+- Download 保持既定依赖矩阵：不额外依赖 Catalog。已知旧 assetId 在资产仍可下载时可以申请，不将停用产品等同于撤销文件权限。
+- 下载统计指 `AUTHORIZED` 授权申请，不声称客户端完整下载。完整传输统计仍未实现。
+- HTTP 扫描提交返回 202 和真实任务 ID；不把后台尚未完成的任务描述成“扫描成功”。
+- Copilot 只帮助理解产品和筛选数据，不能替用户下载、越权管理或直接执行模型输出。
 
-## 3. Catalog
+## 还不能声称完成的事项
 
-- [已完成] 增加创建或更新 ProductModePolicy 的公开管理能力和 Mock 规则验证；
-- [已完成] 实现公开产品目录和单产品详情 Controller；
-- [已完成] 增加批量公开详情查询，避免 HTTP 列表逐产品查询；
-- 实现 MariaDB Repository 和事务；
-- 发布/重新发布时验证启用模式、色标并写管理审计；
-- [已完成] 实现管理员产品 Controller 适配层；
-- 保持 DRAFT → PUBLISHED ↔ DISABLED，重新发布不覆盖首次 publishedAt。
+1. **真实数据覆盖**：当前 NC 解析器覆盖已确认的 RePPIC 命名；辐射/云 NC 的具体命名仍需样本，不能仅凭家族映射自动推断。
+2. **真实模型联调**：未提供百炼凭据；现有模型传输测试使用本地 HTTP 替身。启用真实服务前需验证地区 Base URL、模型权限、额度、限流配置。
+3. **浏览器与前端**：后端测试不等于 Cesium/下载页面完成联调。WebP URL 仍需静态资源服务映射；前端重构不在本次后端交付范围。
+4. **生产部署**：未部署、未迁移生产用户/数据。首次管理员初始化、HTTPS Secure Cookie、Nginx alias、数据目录权限、备份与回滚需部署阶段核验。
+5. **性能指标**：没有代表性历史数据规模下的 EXPLAIN/压测结果，不承诺 QPS。发现服务部分聚合及预览到 NC 候选查询尚有批量优化空间。
+6. **多实例**：当前扫描互斥、登录限流辅助锁及缓存失效恢复按单实例实现；Session 共享、分布式扫描锁和可靠事件等不在本版承诺中。
 
-最低验证：Catalog 单元测试、MariaDB 集成测试、公开/管理员 HTTP 契约测试。
+## 验收口径
 
-## 4. AssetIndex 与 Discovery
-
-- 实现文件名和目录解析器；
-- 实现初次全量及可配置增量扫描；
-- 将手动扫描改为异步任务提交，并支持按 ID 查询；
-- 持久化扫描批次和安全错误摘要；
-- [已完成] 实现 WebP 时间轴、预报批次和 NC 分页 HTTP 适配层；
-- 用代表性数据执行 EXPLAIN；
-- 为 Legacy 增加受限的 storageKey + relativePath → assetId 内部查询端口。
-
-最低验证：临时目录、重复扫描、缺失 WebP/NC、非法文件名、并发扫描冲突和 MariaDB 查询测试。
-
-## 5. Identity
-
-- 实现用户 Repository、密码哈希和登录失败限流；
-- 注册事务提交后再建立认证 Session；
-- 实现 Session Fixation 防护和 CSRF Token 生命周期；
-- 增加管理员用户分页查询；
-- 禁止管理员禁用自己或移除最后一个有效管理员；
-- [已完成] 实现 Session、注册、登录、退出和管理员用户 Controller 适配层；
-
-最低验证：事务失败不建立 Session、Token 与 Session 一致、禁用用户不能登录、限流、CSRF 和权限测试。
-
-## 6. Download
-
-- 实现 assetId + purpose 授权事务和审计快照；
-- [已完成] 在 Mock 范围生成短期 downloadEventId 内容地址并校验申请人；
-- 本地使用 Java 分块适配器，生产使用 Nginx X-Accel-Redirect；
-- 实现授权过期、资产消失和路径逃逸检查；
-- 保持当前决定：Download 不额外依赖 Catalog，已知旧 assetId 在资产仍可用时可以申请。
-
-最低验证：未登录、用途长度、非 NC、MISSING、过期授权、非申请人、路径逃逸和 Nginx 隔离环境测试。
-
-## 7. Operations
-
-- 将同步扫描接口调整为异步提交结果；
-- 增加扫描历史分页和详情；
-- 增加用户分页编排；
-- [已完成] 实现仪表盘、产品健康、授权下载统计和审计 HTTP 适配层；
-- 统计名称不得把 AUTHORIZED 写成客户端“下载完成”。
-
-最低验证：管理员权限、运行中扫描冲突、统计口径、敏感字段不出现在响应中。
-
-## 8. Copilot
-
-- 接入 AI Provider，并设置超时、限流和降级；
-- 将模型输出解析为受控结构，再由 Java 校验；
-- 只调用 Catalog 和 Discovery；
-- Suggested Action 使用固定白名单；
-- 第一版不持久化完整对话、不流式响应、不执行下载或管理操作。
-- [已完成] 实现 Copilot HTTP 适配层和动作响应映射；
-
-最低验证：非法模型输出、未知产品、时区转换、提示注入、Provider 超时、降级与动作白名单。
-
-## 9. Legacy Adapter
-
-已实现六个兼容 Controller 路由和两个 410 Gone 端点：
-
-~~~text
-products.php      → Catalog
-files.php         → Discovery
-fcst_latest.php   → Discovery
-search.php        → Discovery
-auth.php          → Identity
-download.php      → AssetIndex + Download
-admin_products.php/admin.php → 410
-~~~
-
-必须通过 ArchUnit 保证 Legacy 不直接访问 Repository、数据库或文件系统。
-
-当前 Legacy 行为仍基于 skeleton Mock；真实文件大小、目录解析覆盖面和表单兼容性需要在文件索引实现后补充完整契约测试。
-
-## 10. 推荐实现顺序
-
-~~~text
-1. 公共错误、分页和安全接入骨架
-2. Catalog MariaDB + /api/v1 Catalog
-3. AssetIndex/Discovery + 查询 API
-4. Identity + Session/CSRF
-5. Download + Nginx/本地适配
-6. Operations 异步扫描和管理接口
-7. Copilot
-8. Legacy Adapter
-9. 全链路契约与浏览器测试
-~~~
-
-每一项仍按“一个可审查、可验证闭环”实施，不一次生成全部 Controller。
+- 模块测试证明各自覆盖的规则，不能替代最终组合验收。
+- `PlatformWorkflowIntegrationTest` 使用真实业务服务、临时数据库和合成文件，通过 HTTP 跑产品发布→扫描→检索→注册→受控下载→管理员统计/禁用。
+- 全量 `clean verify` 与 GitHub CI 应基于最终组合提交执行；有跳过/失败时不得写为全部通过。
+- 最终报告需明确真实容器验证、业务替身测试、尚未提供凭据的外部服务三者的区别。

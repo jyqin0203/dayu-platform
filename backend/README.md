@@ -66,12 +66,20 @@ dayu:
   download:
     transfer-mode: LOCAL          # 本地流式传输；部署时才考虑 NGINX
     grant-ttl: 5m
+  cache:
+    enabled: false                # 开启前配置 spring.data.redis.*
+    catalog-ttl: 5m
+    preview-ttl: 2m
+    forecast-cycle-ttl: 2m
   copilot:
     enabled: false
     provider: qwen
     qwen:
       model: qwen-plus
       base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    rate-limit:
+      requests-per-minute: 30
+      max-concurrent-calls: 2
 ```
 
 ```powershell
@@ -87,6 +95,7 @@ $env:SPRING_CONFIG_ADDITIONAL_LOCATION='file:E:/dayu-local/application.yml'
 - 当前已确认的 NC 文件名解析范围是 RePPIC 降水（同时关联 PLP、PRECIP）。辐射/云 NC 的具体文件名规则仍需真实样本确认；不会凭推断自动建错索引。
 - WebP 查询返回资源 URL；Java 不把整个图片读入堆内存。该 URL 需由本地前端代理/静态服务或部署 Nginx 映射到 `webp-preview` 对应目录。仅启动 Java 不代表地图图片服务已经配置。
 - `LOCAL` 下载真实流式输出文件；`NGINX` 需要独立部署 [internal location](../infra/nginx-download.conf)，不能把 NC 目录直接公开为静态资源。
+- Redis 仅缓存公开产品目录、WebP 时间轴和 WebP 预报批次；故障回源，不缓存历史 NC 搜索、密码或下载用途。连接/命令超时默认 250ms。启用时显式提供 `spring.data.redis.host/port`，需要认证时凭据只放外部配置；不开启时不访问 Redis。
 - 启用 Qwen 时，在进程环境安全提供 `DASHSCOPE_API_KEY`，并显式开启 `dayu.copilot.enabled`。当前客户端测试使用本地假 HTTP 服务，**不代表真实百炼账号/额度已经验证**。增加提供商时实现 `AiClient`，由 `ChatClient` 路由，不改业务查询代码。
 - HTTPS 部署需开启 `server.servlet.session.cookie.secure=true`；反向代理、会话多实例共享、备份及生产容量验证另行部署验收。
 
