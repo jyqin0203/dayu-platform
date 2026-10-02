@@ -9,5 +9,12 @@ import java.time.Instant;
  */
 public record DownloadGrant(
         DownloadEventId eventId, String downloadFileName, String contentType,
-        long expectedBytes, String internalLocation, Instant authorizedAt
-) {}
+        long expectedBytes, String internalLocation, Instant authorizedAt, Instant expiresAt
+) {
+    /** 保持 skeleton 调用兼容；真实实现显式使用配置计算 expiresAt。 */
+    public DownloadGrant(DownloadEventId eventId, String downloadFileName, String contentType,
+                         long expectedBytes, String internalLocation, Instant authorizedAt) {
+        this(eventId, downloadFileName, contentType, expectedBytes, internalLocation,
+                authorizedAt, authorizedAt.plus(java.time.Duration.ofMinutes(5)));
+    }
+}

@@ -12,6 +12,8 @@ import cn.edu.fudan.dayu.download.api.DownloadAuthorizationService;
 import cn.edu.fudan.dayu.download.api.DownloadCommand;
 import cn.edu.fudan.dayu.download.api.DownloadGrant;
 import cn.edu.fudan.dayu.download.api.DownloadGrantAccess;
+import cn.edu.fudan.dayu.download.api.DownloadContentService;
+import cn.edu.fudan.dayu.download.api.DownloadContent;
 import cn.edu.fudan.dayu.download.api.DownloadStatistics;
 import cn.edu.fudan.dayu.download.api.DownloadStatisticsQuery;
 import cn.edu.fudan.dayu.download.api.DownloadStatus;
@@ -41,7 +43,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Profile("skeleton")
 class MockDownload implements DownloadAuthorizationService, DownloadGrantAccess,
-        DownloadAuditQueryService, DeliveryResultRecorder {
+        DownloadAuditQueryService, DeliveryResultRecorder, DownloadContentService {
     private static final Instant AUTHORIZED_AT = Instant.parse("2026-09-29T02:20:00Z");
     private final DownloadAssetLookup assets;
     private final AtomicLong eventSequence = new AtomicLong(50_000);
@@ -97,6 +99,12 @@ class MockDownload implements DownloadAuthorizationService, DownloadGrantAccess,
                 .filter(a -> query.productCode() == null || a.productSnapshot().contains(query.productCode()))
                 .toList();
         return new PageResult<>(result, query.pageRequest().page(), query.pageRequest().size(), result.size());
+    }
+
+    /** skeleton 只演示内部转发响应，不读取或伪造真实科学文件。 */
+    @Override
+    public DownloadContent prepareContent(DownloadEventId eventId, ActorContext actor) {
+        return new DownloadContent(getAuthorizedGrant(eventId, actor), null);
     }
 
     @Override

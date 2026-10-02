@@ -5,6 +5,7 @@ import cn.edu.fudan.dayu.download.api.DownloadAuthorizationService;
 import cn.edu.fudan.dayu.download.api.DownloadCommand;
 import cn.edu.fudan.dayu.download.api.DownloadGrant;
 import cn.edu.fudan.dayu.download.api.DownloadGrantAccess;
+import cn.edu.fudan.dayu.download.api.DownloadContentService;
 import cn.edu.fudan.dayu.interfaces.rest.v1.CurrentActorProvider;
 import cn.edu.fudan.dayu.shared.kernel.AssetId;
 import cn.edu.fudan.dayu.shared.kernel.BusinessException;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.net.URI;
 import java.time.Duration;
@@ -21,6 +23,7 @@ import java.time.Instant;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,15 +35,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/downloads")
 public class DownloadController {
-    private static final Duration GRANT_TTL = Duration.ofMinutes(5);
     private final DownloadAuthorizationService authorizations;
-    private final DownloadGrantAccess grants;
+    private final DownloadContentService contents;
     private final CurrentActorProvider actors;
 
     public DownloadController(DownloadAuthorizationService authorizations,
-                              DownloadGrantAccess grants, CurrentActorProvider actors) {
+                              DownloadContentService contents, CurrentActorProvider actors) {
         this.authorizations = authorizations;
-        this.grants = grants;
+        this.contents = contents;
         this.actors = actors;
     }
 
@@ -53,28 +55,17 @@ public class DownloadController {
                 new ClientContext(request.getRemoteAddr(), request.getHeader("User-Agent")));
         return ResponseEntity.status(HttpStatus.CREATED).body(new AuthorizationResponse(
                 grant.eventId().value(), URI.create("/api/v1/downloads/" + grant.eventId().value() + "/content"),
-                grant.downloadFileName(), grant.expectedBytes(), grant.authorizedAt().plus(GRANT_TTL)));
+                grant.downloadFileName(), grant.expectedBytes(), grant.expiresAt()));
     }
 
     @GetMapping("/{downloadEventId}/content")
-    public ResponseEntity<Void> content(@PathVariable long downloadEventId) {
-        DownloadGrant grant = grants.getAuthorizedGrant(
-                new DownloadEventId(downloadEventId), actors.required());
-        if (Instant.now().isAfter(grant.authorizedAt().plus(GRANT_TTL))) {
-            throw new BusinessException(ErrorCode.ASSET_GONE, "下载授权已过期");
-        }
-        return ResponseEntity.ok()
-                .header("X-Accel-Redirect", grant.internalLocation())
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + grant.downloadFileName().replace("\"", "_") + "\"")
-                .header(HttpHeaders.CONTENT_TYPE, grant.contentType())
-                .header(HttpHeaders.CONTENT_LENGTH, Long.toString(grant.expectedBytes()))
-                .header(HttpHeaders.CACHE_CONTROL, "private, no-store")
-                .build();
+    public ResponseEntity<Resource> content(@PathVariable long downloadEventId) {
+        if (downloadEventId < 1) throw new BusinessException(ErrorCode.VALIDATION_FAILED, "下载事件编号必须大于零");
+        return DownloadHttpResponse.from(contents.prepareContent(new DownloadEventId(downloadEventId), actors.required()));
     }
 
     public record AuthorizationRequest(
-            @Min(1) long assetId,
+            @NotNull @Min(1) Long assetId,
             @NotBlank @Size(min = 10, max = 2000) String purpose) {}
     public record AuthorizationResponse(
             long downloadEventId, URI downloadUrl, String fileName,
