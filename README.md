@@ -4,7 +4,9 @@
 
 ## 当前阶段
 
-项目处于 MS1 可编译空骨架阶段。后端已经用公开接口、核心 DTO、`skeleton` Mock 和 ArchUnit 测试固定七个业务模块的边界；数据库、Redis、真实文件索引、下载传输与 AI 模型尚未接入。
+项目已从空骨架进入真实后端实现与集成验收阶段：MariaDB 持久化、文件索引、Session/CSRF、检索、受控下载、管理员编排及可替换的 Qwen 客户端已实现。`skeleton` 仍保留为无数据库演示，不能替代真实服务验收。前端重构、真实模型凭据联调和生产部署不属于本轮已完成事项。
+
+运行方式见 [backend/README.md](backend/README.md)，逐模块实现与测试证据见 [docs/reviews](docs/reviews)。
 
 ## 系统边界
 
