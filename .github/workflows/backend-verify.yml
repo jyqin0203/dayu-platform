@@ -1,0 +1,42 @@
+name: Backend verification
+on:
+  pull_request:
+  push:
+    branches: [main, integration/backend-modules]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      MAVEN_OPTS: -Xmx256m
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Verify against temporary databases
+        working-directory: backend
+        run: bash mvnw --batch-mode -DargLine=-Xmx512m -Ddebug=false clean verify
+      - name: Reject skipped database verification
+        if: success()
+        shell: python
+        run: |
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          reports = list(Path("backend/target/surefire-reports").glob("TEST-*.xml"))
+          assert reports, "No test reports"
+          for report in reports:
+              suite = ET.parse(report).getroot()
+              if "IntegrationTest" in suite.attrib["name"]:
+                  assert int(suite.attrib.get("skipped", "0")) == 0, f"Database verification skipped: {report}"
+      - name: Store test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports
+          path: backend/target/surefire-reports/*.xml
