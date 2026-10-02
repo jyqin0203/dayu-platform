@@ -68,6 +68,7 @@ public class LegacyDataController {
     private final String previewPrefix;
     private final Duration previewWindow;
     private final int maxSearchResults;
+    private final int maxInternalQueries;
     private final Clock clock;
 
     @Autowired
@@ -78,17 +79,18 @@ public class LegacyDataController {
             @Value("${dayu.legacy.netcdf-alias:netcdf}") String netcdfAlias,
             @Value("${dayu.preview.public-prefix:/media/webp/}") String previewPrefix,
             @Value("${dayu.preview.retention:3d}") Duration previewWindow,
-            @Value("${dayu.legacy.max-search-results:2000}") int maxSearchResults) {
+            @Value("${dayu.legacy.max-search-results:2000}") int maxSearchResults,
+            @Value("${dayu.legacy.max-internal-queries:100}") int maxInternalQueries) {
         this(discovery, catalog, assets, downloads, contents, actors,
                 new LegacyPathParser(webpAlias, netcdfAlias), previewPrefix, previewWindow,
-                maxSearchResults, Clock.systemUTC());
+                maxSearchResults, maxInternalQueries, Clock.systemUTC());
     }
 
     LegacyDataController(
             DiscoveryQueryService discovery, CatalogQueryService catalog, DownloadAssetLookup assets,
             DownloadAuthorizationService downloads, DownloadContentService contents, CurrentActorProvider actors,
             LegacyPathParser paths, String previewPrefix, Duration previewWindow,
-            int maxSearchResults, Clock clock) {
+            int maxSearchResults, int maxInternalQueries, Clock clock) {
         this.discovery = discovery;
         this.catalog = catalog;
         this.assets = assets;
@@ -102,7 +104,9 @@ public class LegacyDataController {
         }
         this.previewWindow = previewWindow;
         if (maxSearchResults < 1) throw new IllegalArgumentException("Legacy search result limit must be positive");
+        if (maxInternalQueries < 1) throw new IllegalArgumentException("Legacy internal query limit must be positive");
         this.maxSearchResults = maxSearchResults;
+        this.maxInternalQueries = maxInternalQueries;
         this.clock = clock;
     }
 
@@ -190,7 +194,8 @@ public class LegacyDataController {
             Instant recentFrom = later(from.get(), current.minus(previewWindow));
             Instant recentTo = to.get();
             if (recentFrom.isAfter(recentTo)) return emptySearch();
-            List<PreviewFrame> frames = allWebp(code, directory.mode(), recentFrom, recentTo, directory.cycle());
+            List<PreviewFrame> frames = allWebp(
+                    code, directory.mode(), recentFrom, recentTo, directory.cycle(), new QueryBudget());
             frames = frames.stream().sorted(Comparator.comparing(PreviewFrame::validTime).reversed()
                     .thenComparing(frame -> frame.webpAssetId().value(), Comparator.reverseOrder())).toList();
             return searchResponse(
@@ -202,7 +207,7 @@ public class LegacyDataController {
         List<ProductCode> products = explicit.map(List::of).orElseGet(() -> enabledProducts(directory.mode()));
         if (explicit.isPresent() && !enabled(explicit.get(), directory.mode())) return emptySearch();
         List<ScientificAssetSummary> scientific = allScientific(
-                products, directory.mode(), from.get(), to.get(), directory.cycle());
+                products, directory.mode(), from.get(), to.get(), directory.cycle(), new QueryBudget());
         return searchResponse(
                 scientific.stream().map(this::legacyNcPath).toList(),
                 scientific.stream().map(asset -> formatSize(asset.fileSize())).toList(),
@@ -224,29 +229,30 @@ public class LegacyDataController {
     }
 
     private List<PreviewFrame> allWebp(
-            ProductCode product, DataMode mode, Instant from, Instant to, Instant cycle) {
+            ProductCode product, DataMode mode, Instant from, Instant to, Instant cycle, QueryBudget budget) {
         Map<AssetId, PreviewFrame> unique = new LinkedHashMap<>();
-        collectWebp(product, mode, from, to, cycle, unique);
+        collectWebp(product, mode, from, to, cycle, unique, budget);
         return List.copyOf(unique.values());
     }
 
     private void collectWebp(
             ProductCode product, DataMode mode, Instant from, Instant to, Instant cycle,
-            Map<AssetId, PreviewFrame> unique) {
+            Map<AssetId, PreviewFrame> unique, QueryBudget budget) {
         if (Duration.between(from, to).compareTo(previewWindow) > 0) {
             Instant middle = midpoint(from, to);
-            collectWebp(product, mode, from, middle, cycle, unique);
-            collectWebp(product, mode, middle, to, cycle, unique);
+            collectWebp(product, mode, from, middle, cycle, unique, budget);
+            collectWebp(product, mode, middle, to, cycle, unique, budget);
             return;
         }
+        budget.take();
         List<PreviewFrame> page = discovery.listPreviewFrames(
                 new PreviewQuery(product, mode, from, to, cycle, null, DISCOVERY_PAGE_SIZE));
         addFrames(unique, page);
         if (page.size() < DISCOVERY_PAGE_SIZE) return;
         if (!from.isBefore(to.minus(1, ChronoUnit.MINUTES))) throw tooMany();
         Instant middle = midpoint(from, to);
-        collectWebp(product, mode, from, middle, cycle, unique);
-        collectWebp(product, mode, middle, to, cycle, unique);
+        collectWebp(product, mode, from, middle, cycle, unique, budget);
+        collectWebp(product, mode, middle, to, cycle, unique, budget);
     }
 
     private void addFrames(Map<AssetId, PreviewFrame> unique, List<PreviewFrame> frames) {
@@ -257,12 +263,14 @@ public class LegacyDataController {
     }
 
     private List<ScientificAssetSummary> allScientific(
-            List<ProductCode> products, DataMode mode, Instant from, Instant to, Instant cycle) {
+            List<ProductCode> products, DataMode mode, Instant from, Instant to, Instant cycle,
+            QueryBudget budget) {
         Map<AssetId, ScientificAssetSummary> unique = new LinkedHashMap<>();
         for (ProductCode product : products) {
             int page = 1;
             long read = 0;
             do {
+                budget.take();
                 var result = discovery.searchScientificAssets(new ScientificAssetQuery(
                         product, mode, from, to, cycle, null, new PageRequest(page, DISCOVERY_PAGE_SIZE)));
                 for (ScientificAssetSummary asset : result.items()) {
@@ -365,5 +373,15 @@ public class LegacyDataController {
 
     private static BusinessException tooMany() {
         return invalid("Search result count exceeds the configured legacy limit.");
+    }
+
+    private final class QueryBudget {
+        private int used;
+
+        void take() {
+            if (++used > maxInternalQueries) {
+                throw invalid("Search requires too many internal queries; narrow the time range.");
+            }
+        }
     }
 }

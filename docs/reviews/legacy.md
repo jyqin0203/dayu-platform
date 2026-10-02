@@ -39,8 +39,9 @@ netcdf/forecast[/<yyyyMMddHHmm>]
 - WebP 搜索按 `dayu.preview.retention` 裁掉过旧起点但不裁掉用户的未来结束时间；调用 Discovery 前先把长窗口分段，满 200 帧时继续递归拆分并按 `assetId` 去重；一分钟区间仍满载时明确返回 422，不静默截断；
 - NetCDF 搜索逐页读取到 `total`，跨 PLP/PRECIP 等共享产品按 `assetId` 去重；输出路径通过 `findDownloadableAsset(assetId).relativePath` 组成，不使用摘要文件名推测；
 - `dayu.legacy.max-search-results`（默认 2000）限制兼容搜索结果，发现第 N+1 个唯一资产即返回旧式 422。
+- `dayu.legacy.max-internal-queries`（默认 100）是每次请求独享的 Discovery 查询预算，WebP 时间分段和 NC 翻页均计数；极远未来或异常分页超过预算时返回 422 并要求缩小范围，不静默截断，也不存在跨请求共享计数。
 
-非法路径、非法时间和无数据保留各端点规定的旧空响应。模块运行异常不再被吞成空成功，而是记录并返回旧形状 `{ "ok": false, "message": ... }` 的真实 4xx/5xx。
+非法路径、非法时间和无数据保留各端点规定的旧空响应。模块运行异常不再被吞成空成功，而是返回旧形状 `{ "ok": false, "message": ... }` 的真实 4xx/5xx。500 响应固定使用通用消息；日志只记录 traceId 和异常类名，不记录异常消息、堆栈或可能包含的 SQL、路径、用途和凭据。
 
 ## 4. 旧直接下载
 
@@ -72,10 +73,10 @@ BUILD SUCCESS；180 个主源码文件编译通过。
 
 $env:MAVEN_OPTS='-Xmx256m'
 .\mvnw.cmd "-Dtest=LegacyDataControllerContractTest" "-DargLine=-Xmx384m" test
-审查修复后 10 tests；0 failures；0 errors；0 skipped。
+最终安全审查后 12 tests；0 failures；0 errors；0 skipped。
 ```
 
-验证覆盖：坏路径不调用模块、严格 UTC 日历、旧空响应、最近 N 帧正序、预报未来有效帧、可选产品最新批次、可配置 retention 分段、WebP 真实大小、NC 多页与共享资产去重、真实索引相对路径、配置上限 422、系统异常 500、POST local 流，以及下载登录/CSRF 安全链。架构规则 5 项全部通过。
+验证覆盖：坏路径不调用模块、严格 UTC 日历、旧空响应、最近 N 帧正序、预报未来有效帧、可选产品最新批次、可配置 retention 分段、极远未来空结果查询预算、WebP 真实大小、NC 多页与共享资产去重、真实索引相对路径、配置上限 422、500 HTTP 脱敏、POST local 流，以及下载登录/CSRF 安全链。架构规则 5 项全部通过。
 
 ## 6. 未覆盖范围
 

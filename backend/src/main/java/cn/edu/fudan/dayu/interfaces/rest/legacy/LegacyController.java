@@ -108,7 +108,8 @@ public class LegacyController {
         };
         var response = ResponseEntity.status(status).header("Cache-Control", "no-store");
         if (status == 429) response.header("Retry-After", String.valueOf(exception.details().getOrDefault("retryAfterSeconds", 900)));
-        return response.body(Map.of("ok", false, "message", exception.getMessage()));
+        return response.body(Map.of("ok", false,
+                "message", status == 500 ? "Internal server error" : exception.safeMessage()));
     }
 
     @GetMapping({"/api/admin.php", "/api/admin_products.php"})

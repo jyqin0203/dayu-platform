@@ -5,8 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 
 import cn.edu.fudan.dayu.assetindex.api.DownloadAssetLookup;
 import cn.edu.fudan.dayu.assetindex.api.DownloadableAsset;
@@ -46,7 +49,7 @@ class LegacyDataControllerContractTest {
         actors = mock(CurrentActorProvider.class);
         controller = new LegacyDataController(discovery, catalog, assets, downloads, contents, actors,
                 new LegacyPathParser("WebP/WebP_V2_Dpi500_4KM", "netcdf"),
-                "/media/webp/", Duration.ofDays(3), 500, Clock.fixed(NOW, ZoneOffset.UTC));
+                "/media/webp/", Duration.ofDays(3), 500, 100, Clock.fixed(NOW, ZoneOffset.UTC));
     }
 
     @Test
@@ -170,7 +173,7 @@ class LegacyDataControllerContractTest {
         LegacyDataController oneDay = new LegacyDataController(
                 discovery, catalog, assets, downloads, contents, actors,
                 new LegacyPathParser("WebP/WebP_V2_Dpi500_4KM", "netcdf"),
-                "/media/webp/", Duration.ofDays(1), 500, Clock.fixed(NOW, ZoneOffset.UTC));
+                "/media/webp/", Duration.ofDays(1), 500, 100, Clock.fixed(NOW, ZoneOffset.UTC));
         enable("BT855", DataMode.FORECAST);
         Instant future = NOW.plus(Duration.ofHours(1));
         when(discovery.listPreviewFrames(any())).thenAnswer(invocation -> {
@@ -222,7 +225,7 @@ class LegacyDataControllerContractTest {
         LegacyDataController limited = new LegacyDataController(
                 discovery, catalog, assets, downloads, contents, actors,
                 new LegacyPathParser("WebP/WebP_V2_Dpi500_4KM", "netcdf"),
-                "/media/webp/", Duration.ofDays(3), 1, Clock.fixed(NOW, ZoneOffset.UTC));
+                "/media/webp/", Duration.ofDays(3), 1, 100, Clock.fixed(NOW, ZoneOffset.UTC));
         when(catalog.listPublishedProductDetails()).thenReturn(List.of(product(1, "PLP", DataMode.REALTIME)));
         when(discovery.searchScientificAssets(any())).thenReturn(new PageResult<>(List.of(
                 scientific(1, "one.nc", NOW, 1), scientific(2, "two.nc", NOW.minusSeconds(60), 1)),
@@ -236,16 +239,52 @@ class LegacyDataControllerContractTest {
     }
 
     @Test
+    void extremeFutureEmptySearchStopsAtPerRequestQueryBudget() {
+        LegacyDataController bounded = new LegacyDataController(
+                discovery, catalog, assets, downloads, contents, actors,
+                new LegacyPathParser("WebP/WebP_V2_Dpi500_4KM", "netcdf"),
+                "/media/webp/", Duration.ofDays(3), 500, 5, Clock.fixed(NOW, ZoneOffset.UTC));
+        enable("BT855", DataMode.REALTIME);
+        when(discovery.listPreviewFrames(any())).thenReturn(List.of());
+
+        assertThatThrownBy(() -> bounded.search("multi",
+                "WebP/WebP_V2_Dpi500_4KM/realtime/BT855",
+                "202610010000", "999912312359", null))
+                .isInstanceOfSatisfying(BusinessException.class, error -> {
+                    assertThat(error.errorCode()).isEqualTo(ErrorCode.VALIDATION_FAILED);
+                    assertThat(error.safeMessage()).contains("narrow the time range");
+                });
+        verify(discovery, times(5)).listPreviewFrames(any());
+    }
+
+    @Test
     void unexpectedModuleFailureIsARealLegacy500RatherThanAnEmptySuccess() throws Exception {
         enable("BT855", DataMode.REALTIME);
-        when(discovery.listPreviewFrames(any())).thenThrow(new IllegalStateException("database unavailable"));
+        String sensitive = "SQL password=secret path=C:/science/private.nc";
+        when(discovery.listPreviewFrames(any())).thenThrow(new IllegalStateException(sensitive));
         MockMvc mvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new LegacyExceptionHandler()).build();
         mvc.perform(get("/api/files.php")
                         .param("path", "WebP/WebP_V2_Dpi500_4KM/realtime/BT855"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.ok").value(false))
-                .andExpect(jsonPath("$.message").value("Internal server error"));
+                .andExpect(jsonPath("$.message").value("Internal server error"))
+                .andExpect(content().string(not(containsString(sensitive))));
+    }
+
+    @Test
+    void internalBusinessFailureDoesNotExposeItsSafeMessageAtLegacyBoundary() throws Exception {
+        enable("BT855", DataMode.REALTIME);
+        String sensitive = "repository leaked SQL and /srv/netcdf/private.nc";
+        when(discovery.listPreviewFrames(any()))
+                .thenThrow(new BusinessException(ErrorCode.INTERNAL_ERROR, sensitive));
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new LegacyExceptionHandler()).build();
+        mvc.perform(get("/api/files.php")
+                        .param("path", "WebP/WebP_V2_Dpi500_4KM/realtime/BT855"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("Internal server error"))
+                .andExpect(content().string(not(containsString(sensitive))));
     }
 
     private void enable(String code, DataMode mode) {
