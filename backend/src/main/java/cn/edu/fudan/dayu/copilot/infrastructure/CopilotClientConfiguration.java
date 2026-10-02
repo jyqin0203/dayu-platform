@@ -22,7 +22,11 @@ public class CopilotClientConfiguration {
     }
     @Bean @Primary ChatClient chatClient(List<AiClient> clients,
             @Value("${dayu.copilot.enabled:false}") boolean enabled,
-            @Value("${dayu.copilot.provider:qwen}") String provider) {
-        return new RoutingChatClient(enabled, provider, clients);
+            @Value("${dayu.copilot.provider:qwen}") String provider,
+            @Value("${dayu.copilot.rate-limit.requests-per-minute:30}") int requestsPerMinute,
+            @Value("${dayu.copilot.rate-limit.max-concurrent-calls:2}") int maxConcurrentCalls) {
+        ChatClient routing = new RoutingChatClient(enabled, provider, clients);
+        // 禁用时保持原有 AI_UNAVAILABLE 行为；启用后所有真实 provider 调用共享同一限制器。
+        return enabled ? new RateLimitedChatClient(routing, requestsPerMinute, maxConcurrentCalls) : routing;
     }
 }

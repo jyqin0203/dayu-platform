@@ -89,6 +89,12 @@ class CopilotApplicationServiceTest {
         assertThat(response.suggestedActions().get(0).type()).isEqualTo("OPEN_PRODUCT_DETAILS");
         verifyNoInteractions(discovery);
     }
+    @Test void rateLimitIsNotSwallowedByModelFallback() {
+        var limited = new BusinessException(ErrorCode.RATE_LIMITED, "slow down", Map.of("retryAfterSeconds", 17));
+        when(chat.complete(any())).thenThrow(limited);
+        assertThatThrownBy(() -> service.query(command(null), Optional.empty())).isSameAs(limited);
+        verifyNoInteractions(discovery);
+    }
     @Test void invalidDatesAndRealtimeForecastFieldsAreNeverQueried() {
         for (String invalid : List.of(SEARCH.replace("2026-09-02T09:00:00Z", "2026-09-01T09:00:00Z"),
                 SEARCH.replace("2026-09-02T06:00:00Z", "not-a-dateZ"), SEARCH.replace("FORECAST", "REALTIME"))) {

@@ -42,6 +42,10 @@ public class CopilotApplicationService implements CopilotService {
             if (intent == null || !intent.isObject()) throw new AiUnavailableException();
             var names = intent.fieldNames();
             while (names.hasNext()) if (!FIELDS.contains(names.next())) throw new AiUnavailableException();
+        } catch (BusinessException business) {
+            // 付费模型保护必须到达 HTTP 429，不能被安全降级转换成 200/503。
+            if (business.errorCode() == ErrorCode.RATE_LIMITED) throw business;
+            return fallback(command);
         } catch (Exception unavailable) {
             return fallback(command);
         }
