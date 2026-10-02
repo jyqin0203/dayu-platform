@@ -60,6 +60,8 @@ public class CatalogAdminController {
             @RequestParam(required = false) String code) {
         if (actors.required().role() != UserRole.ADMIN)
             throw new BusinessException(ErrorCode.FORBIDDEN, "需要管理员权限");
+        if (code != null && !code.matches("^[A-Z][A-Z0-9_]{1,63}$"))
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "产品编码不合法");
         return queries.listManagedProductDetails(new ManagedProductQuery(
                         family, status, code == null ? null : new ProductCode(code))).stream()
                 .map(CatalogAdminController::response)
@@ -79,7 +81,7 @@ public class CatalogAdminController {
     @PutMapping("/{productId}")
     public Map<String, Object> update(@PathVariable long productId, @Valid @RequestBody UpdateRequest body) {
         return response(commands.updateProduct(new UpdateProductCommand(
-                new ProductId(productId), body.nameZh(), body.nameEn(), body.unit(),
+                validatedProductId(productId), body.nameZh(), body.nameEn(), body.unit(),
                 body.descriptionZh(), body.descriptionEn(), body.producer(), body.algorithmName(),
                 body.sourceDescription(), body.officialSourceUrl(), body.colorbarRequired(),
                 body.colorbarPath(), body.sortOrder()), actors.required()));
@@ -89,7 +91,7 @@ public class CatalogAdminController {
     public Map<String, Object> mode(@PathVariable long productId, @PathVariable DataMode dataMode,
                                     @Valid @RequestBody ModeRequest body) {
         var mode = commands.configureProductMode(new ConfigureProductModeCommand(
-                new ProductId(productId), dataMode, body.enabled(),
+                validatedProductId(productId), dataMode, body.enabled(),
                 Duration.ofMinutes(body.staleAfterMinutes())), actors.required());
         return Map.of("dataMode", mode.dataMode(), "enabled", mode.enabled(),
                 "staleAfterMinutes", mode.staleAfter().toMinutes());
@@ -97,12 +99,18 @@ public class CatalogAdminController {
 
     @PostMapping("/{productId}/publish")
     public Map<String, Object> publish(@PathVariable long productId) {
-        return response(commands.publishProduct(new ProductId(productId), actors.required()));
+        return response(commands.publishProduct(validatedProductId(productId), actors.required()));
     }
 
     @PostMapping("/{productId}/disable")
     public Map<String, Object> disable(@PathVariable long productId) {
-        return response(commands.disableProduct(new ProductId(productId), actors.required()));
+        return response(commands.disableProduct(validatedProductId(productId), actors.required()));
+    }
+
+    /** 在构造领域 ID 前转为明确的 HTTP 422；不让非法 path 参数泄露为 500。 */
+    private static ProductId validatedProductId(long value) {
+        if (value < 1) throw new BusinessException(ErrorCode.VALIDATION_FAILED, "产品编号必须大于零");
+        return new ProductId(value);
     }
 
     private static Map<String, Object> response(ProductDetail detail) {

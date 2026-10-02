@@ -43,6 +43,7 @@ Catalog 没有新增跨业务模块依赖。Repository 和文件验证端口通�
 - 管理列表改用新增批量详情端口，不再逐产品 findProduct。
 - 管理响应按 OpenAPI 输出扁平字段及 `colorbarUrl`，不返回 `colorbarPath`。
 - 必填 boolean/int 使用包装类型和 NotNull，避免缺字段被当作 false/0。
+- 所有管理员产品 ID 路径在构造领域 ID 前检查正数；0、负数以及非法管理查询 code 返回 422，且不调用业务服务。
 - 公开 URL 转换拒绝绝对路径、反斜线、驱动器、`.`/`..`、控制字符和预编码路径，并正确编码空格。
 
 ## 文件与配置
@@ -65,6 +66,8 @@ $env:MAVEN_OPTS='-Xmx256m'
 实测结果：21 tests，0 failures，0 errors，0 skipped，BUILD SUCCESS。其中 9 项真实 MariaDB 测试、5 项原模式规则测试、4 项公开 HTTP 测试、3 项管理员 HTTP 测试。
 
 将数据库测试配置标为 `@TestConfiguration`（避免全应用测试误扫描其临时 DataSource）后，再执行 `.\mvnw.cmd "-DargLine=-Xmx384m" "-Dtest=CatalogPersistenceIntegrationTest" test`：9 tests，0 failures/errors/skipped，BUILD SUCCESS。最终数据库源码已重新编译并实测。
+
+主 Agent 验收提出非正数路径 ID 的错误映射问题，修复并新增 1 项边界测试后执行 `.\mvnw.cmd "-DargLine=-Xmx256m" "-Dtest=CatalogControllerContractTest,CatalogAdminControllerContractTest" test`：8 tests，0 failures/errors/skipped，BUILD SUCCESS。本分支最终共有 22 项 Catalog 相关测试（9 数据库 + 5 模式 + 8 HTTP）；最后 HTTP 修复没有修改数据库逻辑。
 
 真实库覆盖：重建应用上下文后仍可读取；重复编码/权限/非法状态；服务入口非法编码与 null 命令不落库；审计失败回滚产品和模式；并发关闭模式仅一个成功；并发发布仅一个审计；必要色标和已发布修改校验；筛选与稳定排序；资料更新保持身份、模式和首次发布时间。
 

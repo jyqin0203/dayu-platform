@@ -61,4 +61,18 @@ class CatalogAdminControllerContractTest {
         mvc.perform(get("/api/v1/admin/products")).andExpect(status().isForbidden());
         verifyNoInteractions(query);
     }
+    @Test void rejectsNonPositivePathIdsBeforeCallingBusinessCommands() throws Exception {
+        mvc.perform(post("/api/v1/admin/products/-1/publish"))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.code").value("VALIDATION_FAILED"));
+        mvc.perform(post("/api/v1/admin/products/0/disable"))
+                .andExpect(status().isUnprocessableEntity());
+        mvc.perform(put("/api/v1/admin/products/-1/modes/REALTIME").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"enabled\":true,\"staleAfterMinutes\":90}"))
+                .andExpect(status().isUnprocessableEntity());
+        mvc.perform(get("/api/v1/admin/products").param("code", "invalid"))
+                .andExpect(status().isUnprocessableEntity());
+        verifyNoInteractions(commands);
+        verifyNoInteractions(query);
+    }
 }
