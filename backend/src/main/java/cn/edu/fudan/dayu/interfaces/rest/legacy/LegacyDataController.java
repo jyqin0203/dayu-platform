@@ -56,7 +56,6 @@ public class LegacyDataController {
             DateTimeFormatter.ofPattern("uuuuMMddHHmm").withZone(ZoneOffset.UTC);
     private static final DateTimeFormatter DISPLAY =
             DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm").withZone(ZoneOffset.UTC);
-    private static final Duration PREVIEW_WINDOW = Duration.ofDays(3);
     private static final int DISCOVERY_PAGE_SIZE = 200;
 
     private final DiscoveryQueryService discovery;
@@ -67,6 +66,7 @@ public class LegacyDataController {
     private final CurrentActorProvider actors;
     private final LegacyPathParser paths;
     private final String previewPrefix;
+    private final Duration previewWindow;
     private final int maxSearchResults;
     private final Clock clock;
 
@@ -77,15 +77,18 @@ public class LegacyDataController {
             @Value("${dayu.legacy.webp-alias:WebP/WebP_V2_Dpi500_4KM}") String webpAlias,
             @Value("${dayu.legacy.netcdf-alias:netcdf}") String netcdfAlias,
             @Value("${dayu.preview.public-prefix:/media/webp/}") String previewPrefix,
+            @Value("${dayu.preview.retention:3d}") Duration previewWindow,
             @Value("${dayu.legacy.max-search-results:2000}") int maxSearchResults) {
         this(discovery, catalog, assets, downloads, contents, actors,
-                new LegacyPathParser(webpAlias, netcdfAlias), previewPrefix, maxSearchResults, Clock.systemUTC());
+                new LegacyPathParser(webpAlias, netcdfAlias), previewPrefix, previewWindow,
+                maxSearchResults, Clock.systemUTC());
     }
 
     LegacyDataController(
             DiscoveryQueryService discovery, CatalogQueryService catalog, DownloadAssetLookup assets,
             DownloadAuthorizationService downloads, DownloadContentService contents, CurrentActorProvider actors,
-            LegacyPathParser paths, String previewPrefix, int maxSearchResults, Clock clock) {
+            LegacyPathParser paths, String previewPrefix, Duration previewWindow,
+            int maxSearchResults, Clock clock) {
         this.discovery = discovery;
         this.catalog = catalog;
         this.assets = assets;
@@ -94,6 +97,10 @@ public class LegacyDataController {
         this.actors = actors;
         this.paths = paths;
         this.previewPrefix = normalizedPreviewPrefix(previewPrefix);
+        if (previewWindow == null || previewWindow.isZero() || previewWindow.isNegative()) {
+            throw new IllegalArgumentException("Legacy preview window must be positive");
+        }
+        this.previewWindow = previewWindow;
         if (maxSearchResults < 1) throw new IllegalArgumentException("Legacy search result limit must be positive");
         this.maxSearchResults = maxSearchResults;
         this.clock = clock;
@@ -110,9 +117,22 @@ public class LegacyDataController {
         }
         var directory = parsed.get();
         if (!enabled(directory.product(), directory.mode())) return filesOnly(List.of());
-        Instant to = clock.instant();
+        Instant to;
+        Instant from;
+        if (directory.mode() == DataMode.FORECAST) {
+            var batch = discovery.listForecastCycles(new ForecastCycleQuery(
+                            directory.product(), AssetType.WEBP, directory.cycle(), directory.cycle())).stream()
+                    .filter(cycle -> cycle.cycleTime().equals(directory.cycle()))
+                    .findFirst();
+            if (batch.isEmpty()) return filesOnly(List.of());
+            to = batch.get().lastValidTime();
+            from = later(batch.get().firstValidTime(), to.minus(previewWindow));
+        } else {
+            to = clock.instant();
+            from = to.minus(previewWindow);
+        }
         List<String> files = discovery.listPreviewFrames(new PreviewQuery(
-                        directory.product(), directory.mode(), to.minus(PREVIEW_WINDOW), to,
+                        directory.product(), directory.mode(), from, to,
                         directory.cycle(), null, number)).stream()
                 .map(this::legacyWebpPath)
                 .toList();
@@ -167,8 +187,8 @@ public class LegacyDataController {
             ProductCode code = explicit.orElse(directory.product());
             if (code == null || !enabled(code, directory.mode())) return emptySearch();
             Instant current = clock.instant();
-            Instant recentFrom = later(from.get(), current.minus(PREVIEW_WINDOW));
-            Instant recentTo = earlier(to.get(), current);
+            Instant recentFrom = later(from.get(), current.minus(previewWindow));
+            Instant recentTo = to.get();
             if (recentFrom.isAfter(recentTo)) return emptySearch();
             List<PreviewFrame> frames = allWebp(code, directory.mode(), recentFrom, recentTo, directory.cycle());
             frames = frames.stream().sorted(Comparator.comparing(PreviewFrame::validTime).reversed()
@@ -213,14 +233,18 @@ public class LegacyDataController {
     private void collectWebp(
             ProductCode product, DataMode mode, Instant from, Instant to, Instant cycle,
             Map<AssetId, PreviewFrame> unique) {
+        if (Duration.between(from, to).compareTo(previewWindow) > 0) {
+            Instant middle = midpoint(from, to);
+            collectWebp(product, mode, from, middle, cycle, unique);
+            collectWebp(product, mode, middle, to, cycle, unique);
+            return;
+        }
         List<PreviewFrame> page = discovery.listPreviewFrames(
                 new PreviewQuery(product, mode, from, to, cycle, null, DISCOVERY_PAGE_SIZE));
         addFrames(unique, page);
         if (page.size() < DISCOVERY_PAGE_SIZE) return;
         if (!from.isBefore(to.minus(1, ChronoUnit.MINUTES))) throw tooMany();
-        Instant middle = from.plusMillis(Duration.between(from, to).toMillis() / 2)
-                .truncatedTo(ChronoUnit.MINUTES);
-        if (!middle.isAfter(from)) middle = from.plus(1, ChronoUnit.MINUTES);
+        Instant middle = midpoint(from, to);
         collectWebp(product, mode, from, middle, cycle, unique);
         collectWebp(product, mode, middle, to, cycle, unique);
     }
@@ -316,7 +340,9 @@ public class LegacyDataController {
     }
 
     private static Instant later(Instant left, Instant right) { return left.isAfter(right) ? left : right; }
-    private static Instant earlier(Instant left, Instant right) { return left.isBefore(right) ? left : right; }
+    private static Instant midpoint(Instant from, Instant to) {
+        return from.plusMillis(Duration.between(from, to).toMillis() / 2);
+    }
     private static Map<String, Object> filesOnly(List<String> files) { return Map.of("files", files); }
     private static Map<String, Object> emptySearch() { return searchResponse(List.of(), List.of(), List.of()); }
 

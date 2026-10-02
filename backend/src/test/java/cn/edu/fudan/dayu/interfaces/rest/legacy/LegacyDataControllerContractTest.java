@@ -46,7 +46,7 @@ class LegacyDataControllerContractTest {
         actors = mock(CurrentActorProvider.class);
         controller = new LegacyDataController(discovery, catalog, assets, downloads, contents, actors,
                 new LegacyPathParser("WebP/WebP_V2_Dpi500_4KM", "netcdf"),
-                "/media/webp/", 500, Clock.fixed(NOW, ZoneOffset.UTC));
+                "/media/webp/", Duration.ofDays(3), 500, Clock.fixed(NOW, ZoneOffset.UTC));
     }
 
     @Test
@@ -78,6 +78,25 @@ class LegacyDataControllerContractTest {
         assertThat(query.getValue().from()).isEqualTo(NOW.minus(Duration.ofDays(3)));
         assertThat(query.getValue().to()).isEqualTo(NOW);
         assertThat(query.getValue().limit()).isEqualTo(2);
+    }
+
+    @Test
+    void forecastFilesUsesRealBatchRangeAndKeepsFutureValidFrames() {
+        enable("BT855", DataMode.FORECAST);
+        Instant future = NOW.plus(Duration.ofHours(1));
+        when(discovery.listForecastCycles(any())).thenReturn(List.of(
+                new ForecastCycleSummary(NOW, NOW, future, Set.of(0, 60), true)));
+        when(discovery.listPreviewFrames(any())).thenReturn(List.of(
+                new PreviewFrame(new AssetId(3), URI.create("/media/webp/forecast/202610021200/BT855/future.webp"),
+                        future, NOW, 60, false, 1024)));
+
+        assertThat(controller.files("WebP/WebP_V2_Dpi500_4KM/forecast/202610021200/BT855", 48).get("files"))
+                .isEqualTo(List.of("WebP/WebP_V2_Dpi500_4KM/forecast/202610021200/BT855/future.webp"));
+        var query = org.mockito.ArgumentCaptor.forClass(PreviewQuery.class);
+        verify(discovery).listPreviewFrames(query.capture());
+        assertThat(query.getValue().from()).isEqualTo(NOW);
+        assertThat(query.getValue().to()).isEqualTo(future);
+        assertThat(query.getValue().cycleTime()).isEqualTo(NOW);
     }
 
     @Test
@@ -147,6 +166,33 @@ class LegacyDataControllerContractTest {
     }
 
     @Test
+    void forecastSearchPreservesFutureEndAndSegmentsByConfiguredRetention() {
+        LegacyDataController oneDay = new LegacyDataController(
+                discovery, catalog, assets, downloads, contents, actors,
+                new LegacyPathParser("WebP/WebP_V2_Dpi500_4KM", "netcdf"),
+                "/media/webp/", Duration.ofDays(1), 500, Clock.fixed(NOW, ZoneOffset.UTC));
+        enable("BT855", DataMode.FORECAST);
+        Instant future = NOW.plus(Duration.ofHours(1));
+        when(discovery.listPreviewFrames(any())).thenAnswer(invocation -> {
+            PreviewQuery query = invocation.getArgument(0);
+            assertThat(Duration.between(query.from(), query.to())).isLessThanOrEqualTo(Duration.ofDays(1));
+            if (query.to().equals(future)) {
+                return List.of(new PreviewFrame(new AssetId(4),
+                        URI.create("/media/webp/forecast/202610021200/BT855/future.webp"),
+                        future, NOW, 60, false, 2_097_152));
+            }
+            return List.of();
+        });
+
+        Map<String, Object> result = oneDay.search("multi",
+                "WebP/WebP_V2_Dpi500_4KM/forecast/202610021200/BT855",
+                "202609291200", "202610021300", null);
+        assertThat(result.get("times")).isEqualTo(List.of("2026-10-02 13:00"));
+        assertThat(result.get("sizes")).isEqualTo(List.of("2.00 MB"));
+        verify(discovery, atLeast(2)).listPreviewFrames(any());
+    }
+
+    @Test
     void legacyDownloadReturnsPreparedLocalStreamAndUsesCanonicalStorageKey() throws Exception {
         DownloadableAsset asset = downloadable(9, "forecast/202610020600/sample.nc", 4);
         when(assets.findByStoragePath("netcdf-data", "forecast/202610020600/sample.nc"))
@@ -176,7 +222,7 @@ class LegacyDataControllerContractTest {
         LegacyDataController limited = new LegacyDataController(
                 discovery, catalog, assets, downloads, contents, actors,
                 new LegacyPathParser("WebP/WebP_V2_Dpi500_4KM", "netcdf"),
-                "/media/webp/", 1, Clock.fixed(NOW, ZoneOffset.UTC));
+                "/media/webp/", Duration.ofDays(3), 1, Clock.fixed(NOW, ZoneOffset.UTC));
         when(catalog.listPublishedProductDetails()).thenReturn(List.of(product(1, "PLP", DataMode.REALTIME)));
         when(discovery.searchScientificAssets(any())).thenReturn(new PageResult<>(List.of(
                 scientific(1, "one.nc", NOW, 1), scientific(2, "two.nc", NOW.minusSeconds(60), 1)),

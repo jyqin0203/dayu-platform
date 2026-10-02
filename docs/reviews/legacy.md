@@ -33,10 +33,10 @@ netcdf/forecast[/<yyyyMMddHHmm>]
 
 ## 3. 查询兼容行为
 
-- `files.php`：查询最近三天交集内最新 `number` 帧，`number` 为 1～200，保持有效时间正序并返回旧 WebP 别名；
+- `files.php`：实况查询 retention 窗口内最新 `number` 帧；预报先读取真实批次的首末有效时间，再在 retention 范围内查询，因此保留起报后的未来有效帧；`number` 为 1～200，结果保持有效时间正序并返回旧 WebP 别名；
 - `fcst_latest.php`：仅接受精确预报根；`product` 可省略，省略时遍历已发布且启用 FORECAST 的产品，从真实 AVAILABLE WebP 批次选择全局最新值；
 - `search.php`：保留 `files/sizes/times` 三个平行数组，统一按有效时间倒序，大小按 1024 进位输出两位小数；
-- WebP 搜索先裁到最近三天，满 200 帧时递归拆分时间区间并按 `assetId` 去重；一分钟区间仍满载时明确返回 422，不静默截断；
+- WebP 搜索按 `dayu.preview.retention` 裁掉过旧起点但不裁掉用户的未来结束时间；调用 Discovery 前先把长窗口分段，满 200 帧时继续递归拆分并按 `assetId` 去重；一分钟区间仍满载时明确返回 422，不静默截断；
 - NetCDF 搜索逐页读取到 `total`，跨 PLP/PRECIP 等共享产品按 `assetId` 去重；输出路径通过 `findDownloadableAsset(assetId).relativePath` 组成，不使用摘要文件名推测；
 - `dayu.legacy.max-search-results`（默认 2000）限制兼容搜索结果，发现第 N+1 个唯一资产即返回旧式 422。
 
@@ -69,9 +69,13 @@ BUILD SUCCESS；180 个主源码文件编译通过。
 
 .\mvnw.cmd "-Dtest=ArchitectureTest,HttpRouteCoverageTest,RemainingHttpContractTest,LegacyPathParserTest,LegacyDataControllerContractTest,LegacyDownloadSecurityTest" test
 22 tests；0 failures；0 errors；0 skipped。
+
+$env:MAVEN_OPTS='-Xmx256m'
+.\mvnw.cmd "-Dtest=LegacyDataControllerContractTest" "-DargLine=-Xmx384m" test
+审查修复后 10 tests；0 failures；0 errors；0 skipped。
 ```
 
-验证覆盖：坏路径不调用模块、严格 UTC 日历、旧空响应、最近 N 帧正序、可选产品最新批次、WebP 分段与真实大小、NC 多页与共享资产去重、真实索引相对路径、配置上限 422、系统异常 500、POST local 流，以及下载登录/CSRF 安全链。架构规则 5 项全部通过。
+验证覆盖：坏路径不调用模块、严格 UTC 日历、旧空响应、最近 N 帧正序、预报未来有效帧、可选产品最新批次、可配置 retention 分段、WebP 真实大小、NC 多页与共享资产去重、真实索引相对路径、配置上限 422、系统异常 500、POST local 流，以及下载登录/CSRF 安全链。架构规则 5 项全部通过。
 
 ## 6. 未覆盖范围
 
