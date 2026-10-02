@@ -29,6 +29,15 @@ public class V1ExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     ResponseEntity<ApiErrorResponse> handleBusiness(BusinessException error, HttpServletRequest request) {
+        if (error.errorCode() == ErrorCode.RATE_LIMITED
+                && error.details().get("retryAfterSeconds") instanceof Number retry
+                && retry.longValue() > 0) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .header("Cache-Control", "no-store")
+                    .header("Retry-After", Long.toString(retry.longValue()))
+                    .body(new ApiErrorResponse(error.errorCode().name(), error.safeMessage(),
+                            TraceIdFilter.from(request), error.details()));
+        }
         return response(statusOf(error.errorCode()), error.errorCode(), error.safeMessage(),
                 error.details(), request);
     }

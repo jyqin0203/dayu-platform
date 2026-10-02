@@ -124,6 +124,14 @@ class HttpFoundationContractTest {
     }
 
     @Test
+    void rateLimitReturnsRetryAfterWithoutInventingWindow() throws Exception {
+        mockMvc.perform(get("/api/v1/test/rate-limit"))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().string("Retry-After", "45"))
+                .andExpect(jsonPath("$.code").value("RATE_LIMITED"));
+    }
+
+    @Test
     void hidesUnexpectedExceptionDetails() throws Exception {
         mockMvc.perform(get("/api/v1/test/unexpected"))
                 .andExpect(status().isInternalServerError())
@@ -166,6 +174,11 @@ class HttpFoundationContractTest {
         @Min(1)
         int invalidResult() {
             return 0;
+        }
+
+        @GetMapping("/api/v1/test/rate-limit")
+        void rateLimit() {
+            throw new BusinessException(ErrorCode.RATE_LIMITED, "请求过于频繁", Map.of("retryAfterSeconds",45));
         }
     }
 

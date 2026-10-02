@@ -893,10 +893,12 @@ components:
       type: object
       properties:
         productCode: {$ref: '#/components/schemas/ProductCode'}
-        dataMode: {$ref: '#/components/schemas/DataMode'}
-        from: {$ref: '#/components/schemas/UtcInstant'}
-        to: {$ref: '#/components/schemas/UtcInstant'}
+        dataMode: {oneOf: [{$ref: '#/components/schemas/DataMode'}, {type: 'null'}]}
+        from: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
+        to: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
         queryKind: {type: string, enum: [PREVIEW, SCIENTIFIC_ASSET, PRODUCT_HELP]}
+        cycleTime: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
+        leadMinutes: {type: [integer, 'null'], minimum: 0}
     SuggestedAction:
       type: object
       required: [type, label, parameters]
@@ -991,7 +993,7 @@ components:
         fileName: {type: string}
         expectedBytes: {type: integer, format: int64}
         purpose: {type: string}
-        authorizedAt: {$ref: '#/components/schemas/UtcInstant'}
+        authorizedAt: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
         status: {$ref: '#/components/schemas/DownloadStatus'}
     DownloadAuditPage:
       type: object
