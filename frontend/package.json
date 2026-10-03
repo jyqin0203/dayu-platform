@@ -1,0 +1,13 @@
+{
+  "name": "dayu-platform-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "node dev-server.mjs",
+    "test": "node --test dev-server.test.mjs",
+    "build": "node build.mjs"
+  },
+  "dependencies": { "cesium": "1.146.0" }
+}
