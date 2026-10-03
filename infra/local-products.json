@@ -1,0 +1,19 @@
+[
+  {"code":"RGB","nameZh":"真彩色","nameEn":"True Color","family":"RGB","unit":null,"sortOrder":10,"realtimeMinutes":90,"forecastMinutes":null,"colorbarRequired":false},
+  {"code":"FRGB","nameZh":"假彩色","nameEn":"False Color","family":"FRGB","unit":null,"sortOrder":20,"realtimeMinutes":90,"forecastMinutes":null,"colorbarRequired":false},
+  {"code":"CLP","nameZh":"云相态","nameEn":"Cloud Phase","family":"CPP","unit":null,"sortOrder":30,"realtimeMinutes":90,"forecastMinutes":null,"colorbarRequired":false},
+  {"code":"CTH","nameZh":"云顶高度","nameEn":"Cloud Top Height","family":"CPP","unit":"km","sortOrder":40,"realtimeMinutes":90,"forecastMinutes":360,"colorbarRequired":false},
+  {"code":"CBH","nameZh":"云底高度","nameEn":"Cloud Base Height","family":"CPP","unit":"km","sortOrder":50,"realtimeMinutes":90,"forecastMinutes":null,"colorbarRequired":false},
+  {"code":"COT","nameZh":"云光学厚度","nameEn":"Cloud Optical Thickness","family":"CPP","unit":null,"sortOrder":60,"realtimeMinutes":90,"forecastMinutes":360,"colorbarRequired":false},
+  {"code":"CER","nameZh":"云粒子有效半径","nameEn":"Cloud Effective Radius","family":"CPP","unit":"μm","sortOrder":70,"realtimeMinutes":90,"forecastMinutes":360,"colorbarRequired":false},
+  {"code":"CWP","nameZh":"云水路径","nameEn":"Cloud Water Path","family":"CPP","unit":"kg/m²","sortOrder":80,"realtimeMinutes":90,"forecastMinutes":null,"colorbarRequired":false},
+  {"code":"BT625","nameZh":"6.25μm 亮温","nameEn":"BT 6.25μm","family":"BT","unit":"K","sortOrder":90,"realtimeMinutes":90,"forecastMinutes":360,"colorbarRequired":false},
+  {"code":"BT695","nameZh":"6.95μm 亮温","nameEn":"BT 6.95μm","family":"BT","unit":"K","sortOrder":100,"realtimeMinutes":90,"forecastMinutes":360,"colorbarRequired":false},
+  {"code":"BT742","nameZh":"7.42μm 亮温","nameEn":"BT 7.42μm","family":"BT","unit":"K","sortOrder":110,"realtimeMinutes":90,"forecastMinutes":360,"colorbarRequired":false},
+  {"code":"BT855","nameZh":"8.55μm 亮温","nameEn":"BT 8.55μm","family":"BT","unit":"K","sortOrder":120,"realtimeMinutes":90,"forecastMinutes":360,"colorbarRequired":false},
+  {"code":"BT108","nameZh":"10.8μm 亮温","nameEn":"BT 10.8μm","family":"BT","unit":"K","sortOrder":130,"realtimeMinutes":90,"forecastMinutes":360,"colorbarRequired":false},
+  {"code":"BT120","nameZh":"12.0μm 亮温","nameEn":"BT 12.0μm","family":"BT","unit":"K","sortOrder":140,"realtimeMinutes":90,"forecastMinutes":360,"colorbarRequired":false},
+  {"code":"BT133","nameZh":"13.3μm 亮温","nameEn":"BT 13.3μm","family":"BT","unit":"K","sortOrder":150,"realtimeMinutes":90,"forecastMinutes":360,"colorbarRequired":false},
+  {"code":"PLP","nameZh":"雨雪相态（RePPIC-Net）","nameEn":"Rain/Snow Phase (RePPIC-Net)","family":"REPPIC_PRECIP","unit":null,"sortOrder":160,"realtimeMinutes":120,"forecastMinutes":180,"colorbarRequired":true},
+  {"code":"PRECIP","nameZh":"降水强度（RePPIC-Net）","nameEn":"Precipitation Rate (RePPIC-Net)","family":"REPPIC_PRECIP","unit":"mm/h","sortOrder":170,"realtimeMinutes":120,"forecastMinutes":180,"colorbarRequired":true}
+]

@@ -125,15 +125,19 @@ class AssetIndexIntegrationTest {
         assertThat(queries.searchNetcdfAssets(new AssetSearchCriteria(precip,DataMode.REALTIME,cycle,cycle,null,null,new PageRequest(1,20))).total()).isEqualTo(1);
         assertThat(queries.findNetcdfCandidates(new AssetMatchCriteria(precip,DataMode.FORECAST,cycle.plusSeconds(7200),cycle,120))).hasSize(1);
         assertThat(queries.findNetcdfCandidates(new AssetMatchCriteria(precip,DataMode.REALTIME,cycle.plusSeconds(7200),null,null))).isEmpty();
-        var frames=queries.listPreviewAssets(new AssetPreviewCriteria(precip,DataMode.FORECAST,cycle,cycle.plusSeconds(10800),null,null,1));
+        // Use an ordinary BT series for partial-frame query tests: precipitation partial batches are now intentionally hidden.
+        var bt=new ProductCode("BT855");
+        store.upsert(new DataAsset(null,AssetType.NETCDF,DataMode.FORECAST,cycle,cycle.plusSeconds(10800),180,
+                "netcdf-data","forecast/202609020600/existing-bt.nc","existing-bt.nc",1,null,null,cycle,AssetStatus.AVAILABLE,cycle),Set.of(3L),cycle);
+        var frames=queries.listPreviewAssets(new AssetPreviewCriteria(bt,DataMode.FORECAST,cycle,cycle.plusSeconds(10800),null,null,1));
         assertThat(frames).hasSize(1); assertThat(frames.get(0).leadMinutes()).isEqualTo(120);
         assertThat(frames.get(0).previewRelativePath()).isEqualTo(preview(120));
-        assertThat(queries.listPreviewAssets(new AssetPreviewCriteria(precip,DataMode.FORECAST,null,null,null,null,1)))
+        assertThat(queries.listPreviewAssets(new AssetPreviewCriteria(bt,DataMode.FORECAST,null,null,null,null,1)))
                 .extracting(IndexedAssetView::leadMinutes).containsExactly(120);
         assertThatThrownBy(() -> queries.findNetcdfCandidates(new AssetMatchCriteria(precip,DataMode.FORECAST,null,null,null)))
                 .isInstanceOf(BusinessException.class);
         var ncCycles=queries.listForecastCycles(new AssetForecastCycleCriteria(precip,AssetType.NETCDF,cycle,cycle));
-        var webpCycles=queries.listForecastCycles(new AssetForecastCycleCriteria(precip,AssetType.WEBP,null,null));
+        var webpCycles=queries.listForecastCycles(new AssetForecastCycleCriteria(bt,AssetType.WEBP,null,null));
         assertThat(ncCycles).hasSize(1); assertThat(ncCycles.get(0).complete()).isTrue();
         assertThat(ncCycles.get(0).lastValidTime()).isEqualTo(cycle.plusSeconds(10800));
         assertThat(webpCycles.get(0).leadMinutes()).containsExactlyInAnyOrder(60,120);
@@ -175,6 +179,24 @@ class AssetIndexIntegrationTest {
         assertThatThrownBy(() -> store.upsert(asset,Set.of(1L,99999L),cycle)).isInstanceOf(RuntimeException.class);
         assertThat(sql.queryForObject("SELECT COUNT(*) FROM data_assets",Long.class)).isZero();
         assertThat(sql.queryForObject("SELECT COUNT(*) FROM data_asset_products",Long.class)).isZero();
+    }
+
+    @Test void rollsBackWholeReleasedBatchWhenSecondRelationshipFails() {
+        List<AssetIndexStore.IndexedWrite> writes=new ArrayList<>();
+        for(int h=1;h<=3;h++) {
+            String name="FY4B_AGRI_REPPIC_PRECIP_"+h+"H_202609020600_20260902"+String.format("%02d",6+h)+"00_palettev2_Dpi500.webp";
+            String path="forecast/202609020600/PRECIP_"+h+"H/"+name;
+            var asset=new DataAsset(null,AssetType.WEBP,DataMode.FORECAST,cycle,cycle.plusSeconds(h*3600L),h*60,
+                    "webp-preview",path,name,1,null,500,cycle,AssetStatus.AVAILABLE,cycle);
+            writes.add(new AssetIndexStore.IndexedWrite(asset,Set.of(h==2 ? 99999L : 2L)));
+        }
+        assertThatThrownBy(() -> store.replaceReppicCycle("webp-preview",cycle,writes,cycle)).isInstanceOf(RuntimeException.class);
+        assertThat(sql.queryForObject("SELECT COUNT(*) FROM data_assets",Long.class)).isZero();
+        assertThat(sql.queryForObject("SELECT COUNT(*) FROM data_asset_products",Long.class)).isZero();
+        var valid=writes.stream().map(w -> new AssetIndexStore.IndexedWrite(w.asset(),Set.of(2L))).toList();
+        assertThat(store.replaceReppicCycle("webp-preview",cycle,valid,cycle).created()).isEqualTo(3);
+        assertThat(store.replaceReppicCycle("webp-preview",cycle,List.of(),cycle).removed()).isEqualTo(3);
+        assertThat(store.reppicCycles("webp-preview")).isEmpty();
     }
 
     @Test void commitsTaskBeforeReturningEvenWhenCallerTransactionRollsBack() {
@@ -234,7 +256,7 @@ class AssetIndexIntegrationTest {
         return "forecast/202609020600/FY4B_AGRI_REPPIC_PRECIP_"+hour+"H_202609020600_20260902"+String.format("%02d",6+hour)+"00.nc";
     }
     private String preview(int lead) {
-        return "forecast/202609020600/PRECIP/FY4B_AGRI_PRECIP_202609020600_20260902"+String.format("%02d",6+lead/60)+"00_Dpi500.webp";
+        return "forecast/202609020600/BT855/FY4B_AGRI_BT855_202609020600_20260902"+String.format("%02d",6+lead/60)+"00_Dpi500.webp";
     }
     private Path write(Path root,String path,String content) throws Exception {
         Path file=root.resolve(path); Files.createDirectories(file.getParent()); return Files.writeString(file,content);

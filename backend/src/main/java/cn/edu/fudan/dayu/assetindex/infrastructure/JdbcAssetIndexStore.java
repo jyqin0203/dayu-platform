@@ -20,6 +20,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Repository
 @Profile("!skeleton")
 public class JdbcAssetIndexStore implements AssetIndexStore {
+    private static final String REPPIC_ROWS="a.asset_type='WEBP' AND a.data_mode='FORECAST' AND "
+            +"(a.file_name LIKE 'FY4B!_AGRI!_REPPIC!_PRECIP!_%!_palettev2!_Dpi500.webp' ESCAPE '!' "
+            +"OR a.file_name LIKE 'FY4B!_AGRI!_PRECIP!_%' ESCAPE '!')";
     private final NamedParameterJdbcTemplate jdbc;
     private final TransactionTemplate tx;
     private final TransactionTemplate independent;
@@ -73,6 +76,41 @@ public class JdbcAssetIndexStore implements AssetIndexStore {
                 && a.validTime().equals(b.validTime()) && Objects.equals(a.leadMinutes(), b.leadMinutes())
                 && Objects.equals(a.dpi(), b.dpi()) && a.fileSize() == b.fileSize()
                 && a.fileModifiedAt().equals(b.fileModifiedAt().truncatedTo(ChronoUnit.MICROS));
+    }
+
+    @Override public Set<Instant> reppicCycles(String storageKey) {
+        return new HashSet<>(jdbc.query("SELECT DISTINCT a.cycle_time FROM data_assets a WHERE a.storage_key=:storage AND "+REPPIC_ROWS,
+                Map.of("storage",storageKey),(r,n) -> instant(r,"cycle_time")));
+    }
+
+    @Override public BatchChange replaceReppicCycle(String storage,Instant cycle,List<IndexedWrite> writes,Instant seenAt) {
+        if (!writes.isEmpty() && (writes.size()!=3 || !writes.stream().map(w -> w.asset().leadMinutes())
+                .collect(java.util.stream.Collectors.toSet()).equals(Set.of(60,120,180))))
+            throw new IllegalArgumentException("Released precipitation batch must contain all three leads");
+        for(var write:writes) {
+            var asset=write.asset();
+            if (asset.assetType()!=AssetType.WEBP || asset.dataMode()!=DataMode.FORECAST || !storage.equals(asset.storageKey())
+                    || !cycle.equals(asset.cycleTime()) || !new cn.edu.fudan.dayu.assetindex.domain.AssetFilenameParser()
+                    .parse(asset.relativePath(),AssetType.WEBP,500).releaseControlled())
+                throw new IllegalArgumentException("Invalid precipitation publication batch");
+        }
+        return tx.execute(status -> {
+            var old=rows("SELECT a.* FROM data_assets a WHERE a.storage_key=:storage AND a.cycle_time=:cycle AND "+REPPIC_ROWS,
+                    new MapSqlParameterSource("storage",storage).addValue("cycle",utc(cycle)));
+            long created=0,updated=0,removed=0;
+            Set<Long> affected=new HashSet<>();
+            Set<String> keep=new HashSet<>();
+            for(var write:writes) {
+                var change=upsert(write.asset(),write.productIds(),seenAt);
+                keep.add(write.asset().relativePath());
+                if (change.created()) created++; else if (change.changed()) updated++;
+                if (change.changed()) affected.addAll(change.affectedProductIds());
+            }
+            for(var row:old) if (!keep.contains(row.asset().relativePath())) {
+                removeOrMarkMissing(row); removed++; affected.addAll(row.productIds());
+            }
+            return new BatchChange(created,updated,removed,Set.copyOf(affected));
+        });
     }
 
     private MapSqlParameterSource assetParameters(DataAsset a) {

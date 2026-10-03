@@ -2,6 +2,10 @@
 
 Java 17 + Spring Boot 3.5.16 模块化单体后端。
 
+首次 clone 后请先按 [新电脑首次启动指南](../docs/新电脑首次启动指南.md) 完成配置、构建、启动和数据库初始化；不要依赖旧电脑的 `target/` 或密码文件。
+
+使用本地脚本时，NC/WebP/色标路径填 `.env.local`，Qwen 配置填 `.env`；图片服务和安全边界见 [后端配置与图片资源接入](../docs/后端配置与图片资源接入.md)。不需要临时模型探测程序来为正式后端注入配置。
+
 七个模块通过公开 API 连接；非 `skeleton` 环境使用真实 MariaDB Repository、文件元数据扫描、Session 登录、检索及下载服务。默认不扫描任何目录、不调用付费模型。`skeleton` Profile 保留 Mock 演示，不能用其测试结果证明数据库、文件或模型集成成功。
 
 ## 构建与测试
@@ -93,7 +97,7 @@ $env:SPRING_CONFIG_ADDITIONAL_LOCATION='file:E:/dayu-local/application.yml'
 - 注册只创建普通用户。首次管理员需由开发/部署负责人在独立数据库中核验账号后初始化；应用不附带通用管理员密码，也不开放匿名提升权限接口。
 - 先配置并发布产品及其模式，再通过管理员扫描接口建立索引；扫描只读文件元数据，不解析 NC 数组、不重新生产图片。
 - 当前已确认的 NC 文件名解析范围是 RePPIC 降水（同时关联 PLP、PRECIP）。辐射/云 NC 的具体文件名规则仍需真实样本确认；不会凭推断自动建错索引。
-- WebP 查询返回资源 URL；Java 不把整个图片读入堆内存。该 URL 需由本地前端代理/静态服务或部署 Nginx 映射到 `webp-preview` 对应目录。仅启动 Java 不代表地图图片服务已经配置。
+- WebP 查询返回资源 URL；本地脚本会开启受限图片服务，需配置 WebP 根目录才能读取图片。生产也可交给 Nginx。仅启动服务、不配置目录，不代表已有可视化数据。
 - `LOCAL` 下载真实流式输出文件；`NGINX` 需要独立部署 [internal location](../infra/nginx-download.conf)，不能把 NC 目录直接公开为静态资源。
 - Redis 仅缓存公开产品目录、WebP 时间轴和 WebP 预报批次；故障回源，不缓存历史 NC 搜索、密码或下载用途。连接/命令超时默认 250ms。启用时显式提供 `spring.data.redis.host/port`，需要认证时凭据只放外部配置；不开启时不访问 Redis。
 - 启用 Qwen 时，在进程环境安全提供 `DASHSCOPE_API_KEY`，并显式开启 `dayu.copilot.enabled`。当前客户端测试使用本地假 HTTP 服务，**不代表真实百炼账号/额度已经验证**。增加提供商时实现 `AiClient`，由 `ChatClient` 路由，不改业务查询代码。
@@ -102,4 +106,3 @@ $env:SPRING_CONFIG_ADDITIONAL_LOCATION='file:E:/dayu-local/application.yml'
 ## 结构
 
 七个业务模块均采用 `api/application/domain/infrastructure` 分层。跨模块调用只能引用目标模块的 `api` 包；`interfaces/rest/v1` 与 `interfaces/rest/legacy` 只作为协议适配层。依赖边界由 `ArchitectureTest` 验证。
-

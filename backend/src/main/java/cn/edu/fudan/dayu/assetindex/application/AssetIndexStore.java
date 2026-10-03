@@ -12,7 +12,13 @@ public interface AssetIndexStore {
     record Filter(long productId, AssetType type, DataMode mode, Instant from, Instant to,
                   Instant cycle, Integer lead) {}
     record Change(boolean created, boolean changed, Set<Long> affectedProductIds) {}
+    record IndexedWrite(DataAsset asset, Set<Long> productIds) {}
+    record BatchChange(long created, long updated, long removed, Set<Long> affectedProductIds) {}
     Change upsert(DataAsset asset, Set<Long> productIds, Instant seenAt);
+    /** Existing precipitation WebP cycles must be rechecked even when their files or marker disappear. */
+    Set<Instant> reppicCycles(String storageKey);
+    /** Publish the three verified rows or withdraw a whole indexed batch atomically; never deletes files. */
+    BatchChange replaceReppicCycle(String storageKey, Instant cycle, List<IndexedWrite> assets, Instant seenAt);
     /** 每批最多 200 条；调用方处理后继续读取，避免全部缺失资产进入内存。 */
     List<Row> unseen(String storageKey, Instant scanStarted);
     void removeOrMarkMissing(Row row);

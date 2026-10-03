@@ -127,6 +127,8 @@ public class LegacyDataController {
             var batch = discovery.listForecastCycles(new ForecastCycleQuery(
                             directory.product(), AssetType.WEBP, directory.cycle(), directory.cycle())).stream()
                     .filter(cycle -> cycle.cycleTime().equals(directory.cycle()))
+                    .filter(cycle -> !directory.product().value().equals("PRECIP") || cycle.complete())
+                    .filter(cycle -> directory.leadMinutes()==null || cycle.leadMinutes().contains(directory.leadMinutes()))
                     .findFirst();
             if (batch.isEmpty()) return filesOnly(List.of());
             to = batch.get().lastValidTime();
@@ -137,7 +139,7 @@ public class LegacyDataController {
         }
         List<String> files = discovery.listPreviewFrames(new PreviewQuery(
                         directory.product(), directory.mode(), from, to,
-                        directory.cycle(), null, number)).stream()
+                        directory.cycle(), directory.leadMinutes(), number)).stream()
                 .map(this::legacyWebpPath)
                 .toList();
         return filesOnly(files);
@@ -158,9 +160,12 @@ public class LegacyDataController {
             products = List.of(code.get());
         }
         Instant now = clock.instant();
+        Integer requestedLead=product==null || product.isBlank() ? null : LegacyPathParser.leadMinutes(product);
         Instant latest = products.stream()
                 .flatMap(code -> discovery.listForecastCycles(
-                        new ForecastCycleQuery(code, AssetType.WEBP, Instant.EPOCH, now)).stream())
+                        new ForecastCycleQuery(code, AssetType.WEBP, Instant.EPOCH, now)).stream()
+                        .filter(cycle -> !code.value().equals("PRECIP") || cycle.complete())
+                        .filter(cycle -> requestedLead==null || cycle.leadMinutes().contains(requestedLead)))
                 .map(cycle -> cycle.cycleTime())
                 .max(Comparator.naturalOrder())
                 .orElse(null);
@@ -186,6 +191,10 @@ public class LegacyDataController {
         if (directory.product() != null && explicit.isPresent() && !directory.product().equals(explicit.get())) {
             return emptySearch();
         }
+        Integer explicitLead=explicit.isPresent() ? LegacyPathParser.leadMinutes(product) : null;
+        if (directory.leadMinutes()!=null && explicitLead!=null && !directory.leadMinutes().equals(explicitLead)) return emptySearch();
+        Integer lead=directory.leadMinutes()!=null ? directory.leadMinutes() : explicitLead;
+        if (lead!=null && directory.mode()!=DataMode.FORECAST) return emptySearch();
 
         if (directory.type() == AssetType.WEBP) {
             ProductCode code = explicit.orElse(directory.product());
@@ -195,7 +204,7 @@ public class LegacyDataController {
             Instant recentTo = to.get();
             if (recentFrom.isAfter(recentTo)) return emptySearch();
             List<PreviewFrame> frames = allWebp(
-                    code, directory.mode(), recentFrom, recentTo, directory.cycle(), new QueryBudget());
+                    code, directory.mode(), recentFrom, recentTo, directory.cycle(), lead, new QueryBudget());
             frames = frames.stream().sorted(Comparator.comparing(PreviewFrame::validTime).reversed()
                     .thenComparing(frame -> frame.webpAssetId().value(), Comparator.reverseOrder())).toList();
             return searchResponse(
@@ -207,7 +216,7 @@ public class LegacyDataController {
         List<ProductCode> products = explicit.map(List::of).orElseGet(() -> enabledProducts(directory.mode()));
         if (explicit.isPresent() && !enabled(explicit.get(), directory.mode())) return emptySearch();
         List<ScientificAssetSummary> scientific = allScientific(
-                products, directory.mode(), from.get(), to.get(), directory.cycle(), new QueryBudget());
+                products, directory.mode(), from.get(), to.get(), directory.cycle(), lead, new QueryBudget());
         return searchResponse(
                 scientific.stream().map(this::legacyNcPath).toList(),
                 scientific.stream().map(asset -> formatSize(asset.fileSize())).toList(),
@@ -229,30 +238,30 @@ public class LegacyDataController {
     }
 
     private List<PreviewFrame> allWebp(
-            ProductCode product, DataMode mode, Instant from, Instant to, Instant cycle, QueryBudget budget) {
+            ProductCode product, DataMode mode, Instant from, Instant to, Instant cycle, Integer lead, QueryBudget budget) {
         Map<AssetId, PreviewFrame> unique = new LinkedHashMap<>();
-        collectWebp(product, mode, from, to, cycle, unique, budget);
+        collectWebp(product, mode, from, to, cycle, lead, unique, budget);
         return List.copyOf(unique.values());
     }
 
     private void collectWebp(
-            ProductCode product, DataMode mode, Instant from, Instant to, Instant cycle,
+            ProductCode product, DataMode mode, Instant from, Instant to, Instant cycle, Integer lead,
             Map<AssetId, PreviewFrame> unique, QueryBudget budget) {
         if (Duration.between(from, to).compareTo(previewWindow) > 0) {
             Instant middle = midpoint(from, to);
-            collectWebp(product, mode, from, middle, cycle, unique, budget);
-            collectWebp(product, mode, middle, to, cycle, unique, budget);
+            collectWebp(product, mode, from, middle, cycle, lead, unique, budget);
+            collectWebp(product, mode, middle, to, cycle, lead, unique, budget);
             return;
         }
         budget.take();
         List<PreviewFrame> page = discovery.listPreviewFrames(
-                new PreviewQuery(product, mode, from, to, cycle, null, DISCOVERY_PAGE_SIZE));
+                new PreviewQuery(product, mode, from, to, cycle, lead, DISCOVERY_PAGE_SIZE));
         addFrames(unique, page);
         if (page.size() < DISCOVERY_PAGE_SIZE) return;
         if (!from.isBefore(to.minus(1, ChronoUnit.MINUTES))) throw tooMany();
         Instant middle = midpoint(from, to);
-        collectWebp(product, mode, from, middle, cycle, unique, budget);
-        collectWebp(product, mode, middle, to, cycle, unique, budget);
+        collectWebp(product, mode, from, middle, cycle, lead, unique, budget);
+        collectWebp(product, mode, middle, to, cycle, lead, unique, budget);
     }
 
     private void addFrames(Map<AssetId, PreviewFrame> unique, List<PreviewFrame> frames) {
@@ -263,7 +272,7 @@ public class LegacyDataController {
     }
 
     private List<ScientificAssetSummary> allScientific(
-            List<ProductCode> products, DataMode mode, Instant from, Instant to, Instant cycle,
+            List<ProductCode> products, DataMode mode, Instant from, Instant to, Instant cycle, Integer lead,
             QueryBudget budget) {
         Map<AssetId, ScientificAssetSummary> unique = new LinkedHashMap<>();
         for (ProductCode product : products) {
@@ -272,7 +281,7 @@ public class LegacyDataController {
             do {
                 budget.take();
                 var result = discovery.searchScientificAssets(new ScientificAssetQuery(
-                        product, mode, from, to, cycle, null, new PageRequest(page, DISCOVERY_PAGE_SIZE)));
+                        product, mode, from, to, cycle, lead, new PageRequest(page, DISCOVERY_PAGE_SIZE)));
                 for (ScientificAssetSummary asset : result.items()) {
                     unique.put(asset.assetId(), asset);
                     if (unique.size() > maxSearchResults) throw tooMany();

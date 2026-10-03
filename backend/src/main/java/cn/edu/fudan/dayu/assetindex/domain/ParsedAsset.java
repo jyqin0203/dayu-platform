@@ -6,4 +6,10 @@ import java.time.Instant;
 
 /** 来自正式路径和文件名的元数据，不读取科学数组；family 或 product 二选一。 */
 public record ParsedAsset(AssetType type, DataMode mode, String family, String product,
-                          Instant cycleTime, Instant validTime, Integer leadMinutes, Integer dpi) {}
+                          Instant cycleTime, Instant validTime, Integer leadMinutes, Integer dpi,
+                          boolean releaseControlled) {
+    public ParsedAsset(AssetType type, DataMode mode, String family, String product,
+                       Instant cycleTime, Instant validTime, Integer leadMinutes, Integer dpi) {
+        this(type,mode,family,product,cycleTime,validTime,leadMinutes,dpi,false);
+    }
+}

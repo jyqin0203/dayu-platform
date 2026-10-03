@@ -86,6 +86,8 @@ WebP/<配置DPI目录>/forecast/<12位起报时间>/<产品>
 
 无数据或参数无效返回空字符串。目录存在但没有资产不能成为最新批次。
 
+2026-10-03 补充：旧 `PRECIP_1H/2H/3H`（含可选 FCST_ 前缀）映射为同一个 PRECIP 产品的 60/120/180 分钟时效。降水最新批次只选完整批次；files/search 保留时效筛选，物理文件路径不改写成虚构路径。RePPIC palette-v2 三张图经有效完成标记校验后整批入库，不保留固定历史日期豁免。规则与验收见 [降水兼容闭环](../reviews/reppic-compatibility.md)。
+
 ## 5. GET /api/search.php
 
 | 参数 | 规则 |

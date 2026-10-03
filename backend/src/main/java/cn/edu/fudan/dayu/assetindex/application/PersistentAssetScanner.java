@@ -105,6 +105,7 @@ public class PersistentAssetScanner implements AssetIndexCommandService, AssetSc
                 String storage=root.getKey();
                 AssetType type=settings.typeOf(storage);
                 int errorsBefore=counts.errorCount;
+                Set<Instant> releaseCycles=type==AssetType.WEBP ? new LinkedHashSet<>(store.reppicCycles(storage)) : new LinkedHashSet<>();
                 boolean complete=files.visit(root.getValue(),file -> {
                     // Other-type files in a root are never claimed as indexed assets.
                     if (type==AssetType.WEBP && !file.relativePath().endsWith(".webp")
@@ -112,6 +113,7 @@ public class PersistentAssetScanner implements AssetIndexCommandService, AssetSc
                     counts.scanned++;
                     try {
                         ParsedAsset parsed=parser.parse(file.relativePath(),type,settings.getDpi());
+                        if (parsed.releaseControlled()) { releaseCycles.add(parsed.cycleTime()); return; }
                         Set<ProductCode> codes=parsed.product()!=null ? Set.of(new ProductCode(parsed.product()))
                                 : families.computeIfAbsent(parsed.family(),family -> catalog.resolveProductsForAssetFamily(family).products());
                         if (codes.isEmpty() || !ids.keySet().containsAll(codes)) throw new IllegalArgumentException("Unmapped product");
@@ -129,6 +131,31 @@ public class PersistentAssetScanner implements AssetIndexCommandService, AssetSc
                         counts.error(new AssetScanError(safePath(file.relativePath()),"INDEX_FILE_FAILED","File name, product mapping or metadata could not be indexed"));
                     }
                 },counts::error);
+                // Gate-controlled images are never inserted individually: publish/retract a whole batch.
+                for(Instant cycle:releaseCycles) {
+                    try {
+                        var release=files.inspectReppicCycle(root.getValue(),cycle);
+                        if (release.status()==FileInventory.ReleaseStatus.UNREADABLE) {
+                            counts.error(new AssetScanError("","REPPIC_RELEASE_UNREADABLE","Precipitation publication metadata could not be verified"));
+                            continue;
+                        }
+                        List<AssetIndexStore.IndexedWrite> writes=new ArrayList<>();
+                        if (release.status()==FileInventory.ReleaseStatus.READY) for(var file:release.files()) {
+                            var parsed=parser.parse(file.relativePath(),AssetType.WEBP,settings.getDpi());
+                            Long id=ids.get(new ProductCode("PRECIP"));
+                            if (id==null || !parsed.releaseControlled() || !cycle.equals(parsed.cycleTime())) throw new IllegalArgumentException("Invalid released product");
+                            String name=file.relativePath().substring(file.relativePath().lastIndexOf('/')+1);
+                            writes.add(new AssetIndexStore.IndexedWrite(new DataAsset(null,AssetType.WEBP,parsed.mode(),cycle,
+                                    parsed.validTime(),parsed.leadMinutes(),storage,file.relativePath(),name,file.size(),null,parsed.dpi(),
+                                    file.modifiedAt(),AssetStatus.AVAILABLE,run.startedAt()),Set.of(id)));
+                        }
+                        var change=store.replaceReppicCycle(storage,cycle,writes,run.startedAt());
+                        counts.created+=change.created(); counts.updated+=change.updated(); counts.removed+=change.removed();
+                        change.affectedProductIds().forEach(id -> { if(products.containsKey(id)) counts.affected.add(products.get(id).code()); });
+                    } catch (RuntimeException failed) {
+                        counts.error(new AssetScanError("","REPPIC_PUBLICATION_FAILED","Precipitation batch could not be indexed atomically"));
+                    }
+                }
                 if (!complete && counts.errorCount==errorsBefore) {
                     counts.error(new AssetScanError("","INCOMPLETE_ROOT","Storage root could not be completely enumerated"));
                 }

@@ -8,6 +8,16 @@ import org.junit.jupiter.api.Test;
 
 class LegacyPathParserTest {
     private final LegacyPathParser parser = new LegacyPathParser("WebP/WebP_V2_Dpi500_4KM", "netcdf");
+    @Test void precipitationAliasesRetainLeadWithoutCreatingProducts() {
+        for(int hours=1;hours<=3;hours++) {
+            var directory=parser.directory("WebP/WebP_V2_Dpi500_4KM/forecast/202609021200/PRECIP_"+hours+"H").orElseThrow();
+            assertThat(directory.product().value()).isEqualTo("PRECIP");
+            assertThat(directory.leadMinutes()).isEqualTo(hours*60);
+            assertThat(LegacyPathParser.code("FCST_PRECIP_"+hours+"H").value()).isEqualTo("PRECIP");
+        }
+        assertThat(parser.directory("WebP/WebP_V2_Dpi500_4KM/realtime/PRECIP_1H")).isEmpty();
+        assertThat(parser.directory("WebP/WebP_V2_Dpi500_4KM/forecast/202609021200/PRECIP_4H")).isEmpty();
+    }
     @Test void acceptsOnlyExactConfiguredRootsAndKnownDirectoryShapes() {
         var path = parser.directory("WebP/WebP_V2_Dpi500_4KM/forecast/202609020600/BT855/").orElseThrow();
         assertThat(path.mode()).isEqualTo(DataMode.FORECAST);

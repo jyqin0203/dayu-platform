@@ -39,6 +39,39 @@ class LegacyDataControllerContractTest {
     private CurrentActorProvider actors;
     private LegacyDataController controller;
 
+    @Test void precipitationAliasUsesCanonicalCodeLeadAndOnlyCompleteLatestCycle() {
+        enable("PRECIP",DataMode.FORECAST);
+        Instant released=NOW.minusSeconds(7200);
+        when(discovery.listForecastCycles(any())).thenReturn(List.of(
+                new ForecastCycleSummary(NOW.minusSeconds(3600),NOW,NOW.plusSeconds(3600),Set.of(60,120),false),
+                new ForecastCycleSummary(released,released.plusSeconds(3600),released.plusSeconds(10800),Set.of(60,120,180),true)));
+        assertThat(controller.latest("WebP/WebP_V2_Dpi500_4KM/forecast","PRECIP_2H"))
+                .isEqualTo(Map.of("latest","202610021000"));
+        when(discovery.listPreviewFrames(any())).thenReturn(List.of(frame(4,
+                "forecast/202610021000/PRECIP_2H/actual.webp",NOW,12)));
+        assertThat(controller.files("WebP/WebP_V2_Dpi500_4KM/forecast/202610021000/PRECIP_2H",200).get("files"))
+                .isEqualTo(List.of("WebP/WebP_V2_Dpi500_4KM/forecast/202610021000/PRECIP_2H/actual.webp"));
+        var query=org.mockito.ArgumentCaptor.forClass(PreviewQuery.class);
+        verify(discovery).listPreviewFrames(query.capture());
+        assertThat(query.getValue().productCode().value()).isEqualTo("PRECIP");
+        assertThat(query.getValue().leadMinutes()).isEqualTo(120);
+        verify(catalog,never()).findProduct(new ProductCode("PRECIP_2H"));
+    }
+
+    @Test void scientificAliasFiltersLeadAndConflictingAliasReturnsEmpty() {
+        enable("PRECIP",DataMode.FORECAST);
+        when(discovery.searchScientificAssets(any())).thenReturn(new PageResult<>(List.of(),1,200,0));
+        assertThat(controller.search("multi","netcdf/forecast","202610020600","202610021200","FCST_PRECIP_3H"))
+                .isEqualTo(emptySearch());
+        var query=org.mockito.ArgumentCaptor.forClass(ScientificAssetQuery.class);
+        verify(discovery).searchScientificAssets(query.capture());
+        assertThat(query.getValue().productCode().value()).isEqualTo("PRECIP");
+        assertThat(query.getValue().leadMinutes()).isEqualTo(180);
+        assertThat(controller.search("multi","WebP/WebP_V2_Dpi500_4KM/forecast/202610020600/PRECIP_1H",
+                "202610020600","202610021200","PRECIP_2H")).isEqualTo(emptySearch());
+        verify(discovery,never()).listPreviewFrames(any());
+    }
+
     @BeforeEach
     void setUp() {
         discovery = mock(DiscoveryQueryService.class);

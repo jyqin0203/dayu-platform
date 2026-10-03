@@ -40,7 +40,8 @@ public class IndexedAssetQueries implements AssetQueryService, DownloadAssetLook
         if (c.productCode()==null || c.assetType()==null || c.from()!=null && c.to()!=null && c.from().isAfter(c.to())) throw invalid();
         long id = productId(productMap(),c.productCode());
         if (id == 0) return List.of();
-        Set<Integer> expected = settings.getExpectedLeads().getOrDefault(c.productCode().value(),Set.of());
+        Set<Integer> expected = settings.getExpectedLeads().getOrDefault(c.productCode().value(),
+                c.assetType()==AssetType.WEBP && c.productCode().value().equals("PRECIP") ? Set.of(60,120,180) : Set.of());
         return store.cycles(id,c.assetType(),c.from(),c.to()).stream().map(row -> new ForecastCycleSummary(row.cycleTime(),
                 row.firstValidTime(),row.lastValidTime(),row.leadMinutes(),!expected.isEmpty() && row.leadMinutes().containsAll(expected))).toList();
     }

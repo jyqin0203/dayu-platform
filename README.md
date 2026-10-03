@@ -8,6 +8,8 @@
 
 运行方式见 [backend/README.md](backend/README.md)，逐模块实现与测试证据见 [docs/reviews](docs/reviews)。
 
+新电脑从零配置、构建、启动及初始化见 [新电脑首次启动指南（Windows）](docs/新电脑首次启动指南.md)。真实配置不提交，仓库提供 `.env.example` 等无密钥模板。
+
 ## 系统边界
 
 ```text
@@ -67,4 +69,3 @@ E:\Dayu-dev-data
 - 不提交用户信息、下载用途和访问日志；
 - 不直接在生产服务器上开发或压测；
 - 所有生产部署必须基于已测试的版本化构建产物。
-

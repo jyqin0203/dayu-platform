@@ -15,6 +15,8 @@ public final class AssetFilenameParser {
             "FY4B_AGRI_([A-Z][A-Z0-9]*)(?:_FD)?_(\\d{12})(?:_(\\d{12}))?(?:_Dpi(\\d+))?\\.webp");
     private static final Pattern NC = Pattern.compile(
             "FY4B_AGRI_(REPPIC_PRECIP)(?:_([0-9]+(?:\\.[0-9]+)?)H)?_(\\d{12})(?:_(\\d{12}))?\\.nc");
+    private static final Pattern REPPIC_WEBP = Pattern.compile(
+            "FY4B_AGRI_REPPIC_PRECIP_([123])H_(\\d{12})_(\\d{12})_palettev2_Dpi500\\.webp");
 
     public ParsedAsset parse(String relativePath, AssetType type, int configuredDpi) {
         validateRelativePath(relativePath);
@@ -23,6 +25,15 @@ public final class AssetFilenameParser {
         if (!forecast && !parts[0].equals("realtime")) throw invalid();
         int expected = type == AssetType.WEBP ? (forecast ? 4 : 3) : (forecast ? 3 : 2);
         if (parts.length != expected) throw invalid();
+        var reppic=REPPIC_WEBP.matcher(parts[parts.length-1]);
+        if (type==AssetType.WEBP && reppic.matches()) {
+            int hours=Integer.parseInt(reppic.group(1));
+            if (!forecast || configuredDpi!=500 || !parts[2].equals("PRECIP_"+hours+"H")) throw invalid();
+            Instant cycle=parseTime(reppic.group(2)), valid=parseTime(reppic.group(3));
+            if (!parts[1].equals(reppic.group(2)) || !valid.equals(cycle.plusSeconds(hours*3600L))) throw invalid();
+            // Physical directory names are delivery aliases, not additional Catalog products.
+            return new ParsedAsset(type,DataMode.FORECAST,null,"PRECIP",cycle,valid,hours*60,500,true);
+        }
         var matcher = (type == AssetType.WEBP ? WEBP : NC).matcher(parts[parts.length - 1]);
         if (!matcher.matches()) throw invalid();
         String product = type == AssetType.WEBP ? matcher.group(1) : null;
@@ -49,7 +60,8 @@ public final class AssetFilenameParser {
         }
         return new ParsedAsset(type, forecast ? DataMode.FORECAST : DataMode.REALTIME,
                 type == AssetType.NETCDF ? matcher.group(1) : null, product, cycle, valid,
-                forecast ? (int) lead : null, dpi);
+                forecast ? (int) lead : null, dpi,
+                type==AssetType.WEBP && forecast && "PRECIP".equals(product));
     }
 
     /** 不接受绝对路径、编码逃逸、控制字符及空路径段。 */

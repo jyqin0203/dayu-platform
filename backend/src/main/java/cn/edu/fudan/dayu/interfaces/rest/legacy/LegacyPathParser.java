@@ -18,7 +18,7 @@ import java.util.Optional;
 final class LegacyPathParser {
     static final DateTimeFormatter COMPACT = DateTimeFormatter.ofPattern("uuuuMMddHHmm")
             .withResolverStyle(ResolverStyle.STRICT).withZone(ZoneOffset.UTC);
-    record Directory(AssetType type, DataMode mode, Instant cycle, ProductCode product) {}
+    record Directory(AssetType type, DataMode mode, Instant cycle, ProductCode product, Integer leadMinutes) {}
     private final String webpRoot;
     private final String netcdfRoot;
 
@@ -43,11 +43,13 @@ final class LegacyPathParser {
         else return Optional.empty();
         String[] parts = suffix.split("/", -1);
         try {
-            if (parts[0].equals("realtime") && (parts.length == 1 || type == AssetType.WEBP && parts.length == 2))
-                return Optional.of(new Directory(type, DataMode.REALTIME, null, parts.length == 2 ? code(parts[1]) : null));
+            if (parts[0].equals("realtime") && (parts.length == 1 || type == AssetType.WEBP && parts.length == 2)) {
+                if (parts.length==2 && leadMinutes(parts[1])!=null) return Optional.empty();
+                return Optional.of(new Directory(type, DataMode.REALTIME, null, parts.length == 2 ? code(parts[1]) : null,null));
+            }
             if (parts[0].equals("forecast") && (parts.length == 1 || parts.length == 2 || type == AssetType.WEBP && parts.length == 3))
                 return Optional.of(new Directory(type, DataMode.FORECAST, parts.length > 1 ? time(parts[1]) : null,
-                        parts.length == 3 ? code(parts[2]) : null));
+                        parts.length == 3 ? code(parts[2]) : null,parts.length==3 ? leadMinutes(parts[2]) : null));
         } catch (IllegalArgumentException | DateTimeException | BusinessException invalid) { return Optional.empty(); }
         return Optional.empty();
     }
@@ -57,7 +59,15 @@ final class LegacyPathParser {
     static ProductCode code(String value) {
         String code = value.startsWith("FCST_") ? value.substring(5) : value;
         if (!code.matches("[A-Z0-9_-]{1,64}")) throw new IllegalArgumentException("Invalid product");
+        if (leadMinutes(code)!=null) return new ProductCode("PRECIP");
         return new ProductCode(code);
+    }
+    /** Only the three verified Legacy aliases are normalized; the domain keeps one PRECIP product. */
+    static Integer leadMinutes(String value) {
+        String code=value.startsWith("FCST_") ? value.substring(5) : value;
+        if (code.matches("PRECIP_[123]H")) return (code.charAt(7)-'0')*60;
+        if (code.matches("PRECIP_[0-9]+H")) throw new IllegalArgumentException("Unsupported precipitation lead");
+        return null;
     }
     static Instant time(String value) {
         if (value == null || !value.matches("[0-9]{12}")) throw new IllegalArgumentException("Invalid time");

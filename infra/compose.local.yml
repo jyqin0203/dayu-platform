@@ -1,0 +1,26 @@
+# Only local MariaDB; no production mounts, Redis, model calls, or scientific data.
+services:
+  mariadb:
+    image: mariadb:10.6
+    container_name: ${DAYU_LOCAL_DB_CONTAINER:-dayu-platform-mariadb-local}
+    ports:
+      - "127.0.0.1:${DAYU_LOCAL_DB_PORT:-13306}:3306"
+    environment:
+      MARIADB_DATABASE: dayu
+      MARIADB_USER: dayu
+      MARIADB_PASSWORD: ${DAYU_LOCAL_DB_PASSWORD:?Provide the ignored .env.local-db file}
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
+    command: ["--default-time-zone=+00:00", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    volumes:
+      - database:/var/lib/mysql
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 20s
+
+volumes:
+  database:
+    name: ${DAYU_LOCAL_DB_VOLUME:-dayu-platform-mariadb-local-data}

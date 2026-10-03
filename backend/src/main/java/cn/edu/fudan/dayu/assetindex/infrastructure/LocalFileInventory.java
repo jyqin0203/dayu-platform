@@ -9,10 +9,13 @@ import java.util.function.Consumer;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-/** 不跟随符号链接，不读文件内容；任何遍历失败都会阻止该根缺失清理。 */
+/** 枚举只读元数据、不跟随链接；发布检查只读小型 JSON 标记，不读取 NC/图片内容。遍历失败阻止根级缺失清理。 */
 @Component
 @Profile("!skeleton")
 public class LocalFileInventory implements FileInventory {
+    @Override public ReleaseSnapshot inspectReppicCycle(Path root,java.time.Instant cycle) {
+        return new ReppicReleaseInspector().inspect(root,cycle);
+    }
     @Override
     public boolean visit(Path configured, Consumer<FileEntry> files, Consumer<AssetScanError> errors) {
         boolean[] complete = {true};

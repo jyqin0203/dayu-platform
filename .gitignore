@@ -2,6 +2,9 @@
 .env
 .env.*
 !.env.example
+!.env.local.example
+!.env.local-db.example
+!.env.local-admin.example
 *.key
 *.pem
 *.p12
@@ -57,4 +60,3 @@ logs/
 tmp/
 *.pid
 docker-data/
-
