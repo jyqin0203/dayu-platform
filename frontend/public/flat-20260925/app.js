@@ -1,4 +1,6 @@
 import {createWorldBasemap} from './world-map.js';
+import {expandCatalog,loadColorbar} from './catalog-adapter.js';
+import {dateOf,stamp,leadHours,loadTimeline} from './timeline-data.js';
 import {geometryFor,containsPoint,unpad} from './product-geometry.js';
 const $=id=>document.getElementById(id);
 const products=[
@@ -22,8 +24,6 @@ let viewer,base,vectorBase,naturalBase,worldLines,currentLayer,currentURL,produc
 let currentRegion='china',catalogMode='realtime';
 const root='WebP/WebP_V2_Dpi500_4KM';
 const read=resource=>'/'+resource;
-const stamp=file=>(file.match(/\d{12}/g)||[]).at(-1);
-const dateOf=s=>new Date(`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T${s.slice(8,10)}:${s.slice(10,12)}:00Z`);
 const displayDate=file=>dateOf(stamp(file)).toISOString().slice(0,16).replace('T',' ')+' UTC';
 const shortDate=file=>displayDate(file).slice(5,16);
 function notify(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,4000);}
@@ -35,7 +35,15 @@ function updateProductUI(){
   const isColor=['RGB','FRGB'].includes(product.id), rain=product.id.includes('PRECIP');
   $('legend-image').hidden=isColor;
   if(isColor)$('legend-image').removeAttribute('src');
-  else $('legend-image').src=read(`CPP_Colorbar/horizontal/${product.id.includes('PRECIP')?'PRECIP_Colorbar_rainsnow_v2':(product.pathId||product.id)+'_Colorbar'}.webp`);
+  else {
+    const selected=product;
+    $('legend-image').hidden=true;$('legend-image').removeAttribute('src');
+    loadColorbar(product.pathId||product.id).then(url=>{
+      if(product!==selected)return;
+      if(url){$('legend-image').hidden=false;$('legend-image').src=url;}
+      else $('legend-note').textContent='该产品未配置色标';
+    }).catch(()=>{if(product===selected)$('legend-note').textContent='产品色标配置暂时不可用';});
+  }
   if(product.sample)$('legend-image').src='samples/legend.webp';
   $('legend-note').textContent=isColor?'原始彩色合成影像 · 不使用数值色阶':rain?'雨 / 雪双配色 · 原始色标，未改变数值':'原始产品色标 · 未修改数值';
   document.querySelectorAll('[data-id]').forEach(b=>{b.classList.toggle('active',b.dataset.id===product.id);b.setAttribute('aria-pressed',String(b.dataset.id===product.id));});
@@ -58,24 +66,13 @@ async function select(p){
   window.mapLoading.stage(1,'正在读取'+p.name+'…');
   stop();const token=++generation;++frameRequest;product=p;frames=[];clearLayer();updateProductUI();
   $('forecast-leads').replaceChildren();$('forecast-leads').hidden=true;updatePoint();
+  $('window-label').textContent='正在读取时间范围…';
   $('play').disabled=true;$('timeline').disabled=true;$('data-time').textContent='正在读取数据时间…';$('data-status').textContent='读取公开图像列表…';$('frame-count').textContent='0 帧';$('selected-time').textContent='等待图像';$('start-time').textContent='—';$('end-time').textContent='—';
   try{
-    let directory=`${root}/realtime/${p.pathId||p.id}`;forecastCycle='';
-    if(p.sample){sampleManifest=await (await fetch('samples/reppic.json')).json();forecastCycle=sampleManifest.initialization;directory='samples';}
-    else if(p.mode==='forecast'){
-      const response=await json(`api/fcst_latest.php?path=${root}/forecast&product=${p.combined?'PRECIP_1H':p.pathId||p.id}`);
-      if(token!==generation)return;
-      if(!/^\d{12}$/.test(response.latest||''))throw Error('该预报产品暂无可用图像');
-      forecastCycle=response.latest;directory=`${root}/forecast/${response.latest}/${p.pathId||p.id}`;
-    }
-    const response=p.sample?{files:sampleManifest.frames.map(f=>f.image)}:p.combined?{files:(await Promise.all([1,2,3].map(h=>json(`api/files.php?path=${root}/forecast/${forecastCycle}/PRECIP_${h}H&number=200`)))).flatMap(x=>x.files||[])}:await json(`api/files.php?path=${directory}&number=200`);
+    forecastCycle='';
+    const snapshot=await loadTimeline(p,json,root);
     if(token!==generation)return;
-    const allowed=p.combined?`${root}/forecast/${forecastCycle}/PRECIP_`:directory+'/';
-    const all=(response.files||[]).filter(f=>typeof f==='string'&&f.startsWith(allowed)&&stamp(f)).sort((a,b)=>stamp(a).localeCompare(stamp(b)));
-    if(p.mode==='realtime' && all.length){
-      const end=Math.floor(dateOf(stamp(all.at(-1))).getTime()/1800000)*1800000;
-      frames=all.filter(f=>{const t=dateOf(stamp(f)).getTime();return t<=end&&t>end-86400000&&t%1800000===0;}).slice(-48);
-    }else frames=all;
+    const {all}=snapshot;forecastCycle=snapshot.cycle;frames=snapshot.frames;
     if(!frames.length)throw Error('该产品当前没有可用图像');
     index=frames.length-1;$('timeline').max=frames.length-1;$('timeline').disabled=false;$('play').disabled=frames.length<2;
     const age=Math.round((Date.now()-dateOf(p.mode==='forecast'?forecastCycle:stamp(all.at(-1))).getTime())/60000);
@@ -83,7 +80,7 @@ async function select(p){
     if(p.sample)$('data-status').textContent='历史调试样例 · 2026-09-02起报 · 非实时 · 点击地图读取原始数值';
     $('window-label').textContent=p.mode==='realtime'?'最近24小时 · 每30分钟':`起报 ${dateOf(forecastCycle).toISOString().slice(5,16).replace('T',' ')} UTC · ${frames.length} 个时效`;
     $('forecast-leads').replaceChildren();$('forecast-leads').hidden=p.mode!=='forecast';
-    if(p.mode==='forecast')frames.forEach((f,i)=>{const b=document.createElement('button');b.textContent='+'+((dateOf(stamp(f))-dateOf(forecastCycle))/3600000)+'h';b.onclick=()=>{stop();showFrame(i).catch(e=>notify(e.message));};$('forecast-leads').append(b);});
+    if(p.mode==='forecast')frames.forEach((f,i)=>{const b=document.createElement('button');b.textContent='+'+leadHours(f,forecastCycle)+'h';b.onclick=()=>{stop();showFrame(i).catch(e=>notify(e.message));};$('forecast-leads').append(b);});
     $('start-time').textContent=shortDate(frames[0]);$('end-time').textContent=shortDate(frames.at(-1));
     document.querySelector('.ticks').hidden=p.mode==='forecast';
     window.mapLoading.stage(2,'正在渲染地图与首帧数据…');
@@ -138,11 +135,10 @@ function locate(region){currentRegion=region;const positions={china:[105,30,1150
 async function init(){
   if(!globalThis.Cesium){window.mapLoading.fail('地图组件加载失败，请检查网络后重试。');$('data-status').textContent='地图组件加载失败，请检查网络并刷新页面';return;}
   window.mapLoading.stage(0,'正在准备世界底图…');
-  const response=await fetch('/api/products.php');
+  const response=await fetch('/api/v1/products');
   if(!response.ok)throw Error('产品目录加载失败');
-  const catalog=await response.json();if(!catalog.ok||!Array.isArray(catalog.products))throw Error('产品目录不可用');
-  const defaults=new Map(products.map(p=>[p.id,p]));
-  products.splice(0,products.length,...catalog.products.filter(p=>p.status==='active'||p.status==='draft').map(p=>({...defaults.get(p.product_id),id:p.product_id,pathId:p.path_id,name:p.name_zh,en:p.name_en,mode:p.category,unit:defaults.get(p.product_id)?.unit||'',draft:p.status!=='active'})));
+  const catalog=await response.json();
+  products.splice(0,products.length,...expandCatalog(catalog));
   product=products.find(p=>p.id==='CTH'&&!p.draft)||products.find(p=>!p.draft);
   if(!product)throw Error('暂无已上架产品');
   const world=await createWorldBasemap();
@@ -184,7 +180,7 @@ async function init(){
   const picker=new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
   picker.setInputAction(click=>{const world=viewer.camera.pickEllipsoid(click.position,viewer.scene.globe.ellipsoid);if(!world)return;const c=Cesium.Cartographic.fromCartesian(world);stop();pickAt(Cesium.Math.toDegrees(c.longitude),Cesium.Math.toDegrees(c.latitude));},Cesium.ScreenSpaceEventType.LEFT_CLICK);
   $('point-close').onclick=()=>{$('point-info').hidden=true;pickedPoint=null;if(pickMarker)viewer.entities.remove(pickMarker);viewer.scene.requestRender();};
-  $('point-forecast').onclick=()=>{const id=product.id.includes('PRECIP')?'PRECIP_1H':product.id.startsWith('FCST_')?product.id:'FCST_'+product.id;const next=products.find(p=>(p.id===id||p.pathId===id)&&p.mode==='forecast'&&!p.draft);if(next)select(next);else notify('该产品暂无可用预报');};
+  $('point-forecast').onclick=()=>{const next=products.find(p=>p.pathId===product.pathId&&p.mode==='forecast');if(next)select(next);else notify('该产品暂无可用预报');};
   select(product);
 }
 function pickAt(lon,lat){pickedPoint={lon,lat};if(pickMarker)viewer.entities.remove(pickMarker);pickMarker=viewer.entities.add({position:Cesium.Cartesian3.fromDegrees(lon,lat),point:{pixelSize:10,color:Cesium.Color.CYAN,outlineColor:Cesium.Color.WHITE,outlineWidth:2,disableDepthTestDistance:Number.POSITIVE_INFINITY}});$('point-info').hidden=false;updatePoint();viewer.scene.requestRender();}
@@ -196,7 +192,7 @@ async function updatePoint(){
  $('point-product').textContent=product.name;
  $('point-time').textContent=frames[index]?displayDate(frames[index]):'暂无图像';
  $('point-series').replaceChildren();$('point-forecast').textContent=product.sample?'定位降水样例点':'查看亮温完整预报 →';
- $('point-forecast').hidden=!product.id.includes('PRECIP')&&!product.id.includes('BT');
+ $('point-forecast').hidden=!products.some(p=>p.pathId===product.pathId&&p.mode==='forecast');
  $('point-forecast').textContent='查看该产品完整预报 →';
  if(product.globalSample){
    $('point-value').textContent='读取原始网格…';$('point-note').textContent='';

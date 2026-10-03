@@ -2,6 +2,8 @@
 const cpp=new Set(['RGB','FRGB','CLP','CTH','CBH','COT','CER','CWP']);
 const padded=new Set(['CLP','CTH','COT','CER','CWP']);
 export function geometryFor(id){
+  // 模式前缀不是物理产品；预报与实况共用已确认的定位和裁边规则。
+  id=id.replace(/^FCST_/, '');
   if(id.startsWith('GLOBAL_'))return {bounds:[-180,-70.02,180,70.02],padding:0,verified:true};
   // Sample NetCDF coordinates are pixel centers, not outer edges (2401 at 0.05 deg).
   if(id==='SAMPLE_PRECIP')return {bounds:[59.975,-60.025,180.025,60.025],padding:0,verified:true};
@@ -11,6 +13,7 @@ export function geometryFor(id){
 }
 export function containsPoint(bounds,lon,lat){if(lon<bounds[0])lon+=360;return lon>=bounds[0]&&lon<=bounds[2]&&lat>=bounds[1]&&lat<=bounds[3];}
 export function unpad(image,id){
+  id=id.replace(/^FCST_/, '');
   const {padding}=geometryFor(id);
   if(!padding)return image;
   // Only apply the known Dpi500 Matplotlib exports, never infer margins from cloud extent.

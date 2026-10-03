@@ -56,3 +56,10 @@ Nginx 静态配置参考 `nginx-static.example.conf`：版本化 Cesium 地址�
 官方资源路径说明：[CesiumJS Quickstart](https://cesium.com/learn/cesiumjs-learn/cesiumjs-quickstart/)。
 
 本服务只用于本地开发；生产静态托管/反向代理单独配置。当前不承诺地图数据展示、完整账号下载流程、管理页和 Copilot 已完成。
+# 当前适配进展（第 2 阶段）
+
+产品目录现读取 `/api/v1/products`，单位和启用模式以 Catalog 为准；色标读取产品详情中的公开地址。帧列表继续使用 Legacy API，时间解析、批次隔离与降水三时效校验封装在 `timeline-data.js`。实况沿用旧页面 24h/30min 显示策略，不代表后端数据保留期限。
+
+`npm test` 现包含 16 项测试。亮温已完成本地真实 WebP 和色标联调；云/降水尚缺真实样本验收，登录/下载/管理员/Copilot 页面不属于本阶段。
+
+输入输出和证据见 `docs/reviews/frontend-catalog-adaptation.md`、`frontend-timeline-adaptation.md`、`frontend-real-webp-verification.md`。这些历史样本、临时放宽的预览窗口、产品色标数据库配置均仅存在本机，不会随 Git clone 自动迁移。
