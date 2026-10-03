@@ -1,4 +1,5 @@
 import {zones,toUtc,timeInput,searchScientific} from './scientific-client.js';
+import {openDownload} from './download-dialog.js';
 
 /** 独立检索弹窗，保留地图状态；动态文件名只使用 textContent，禁止拼入 HTML。 */
 export function openScientificSearch(){dialog.showModal();if(!catalog.length)loadCatalog();}
@@ -16,7 +17,7 @@ dialog.innerHTML=`<div class="drawer-heading"><h2 id="science-title">科学数�
 <p id="science-status" role="status" aria-live="polite">正在准备产品目录…</p>
 <div id="science-results"></div><div class="science-pages"><button id="science-prev" disabled>上一页</button><span id="science-page"></span><button id="science-next" disabled>下一页</button></div>`;
 document.body.append(dialog);
-// 检索是公开入口，与账号模块及登录状态无依赖。
+// 检索是公开入口，不要求登录；仅选中文件下载时进入认证流程。
 document.getElementById('science-open').addEventListener('click',openScientificSearch);
 const $=id=>document.getElementById(id);
 let catalog=[],zone='UTC',active=null,query=null,page=1,generation=0;
@@ -51,6 +52,8 @@ async function run(criteria,nextPage){
       title.textContent=item.fileName;
       details.textContent=`${(item.fileSize/1048576).toFixed(2)} MiB · ${(item.products||[]).join(' / ')} · ${item.status}\n有效时间：${stamp(item.validTime)}\n起报时间：${stamp(item.cycleTime)} · 时效：${item.leadMinutes==null?'—':'+'+item.leadMinutes+' 分钟'}`;
       article.append(title,details);$('science-results').append(article);
+      const download=document.createElement('button');download.type='button';download.textContent=item.status==='AVAILABLE'?'下载':'暂不可下载';download.disabled=item.status!=='AVAILABLE';
+      download.onclick=()=>openDownload(item);article.append(download);
     }
     $('science-status').textContent=result.items.length?`共 ${result.total} 个文件 · 按有效时间从新到旧`:'未找到符合条件的数据，请调整筛选条件';
     $('science-page').textContent=`第 ${page} 页 / ${Math.max(1,Math.ceil(result.total/result.pageSize))} 页`;

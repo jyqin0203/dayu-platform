@@ -19,6 +19,14 @@ dialog.innerHTML=`
   `;
 const $=id=>document.getElementById(id);
 let register=false,busy=false;
+let loginCompletion=null;
+/** 上层下载流程等待登录；关闭/取消返回 false，不触碰检索状态。 */
+export function requestLogin(){
+  if(loginCompletion)return Promise.resolve(false);
+  mode(false);if(!dialog.open)dialog.showModal();
+  const result=new Promise(resolve=>{loginCompletion=resolve;});
+  perform(client.current);return result;
+}
 function render(state){
   const logged=state.authenticated===true;
   $('account-user').hidden=!logged;$('account-form').hidden=logged;
@@ -37,7 +45,10 @@ async function perform(action,success=''){
   busy=true;dialog.setAttribute('aria-busy','true');
   dialog.querySelectorAll('input,button:not(#account-close)').forEach(el=>el.disabled=true);
   $('account-message').textContent='正在处理…';
-  try{render(await action());$('account-message').textContent=success;}
+  try{
+    const state=await action();render(state);$('account-message').textContent=success;
+    if(state.authenticated&&loginCompletion){const resolve=loginCompletion;loginCompletion=null;dialog.close();resolve(true);}
+  }
   catch(error){$('account-message').textContent=error.message;}
   finally{
     $('account-password').value='';busy=false;dialog.setAttribute('aria-busy','false');
@@ -46,7 +57,7 @@ async function perform(action,success=''){
 }
 opener.addEventListener('click',()=>{if(!dialog.open)dialog.showModal();perform(client.current);});
 $('account-close').onclick=()=>dialog.close();
-dialog.addEventListener('close',()=>{$('account-password').value='';});
+dialog.addEventListener('close',()=>{$('account-password').value='';if(loginCompletion){const resolve=loginCompletion;loginCompletion=null;resolve(false);}});
 $('account-login-tab').onclick=()=>mode(false);$('account-register-tab').onclick=()=>mode(true);
 $('account-form').onsubmit=event=>{
   event.preventDefault();

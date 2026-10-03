@@ -1,0 +1,5 @@
+/* 仅扩展下载弹窗，沿用页面主题。 */
+#nc-download{max-height:90dvh;overflow:auto}#nc-download [hidden]{display:none!important}
+#nc-download p{overflow-wrap:anywhere;line-height:1.6}#nc-download label{display:block;margin:12px 0 6px}
+#nc-download textarea{width:100%;box-sizing:border-box;resize:vertical;font:inherit;padding:10px;border:1px solid #ffffff26;border-radius:8px;background:#08121b;color:var(--text)}
+#nc-download button,#download-link{padding:10px 12px}#download-authorize,#download-login,#download-link{display:inline-block;background:#69d9d21c;color:var(--accent);border-radius:8px;margin-top:12px;text-decoration:none}
