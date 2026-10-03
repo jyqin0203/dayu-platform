@@ -5,7 +5,7 @@ import {mountAudits} from './admin-audits.js';
 import {mountUsers} from './admin-users.js';
 const $=id=>document.getElementById(id);
 let generation=0,active;
-function denied(message){++generation;active?.abort();scans.reset();products.reset(true);audits.reset();users.reset();$('admin-content').hidden=true;for(const id of ['admin-counts','admin-downloads','admin-scan','admin-health'])$(id).replaceChildren();$('admin-status').textContent=message;}
+function denied(message){++generation;active?.abort();scans.reset();products.reset(true);audits.reset();users.reset();$('admin-login').hidden=false;$('admin-content').hidden=true;for(const id of ['admin-counts','admin-downloads','admin-scan','admin-health'])$(id).replaceChildren();$('admin-status').textContent=message;}
 const scans=mountScans(denied),products=mountProducts(denied),audits=mountAudits(denied),users=mountUsers(denied);
 const utc=value=>value?new Date(value).toISOString().replace('T',' ').slice(0,19)+' UTC':'—';
 const healthNames={HEALTHY:'正常',STALE:'延迟',MISSING:'缺失',DISABLED:'未启用'};
@@ -30,7 +30,7 @@ async function refresh(){
     $('admin-scan').textContent=scan?`任务 #${scan.scanRunId} · ${scanNames[scan.status]||scan.status}\n开始：${utc(scan.startedAt)}\n结束：${utc(scan.finishedAt)}\n扫描 ${scan.scannedFiles} · 新增 ${scan.createdAssets} · 更新 ${scan.updatedAssets} · 撤下图片索引 ${scan.removedWebpAssets} · 缺失 NC ${scan.missingNetcdfAssets} · 错误 ${scan.errorCount}`:'暂无扫描记录';
     for(const item of health){const row=document.createElement('tr');for(const value of [item.productCode,item.dataMode==='FORECAST'?'预报':'实况',healthNames[item.status]||item.status,utc(item.latestValidTime),item.staleAfterMinutes]){const cell=document.createElement('td');cell.textContent=value??'—';row.append(cell);}$('admin-health').append(row);}
     if(!health.length){const row=document.createElement('tr'),cell=document.createElement('td');cell.colSpan=5;cell.textContent='暂无产品状态记录';row.append(cell);$('admin-health').append(row);}
-    $('admin-content').hidden=false;$('admin-status').textContent='更新于 '+utc(new Date());
+    $('admin-login').hidden=true;$('admin-content').hidden=false;$('admin-status').textContent='更新于 '+utc(new Date());
     scans.load();
     products.load();
     audits.load();

@@ -3,6 +3,8 @@ import {createSessionClient} from './session-client.js';
 /** 只接管既有账号弹窗，不依赖地图初始化成功，也不触碰下载授权。 */
 const dialog=document.getElementById('account'),opener=document.getElementById('account-open');
 const client=createSessionClient();
+const initialUrl=new URL(location.href),adminLogin=initialUrl.searchParams.get('login')==='admin';
+if(adminLogin){initialUrl.searchParams.delete('login');history.replaceState(null,'',initialUrl);}
 dialog.setAttribute('aria-labelledby','account-title');
 dialog.innerHTML=`
   <div class="drawer-heading"><h2 id="account-title">账号与数据服务</h2><button id="account-close" type="button" aria-label="关闭账号窗口">✕</button></div>
@@ -33,6 +35,7 @@ function render(state){
   opener.textContent=logged?'账号':'登录';
   $('account-admin').hidden=!logged||state.user?.role!=='ADMIN';
   $('account-summary').textContent=logged?`${state.user.email} · ${state.user.organization}`:'';
+  if(adminLogin&&logged&&state.user.role==='ADMIN')location.assign('/admin.html');
 }
 function mode(value){
   register=value;$('account-organization-row').hidden=!value;$('account-organization').required=value;
@@ -67,4 +70,5 @@ $('account-form').onsubmit=event=>{
 };
 $('account-logout').onclick=()=>perform(client.logout,'已退出登录');
 // 初始化读取身份；读取失败只提示，不阻塞地图或假装已登录。
+if(adminLogin)dialog.showModal();
 perform(client.current);

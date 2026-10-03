@@ -3,24 +3,10 @@ import {expandCatalog,loadColorbar} from './catalog-adapter.js';
 import {dateOf,stamp,leadHours,loadTimeline} from './timeline-data.js';
 import {geometryFor,containsPoint,unpad} from './product-geometry.js';
 const $=id=>document.getElementById(id);
-const products=[
-  ['RGB','真彩色','Natural color',''],['FRGB','假彩色','False color',''],['CLP','云相态','Cloud phase',''],
-  ['CTH','云顶高度','Cloud top height','km'],['CBH','云底高度','Cloud base height','km'],['COT','云光学厚度','Optical thickness',''],
-  ['CER','云粒子有效半径','Effective radius','μm'],['CWP','云水路径','Cloud water path','kg/m²'],
-  ['BT625','6.25 μm 亮温','Brightness temperature','K'],['BT695','6.95 μm 亮温','Brightness temperature','K'],['BT742','7.42 μm 亮温','Brightness temperature','K'],
-  ['BT855','8.55 μm 亮温','Brightness temperature','K'],['BT108','10.8 μm 亮温','Brightness temperature','K'],['BT120','12.0 μm 亮温','Brightness temperature','K'],['BT133','13.3 μm 亮温','Brightness temperature','K'],
-  ['PRECIP','雨雪降水','RePPIC-Net','mm/h'],
-  ['PRECIP_1H','雨雪降水 · +1h','RePPIC-Net','mm/h','forecast'],['PRECIP_2H','雨雪降水 · +2h','RePPIC-Net','mm/h','forecast'],['PRECIP_3H','雨雪降水 · +3h','RePPIC-Net','mm/h','forecast']
-].map(([id,name,en,unit,mode='realtime'])=>({id,name,en,unit,mode}));
-for(const channel of ['625','695','742','855','108','120','133'])products.push({id:'FCST_BT'+channel,pathId:'BT'+channel,name:products.find(p=>p.id==='BT'+channel).name+' · 完整预报',en:'全部可用预报时效',unit:'K',mode:'forecast'});
-products.push({id:'FCST_PRECIP',name:'雨雪降水 · 完整预报',en:'+1h / +2h / +3h',unit:'mm/h',mode:'forecast',combined:true});
-products.push({id:'SAMPLE_PRECIP',name:'雨雪降水 · 历史样例',en:'2026-09-02 · 点击取值',unit:'mm/h',mode:'forecast',sample:true});
-for(const [field,name] of [['CLP','云相态'],['CTH','云顶高度'],['CER','有效半径'],['COT','云光学厚度']])products.push({id:'GLOBAL_'+field,field,name:'全球'+name+' · 测试',en:'09-11 历史样例 · 原始值',unit:'原始值',mode:'realtime',globalSample:true});
-for(let i=products.length-1;i>=0;i--)if(products[i].sample||products[i].globalSample)products.splice(i,1);
-let globalManifest=null;
-let sampleManifest=null,pointRequest=0;const pointCache=new Map();
+const products=[];
+let pointRequest=0;
 let pickedPoint=null,pickMarker=null,forecastCycle='';
-let viewer,base,vectorBase,naturalBase,worldLines,currentLayer,currentURL,product=products.find(p=>p.id==='CTH'),frames=[],index=0,generation=0,frameRequest=0,playing=false,timer,toastTimer;
+let viewer,base,vectorBase,naturalBase,worldLines,currentLayer,currentURL,product,frames=[],index=0,generation=0,frameRequest=0,playing=false,timer,toastTimer;
 let currentRegion='china',catalogMode='realtime';
 const root='WebP/WebP_V2_Dpi500_4KM';
 const read=resource=>'/'+resource;
@@ -44,11 +30,11 @@ function updateProductUI(){
       else $('legend-note').textContent='该产品未配置色标';
     }).catch(()=>{if(product===selected)$('legend-note').textContent='产品色标配置暂时不可用';});
   }
-  if(product.sample)$('legend-image').src='samples/legend.webp';
+
   $('legend-note').textContent=isColor?'原始彩色合成影像 · 不使用数值色阶':rain?'雨 / 雪双配色 · 原始色标，未改变数值':'原始产品色标 · 未修改数值';
   document.querySelectorAll('[data-id]').forEach(b=>{b.classList.toggle('active',b.dataset.id===product.id);b.setAttribute('aria-pressed',String(b.dataset.id===product.id));});
   $('realtime-tab').classList.toggle('active',product.mode==='realtime');$('forecast-tab').classList.toggle('active',product.mode==='forecast');
-  if(product.globalSample){$('legend-image').hidden=true;$('legend-image').removeAttribute('src');$('mode-label').textContent='全球多卫星 · 历史测试';$('legend-note').textContent=product.field==='CLP'?'原始类别码 0 / 1 / 2 · 类别定义待确认':'原始值色阶：紫 → 蓝 → 黄 → 红 · 单位待确认';}
+
 }
 function buildCatalog(){
   $('product-list').replaceChildren();
@@ -62,7 +48,7 @@ function buildCatalog(){
 function openCatalog(mode){catalogMode=mode;buildCatalog();$('catalog').hidden=false;$('catalog-close').focus();}
 function clearLayer(){if(currentLayer){viewer.imageryLayers.remove(currentLayer,true);currentLayer=null;}if(currentURL){URL.revokeObjectURL(currentURL);currentURL=null;}viewer.scene.requestRender();}
 async function select(p){
-  if(p.globalSample)return selectGlobal(p);
+
   window.mapLoading.stage(1,'正在读取'+p.name+'…');
   stop();const token=++generation;++frameRequest;product=p;frames=[];clearLayer();updateProductUI();
   $('forecast-leads').replaceChildren();$('forecast-leads').hidden=true;updatePoint();
@@ -77,7 +63,7 @@ async function select(p){
     index=frames.length-1;$('timeline').max=frames.length-1;$('timeline').disabled=false;$('play').disabled=frames.length<2;
     const age=Math.round((Date.now()-dateOf(p.mode==='forecast'?forecastCycle:stamp(all.at(-1))).getTime())/60000);
     $('data-status').textContent=`${p.mode==='forecast'?'起报':'网站最新文件'}距今 ${Math.max(0,age)} 分钟${p.mode==='realtime'&&frames.length<48?` · 24小时窗口缺 ${48-frames.length} 帧`:''} · 手动刷新更新列表`;
-    if(p.sample)$('data-status').textContent='历史调试样例 · 2026-09-02起报 · 非实时 · 点击地图读取原始数值';
+
     $('window-label').textContent=p.mode==='realtime'?'最近24小时 · 每30分钟':`起报 ${dateOf(forecastCycle).toISOString().slice(5,16).replace('T',' ')} UTC · ${frames.length} 个时效`;
     $('forecast-leads').replaceChildren();$('forecast-leads').hidden=p.mode!=='forecast';
     if(p.mode==='forecast')frames.forEach((f,i)=>{const b=document.createElement('button');b.textContent='+'+leadHours(f,forecastCycle)+'h';b.onclick=()=>{stop();showFrame(i).catch(e=>notify(e.message));};$('forecast-leads').append(b);});
@@ -86,25 +72,9 @@ async function select(p){
     window.mapLoading.stage(2,'正在渲染地图与首帧数据…');
     await showFrame(index,token);
     if(token===generation)window.mapLoading.ready();
-    if(p.sample && token===generation && !pickedPoint)pickAt(sampleManifest.example.lon,sampleManifest.example.lat);
+
     if(token===generation && $('autoplay').checked && frames.length>1)start();
-  }catch(error){if(token!==generation)return;window.mapLoading.ready();$('data-time').textContent='暂无可展示数据';$('data-status').textContent=error.message;$('selected-time').textContent='数据不可用';notify(error.message);}
-}
-async function selectGlobal(p){
-  stop();const token=++generation;++frameRequest;product=p;frames=[];clearLayer();updateProductUI();
-  window.mapLoading.stage(1,'正在读取全球云产品样例…');
-  $('forecast-leads').replaceChildren();$('forecast-leads').hidden=true;$('play').disabled=true;$('timeline').disabled=true;
-  try{
-    if(!globalManifest){const r=await fetch('global-samples/manifest.json');if(!r.ok)throw Error('全球样例尚未准备好');globalManifest=await r.json();}
-    if(token!==generation)return;
-    frames=[globalManifest.products[p.field].image];index=0;$('timeline').max=0;
-    $('data-status').textContent='历史测试 · 2026-09-11 04:15 UTC · 非实时 · 原始值未缩放';
-    $('window-label').textContent='全球多卫星 · 单时次样例（无预报）';$('start-time').textContent=shortDate(frames[0]);$('end-time').textContent=shortDate(frames[0]);document.querySelector('.ticks').hidden=true;
-    const [lo,hi]=globalManifest.products[p.field].limits;
-    $('legend-note').textContent=p.field==='CLP'?'蓝灰=0 / 青=1 / 橙=2 · 类别定义待确认':`显示范围 ${lo}–${hi}（超界饱和）；紫 → 蓝 → 黄 → 红；查询保留完整原始值，单位待确认`;
-    window.mapLoading.stage(2,'正在渲染全球云产品…');await showFrame(0,token);
-    if(token!==generation)return;window.mapLoading.ready();pickAt(pickedPoint?.lon??121.48,pickedPoint?.lat??31.23);
-  }catch(e){if(token!==generation)return;window.mapLoading.ready();$('data-status').textContent=e.message;$('data-time').textContent='暂无数据';notify(e.message);}
+  }catch(error){if(token!==generation)return;window.mapLoading.ready();$('data-time').textContent='暂无可展示数据';$('data-status').textContent=error.message;$('selected-time').textContent='数据不可用';$('window-label').textContent='暂无可用时间范围';notify(error.message);}
 }
 async function showFrame(i,token=generation){
   if(!frames[i])return false;const request=++frameRequest;
@@ -124,8 +94,8 @@ async function showFrame(i,token=generation){
     viewer.scene.requestRender();
     // Keep the previous frame until Cesium has uploaded the replacement texture.
     // Image.decode alone does not mean that the map tile is ready for display.
-    if(product.sample||product.globalSample)await new Promise(resolve=>{const started=performance.now();const poll=()=>{viewer.scene.requestRender();if((performance.now()-started>150&&viewer.scene.globe.tilesLoaded)||performance.now()-started>8000)resolve();else setTimeout(poll,80);};setTimeout(poll,80);});
-    const retire=()=>{if(previous&&viewer.imageryLayers.contains(previous))viewer.imageryLayers.remove(previous,true);if(previousURL)URL.revokeObjectURL(previousURL);viewer.scene.requestRender();};if(product.sample)retire();else setTimeout(retire,250);
+
+    const retire=()=>{if(previous&&viewer.imageryLayers.contains(previous))viewer.imageryLayers.remove(previous,true);if(previousURL)URL.revokeObjectURL(previousURL);viewer.scene.requestRender();};setTimeout(retire,250);
     return true;
   }catch(error){URL.revokeObjectURL(url);throw error;}
 }
@@ -147,7 +117,7 @@ async function init(){
   viewer.scene.backgroundColor=Cesium.Color.fromCssColorString('#08121b');viewer.scene.skyBox.show=false;viewer.scene.sun.show=false;viewer.scene.moon.show=false;viewer.scene.globe.baseColor=Cesium.Color.fromCssColorString('#172d3c');viewer.scene.globe.enableLighting=false;viewer.scene.globe.showGroundAtmosphere=false;viewer.resolutionScale=Math.min(window.devicePixelRatio,1.5);
   viewer.camera.setView({destination:Cesium.Cartesian3.fromDegrees(105,30,11500000)});
   Cesium.GeoJsonDataSource.load(world.geojson,{stroke:Cesium.Color.fromCssColorString('#a4bdc9').withAlpha(.6),strokeWidth:1,clampToGround:true}).then(ds=>{worldLines=ds;viewer.dataSources.add(ds);viewer.scene.requestRender();}).catch(()=>notify('国家边界线加载失败，底图仍可使用'));
-  for(const id of ['CTH','CLP','PRECIP','BT108','RGB']){const p=products.find(x=>x.id===id&&!x.draft);if(!p)continue;const b=document.createElement('button');b.className='quick';b.dataset.id=id;b.innerHTML='<span class="swatch" aria-hidden="true"></span><span>'+p.name+'<small>'+p.en+'</small></span>';b.onclick=()=>select(p);$('quick-products').append(b);}
+  for(const id of ['CTH','CLP','PRECIP','BT108','RGB']){const p=products.find(x=>x.id===id&&!x.draft);if(!p)continue;const b=document.createElement('button');b.className='quick';b.dataset.id=id;const swatch=document.createElement('span');swatch.className='swatch';swatch.setAttribute('aria-hidden','true');const label=document.createElement('span'),small=document.createElement('small');label.textContent=p.name;small.textContent=p.en;label.append(small);b.append(swatch,label);b.onclick=()=>select(p);$('quick-products').append(b);}
   document.querySelectorAll('[data-region]').forEach(b=>b.onclick=()=>locate(b.dataset.region));
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{catalogMode=b.dataset.tab;buildCatalog();});
   $('catalog-open').onclick=()=>openCatalog(product.mode);$('catalog-close').onclick=()=>{$('catalog').hidden=true;$('catalog-open').focus();};
@@ -191,37 +161,9 @@ async function updatePoint(){
  $('point-coordinate').textContent=`${Math.abs(lat).toFixed(3)}°${lat<0?'S':'N'}, ${Math.abs(lon).toFixed(3)}°${lon<0?'W':'E'}`;
  $('point-product').textContent=product.name;
  $('point-time').textContent=frames[index]?displayDate(frames[index]):'暂无图像';
- $('point-series').replaceChildren();$('point-forecast').textContent=product.sample?'定位降水样例点':'查看亮温完整预报 →';
+ $('point-series').replaceChildren();
  $('point-forecast').hidden=!products.some(p=>p.pathId===product.pathId&&p.mode==='forecast');
  $('point-forecast').textContent='查看该产品完整预报 →';
- if(product.globalSample){
-   $('point-value').textContent='读取原始网格…';$('point-note').textContent='';
-   const field=product.field;
-   try{
-     const response=await fetch(`/global/point?lon=${lon}&lat=${lat}`);if(!response.ok)throw Error('数值查询失败');const result=await response.json();
-     if(request!==pointRequest||!pickedPoint)return;
-     if(result.status==='outside'){$('point-value').textContent='超出南北纬70°覆盖范围';return;}
-     const val=result.values[field];$('point-value').textContent=val===null?'无有效数据':`${field} = ${val.toFixed(3)}（原始值）`;
-     $('point-note').textContent=`历史测试 · 0.04°最近邻网格 ${result.grid.latitude.toFixed(2)}°, ${result.grid.longitude.toFixed(2)}° · QA=${result.qa}，SourceMask=${result.sourceMask} · 单位及质量码定义待确认，不套用旧FY-4B单位`;
-     for(const [key,value] of Object.entries(result.values)){const line=document.createElement('div');line.className='series-row';line.textContent=`${key}：${value===null?'无数据':value.toFixed(3)}`;$('point-series').append(line);}
-   }catch(e){if(request===pointRequest){$('point-value').textContent='查询失败';$('point-note').textContent=e.message;}}
-   return;
- }
- if(product.sample){
-   $('point-value').textContent='读取原始网格…';$('point-note').textContent='历史样例 · 正在查询 +1、+2、+3 小时';
-   try{
-     const key=lon.toFixed(5)+','+lat.toFixed(5);let result=pointCache.get(key);
-     if(!result){const response=await fetch(`/sample/point?lon=${lon}&lat=${lat}`);if(!response.ok)throw Error('原始数值查询失败');result=await response.json();if(pointCache.size>32)pointCache.clear();pointCache.set(key,result);}
-     if(request!==pointRequest||!pickedPoint)return;
-     if(result.status==='outside'){$('point-value').textContent='超出产品覆盖范围';$('point-note').textContent='样例覆盖 60–180°E、60°S–60°N';return;}
-     const phaseName=v=>v.rate===null?'无数据':v.rate<.1?'无显著降水':v.phase===1?'雪':v.phase===2?'雨':'未分类';
-     const active=result.series[index]??result.series[0];$('point-value').textContent=!active||active.rate===null?'无数据':`${active.rate.toFixed(3)} mm/h · ${phaseName(active)}`;
-     $('point-note').textContent=`历史样例 · 最近邻网格 ${result.grid.latitude.toFixed(2)}°, ${result.grid.longitude.toFixed(2)}° · 0.05° · 直接读取NetCDF数值`;
-     const max=Math.max(.1,...result.series.map(v=>v.rate??0));
-     result.series.forEach((v,i)=>{const button=document.createElement('button');button.className='series-row'+(i===index?' active':'');const text=document.createElement('span');text.textContent=`+${v.lead}h　${v.rate===null?'无数据':v.rate.toFixed(3)+' mm/h'}　${phaseName(v)}`;const bar=document.createElement('i');bar.style.width=((v.rate??0)/max*100)+'%';button.append(text,bar);button.onclick=()=>{stop();showFrame(i).catch(e=>notify(e.message));};$('point-series').append(button);});
-   }catch(error){if(request===pointRequest){$('point-value').textContent='查询失败';$('point-note').textContent=error.message;}}
-   return;
- }
  $('point-value').textContent=containsPoint(g.bounds,lon,lat)?'精确数值暂不可用':'该位置不在产品覆盖范围内';
  $('point-note').textContent=product.mode==='realtime'&&['CLP','CTH','COT','CER','CWP','CBH'].includes(product.id)?'该产品暂未接入数值查询；只显示位置与图像时次，不从颜色反推数值。':'该产品暂未接入数值查询；不从图像颜色反推，也不将缺测视为0。';
 }

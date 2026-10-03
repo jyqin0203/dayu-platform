@@ -60,3 +60,5 @@ logs/
 tmp/
 *.pid
 docker-data/
+.playwright-cli/
+output/playwright/
