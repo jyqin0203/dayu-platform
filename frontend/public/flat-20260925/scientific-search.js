@@ -2,7 +2,16 @@ import {zones,toUtc,timeInput,searchScientific} from './scientific-client.js';
 import {openDownload} from './download-dialog.js';
 
 /** 独立检索弹窗，保留地图状态；动态文件名只使用 textContent，禁止拼入 HTML。 */
-export function openScientificSearch(){dialog.showModal();if(!catalog.length)loadCatalog();}
+export async function openScientificSearch(criteria=null,displayZone='UTC'){
+  if(!dialog.open)dialog.showModal();if(!catalog.length)await loadCatalog();
+  if(!criteria)return;
+  try{
+    const p=catalog.find(p=>p.code===criteria.productCode);if(!p||!p.modes.some(m=>m.dataMode===criteria.dataMode))throw Error('该产品或模式当前不可用');
+    if(!zones[displayZone])throw Error('时区不可用');zone=displayZone;$('science-zone').value=zone;$('science-product').value=p.code;modes();$('science-mode').value=criteria.dataMode;forecastFields();
+    $('science-from').value=timeInput(criteria.from,zone);$('science-to').value=timeInput(criteria.to,zone);$('science-cycle').value=criteria.cycleTime?timeInput(criteria.cycleTime,zone):'';$('science-lead').value=criteria.leadMinutes??'';
+    await run(snapshot(),1);
+  }catch(error){$('science-status').textContent=error.message;}
+}
 const dialog=document.createElement('dialog');dialog.id='scientific-search';dialog.setAttribute('aria-labelledby','science-title');
 dialog.innerHTML=`<div class="drawer-heading"><h2 id="science-title">科学数据检索</h2><button id="science-close" type="button" aria-label="关闭检索">✕</button></div>
 <form id="science-form"><div class="science-grid">
@@ -18,7 +27,7 @@ dialog.innerHTML=`<div class="drawer-heading"><h2 id="science-title">科学数�
 <div id="science-results"></div><div class="science-pages"><button id="science-prev" disabled>上一页</button><span id="science-page"></span><button id="science-next" disabled>下一页</button></div>`;
 document.body.append(dialog);
 // 检索是公开入口，不要求登录；仅选中文件下载时进入认证流程。
-document.getElementById('science-open').addEventListener('click',openScientificSearch);
+document.getElementById('science-open').addEventListener('click',()=>openScientificSearch());
 const $=id=>document.getElementById(id);
 let catalog=[],zone='UTC',active=null,query=null,page=1,generation=0;
 const now=new Date();$('science-to').value=timeInput(now,zone);$('science-from').value=timeInput(new Date(now-86400000),zone);

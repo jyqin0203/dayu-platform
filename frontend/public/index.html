@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="download.css">
   <script type="module" src="account.js"></script>
   <script type="module" src="scientific-search.js"></script>
+  <link rel="stylesheet" href="copilot.css"><script type="module" src="copilot.js"></script>
   <script src="/cesium-config.js"></script>
   <script src="/vendor/cesium/1.146.0/Cesium.js" defer></script>
   <script type="module" src="app.js"></script>
@@ -35,7 +36,7 @@
   <header class="topbar">
     <div class="brand panel"><span class="brand-mark">禹</span><div><b>大禹<span class="brand-en">DaYu</span></b><small>辐射 · 云 · 降水分析系统</small></div></div>
     <span class="preview-label">实时观测与预报</span>
-    <nav class="panel nav" aria-label="网站菜单"><button id="refresh" title="重新获取最新文件">↻ <span>刷新数据</span></button><button id="science-open">数据检索</button><button id="settings-open">设置</button><button id="about-open">关于</button><button id="account-open" class="account">登录</button></nav>
+    <nav class="panel nav" aria-label="网站菜单"><button id="refresh" title="重新获取最新文件">↻ <span>刷新数据</span></button><button id="science-open">数据检索</button><button id="copilot-open" aria-label="AI 数据助手">AI</button><button id="settings-open">设置</button><button id="about-open">关于</button><button id="account-open" class="account">登录</button></nav>
   </header>
   <section class="location panel" aria-label="显示区域"><span class="label">定位</span><button data-region="china" class="active">中国</button><button data-region="disk">全圆盘</button><button data-region="mozambique">莫桑比克</button></section>
   <section class="observation" aria-live="polite"><div class="eyebrow">FY-4B / AGRI <span id="mode-label">卫星实况</span></div><h1 id="product-title">云顶高度</h1><div id="data-time">正在读取数据时间…</div><p id="data-status">数据时间以产品文件为准</p></section>
