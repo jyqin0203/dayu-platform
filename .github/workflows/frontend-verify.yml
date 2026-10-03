@@ -1,0 +1,55 @@
+name: Frontend verification
+on:
+  pull_request:
+    paths: ['frontend/**', '.github/workflows/frontend-verify.yml']
+  push:
+    branches: [main, 'feat/**']
+    paths: ['frontend/**', '.github/workflows/frontend-verify.yml']
+permissions:
+  contents: read
+jobs:
+  frontend-test-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Check production entry scripts
+        run: |
+          node --check public/flat-20260925/app.js
+          node --check public/flat-20260925/product-geometry.js
+          node --check public/cesium-config.js
+      - name: Test static server and backend proxy
+        run: npm test
+      - name: Build static deployment package
+        run: npm run build
+      - name: Verify local Cesium deployment files
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { access, readFile } from 'node:fs/promises';
+          import { CESIUM_VERSION, CESIUM_PREFIX } from './vendor.mjs';
+          for (const file of ['index.html', 'cesium-config.js', 'flat-20260925/app.js',
+            `vendor/cesium/${CESIUM_VERSION}/Cesium.js`, `vendor/cesium/${CESIUM_VERSION}/Widgets/widgets.css`,
+            `vendor/cesium/${CESIUM_VERSION}/Workers`, `vendor/cesium/${CESIUM_VERSION}/Assets`,
+            `vendor/cesium/${CESIUM_VERSION}/LICENSE.md`]) await access(`dist/${file}`);
+          const html = await readFile('dist/index.html', 'utf8');
+          assert.ok(html.includes(CESIUM_PREFIX + 'Cesium.js'));
+          assert.ok(!html.includes('api.tianditu.gov.cn'));
+          console.log('Static package and local Cesium references verified.');
+          JS
+      - name: Store static deployment package
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+          retention-days: 7

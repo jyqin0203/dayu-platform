@@ -1,0 +1,47 @@
+{
+  "source": "FDU-CRIAS-source-20261003/FDU-CRIAS",
+  "importedOn": "2026-10-03",
+  "note": "Hashes record the unchanged import baseline, not a prohibition on future reviewed adaptations.",
+  "files": [
+    {
+      "path": "index.html",
+      "sha256": "5e15490bd6e5a3ecf2cf6044c2205744cf5125585cf9ea0e513b8fb97ec345f2"
+    },
+    {
+      "path": "favicon.ico",
+      "sha256": "4b99debb4c84ab1ec00fec116959a622bc901fdafca1287e2b430a868b75ecfc"
+    },
+    {
+      "path": "flat-20260925/index.html",
+      "sha256": "5e15490bd6e5a3ecf2cf6044c2205744cf5125585cf9ea0e513b8fb97ec345f2"
+    },
+    {
+      "path": "flat-20260925/app.js",
+      "sha256": "1be5071b51c0bafc2c03fdca3f260e2eea72934d7e46a34ca1b9f262ab3637bb"
+    },
+    {
+      "path": "flat-20260925/style.css",
+      "sha256": "942d71221321c2eaf03a0f3339e319128c511ca01d68fb1142259ec33a289c12"
+    },
+    {
+      "path": "flat-20260925/about.css",
+      "sha256": "8b7e2cd665aa0be4b4b08e4d2eef5be2b4a8e5b818f7064dd34062547f9c901a"
+    },
+    {
+      "path": "flat-20260925/loading.js",
+      "sha256": "3bdfc98a5f84efa616ef9b5175d57a37b24bb9012d1fda8339d68fa5f314cdcd"
+    },
+    {
+      "path": "flat-20260925/product-geometry.js",
+      "sha256": "c387f70ef50ec9c659778715d3d167904c2522ca35d54ba7ccb0cef8a4a76c01"
+    },
+    {
+      "path": "flat-20260925/world-map.js",
+      "sha256": "f90301e4dfce6ec3f788986a251cfccb4fdd3239b535e8f77b23ce8e07798e84"
+    },
+    {
+      "path": "flat-20260925/assets/world-boundaries.geojson",
+      "sha256": "1aa6c491f158ea4811d5c362ca069cd7a33eda272df2117e761cdc30a71b7ccd"
+    }
+  ]
+}

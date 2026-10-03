@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <base href="/flat-20260925/">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>大禹 · 气象观测台</title>
+  <link rel="stylesheet" href="/vendor/cesium/1.146.0/Widgets/widgets.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="about.css">
+  <script src="/cesium-config.js"></script>
+  <script src="/vendor/cesium/1.146.0/Cesium.js" defer></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <section id="loading-screen" aria-label="正在加载气象地图" aria-busy="true">
+    <div class="loading-content">
+      <div class="loading-mark" aria-hidden="true">禹</div>
+      <h2>大禹 <span>DaYu</span></h2>
+      <p class="loading-subtitle">辐射 · 云 · 降水分析系统</p>
+      <div class="loading-track" aria-hidden="true"><i></i></div>
+      <p id="loading-message" role="status">正在加载地图组件…</p>
+      <div class="loading-steps" aria-hidden="true"><span data-stage="0" class="active">底图</span><span data-stage="1">数据</span><span data-stage="2">渲染</span></div>
+      <button id="loading-retry" hidden>重新加载</button>
+      <small>实时观测与预报</small>
+    </div>
+  </section>
+  <script src="loading.js"></script>
+  <div id="map" aria-label="交互式气象地图"></div>
+  <div class="map-vignette" aria-hidden="true"></div>
+  <header class="topbar">
+    <div class="brand panel"><span class="brand-mark">禹</span><div><b>大禹<span class="brand-en">DaYu</span></b><small>辐射 · 云 · 降水分析系统</small></div></div>
+    <span class="preview-label">实时观测与预报</span>
+    <nav class="panel nav" aria-label="网站菜单"><button id="refresh" title="重新获取最新文件">↻ <span>刷新数据</span></button><button id="settings-open">设置</button><button id="about-open">关于</button><button id="account-open" class="account">登录</button></nav>
+  </header>
+  <section class="location panel" aria-label="显示区域"><span class="label">定位</span><button data-region="china" class="active">中国</button><button data-region="disk">全圆盘</button><button data-region="mozambique">莫桑比克</button></section>
+  <section class="observation" aria-live="polite"><div class="eyebrow">FY-4B / AGRI <span id="mode-label">卫星实况</span></div><h1 id="product-title">云顶高度</h1><div id="data-time">正在读取数据时间…</div><p id="data-status">数据时间以产品文件为准</p></section>
+  <aside class="product-rail panel" aria-label="常用产品"><span class="rail-title">气象图层</span><div id="quick-products"></div><button id="catalog-open" class="more">全部产品 <span>＋</span></button></aside>
+  <aside id="catalog" class="drawer panel" hidden aria-label="全部产品"><div class="drawer-heading"><div><span class="eyebrow">PRODUCTS</span><h2>选择气象图层</h2></div><button id="catalog-close" aria-label="关闭产品菜单">✕</button></div><div class="tabs"><button data-tab="realtime" class="active">实时产品</button><button data-tab="forecast">预报产品</button></div><div id="product-list" class="product-list"></div><p class="drawer-note">准备中的产品暂不可选择。数据为空时不会显示旧产品图像。</p></aside>
+  <div class="map-tools panel"><button id="zoom-in" aria-label="放大">＋</button><button id="zoom-out" aria-label="缩小">−</button><button id="dimension" aria-label="切换三维地球">3D</button><button id="home" aria-label="回到中国">⌂</button></div>
+  <aside class="legend panel"><div class="legend-heading"><b id="legend-title">云顶高度</b><span id="legend-unit">km</span></div><img id="legend-image" alt="当前产品的原始色标"><p id="legend-note">原始产品色标 · 未修改数值</p></aside>
+  <footer class="timeline panel">
+    <div id="forecast-leads" hidden aria-label="全部预报时效"></div>
+    <div class="timeline-heading"><div class="segmented"><button class="active" id="realtime-tab">实况</button><button id="forecast-tab">预报</button></div><span id="window-label">最近24小时 · 每30分钟</span><span id="frame-count">0 / 48 帧</span><button id="latest">回到最新 ↗</button></div>
+    <div class="playback"><button id="play" class="play-button" aria-label="播放" disabled>▶</button><div class="scrubber"><div class="time-caption"><span id="start-time">—</span><strong id="selected-time">等待图像</strong><span id="end-time">—</span></div><input id="timeline" type="range" min="0" max="47" value="47" aria-label="数据时间" disabled><div class="ticks"><span>24小时前</span><span>18小时前</span><span>12小时前</span><span>6小时前</span><span>最新</span></div></div><label class="speed-label">速度<select id="speed" aria-label="播放速度"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label></div>
+  </footer>
+  <div id="toast" role="status" hidden></div>
+  <aside id="point-info" class="panel" hidden aria-label="所选位置数据"><div class="drawer-heading"><h2>位置查询</h2><button id="point-close" aria-label="关闭位置查询">✕</button></div><strong id="point-coordinate"></strong><p id="point-product"></p><p id="point-time"></p><h3 id="point-value"></h3><p id="point-note"></p><div id="point-series" aria-label="逐小时降水预报"></div><button id="point-forecast">定位降水样例点</button></aside>
+  <dialog id="settings"><div class="drawer-heading"><h2>地图设置</h2><button data-close aria-label="关闭">✕</button></div><label class="setting">图层透明度 <output id="opacity-value">85%</output><input id="opacity" type="range" min="0" max="100" value="85"></label><label class="setting">底图<select id="basemap"><option value="vector" selected>世界边界 · 简洁底图</option><option value="muted">低饱和度地形</option><option value="natural">自然地形</option><option value="dark">深色底图</option></select></label><label class="check"><input type="checkbox" id="autoplay" checked> 加载完成后自动播放</label><p>速度仅控制帧间等待时间；不改变图像压缩率。世界边界来自 Natural Earth 1:50m SHP，默认平面显示；边界表达仅用于气象数据定位。</p></dialog>
+  <dialog id="about"><div class="drawer-heading"><h2>大禹 · DaYu</h2><button data-close aria-label="关闭">✕</button></div><section lang="zh-CN">
+                        <h3 class="text-center fw-bold">“大禹”辐射-云-降水分析系统</h3>
+                        <br>
+                        <p style="text-indent:2em; line-height:1.6;">“大禹”辐射云降水分析系统（DaYu Radiation-Cloud-Precipitation Analysis Systems, DaYu-RCPAS）是由遥感大数据与人工智能团队研发的辐射-云-降水特性综合分析平台，专注于辐射模拟计算，云和降水的实时监测、精准反演及短临预报，为天气气候研究和业务应用提供高精度数据支持。</p>
+                        <p style="text-indent:2em; line-height:1.6;">该系统集成了团队“大禹”辐射传输模式（DaYu Radiation Transfer Model, DaYu-RTM）、“大禹”云分析系统（DaYu CLoud Analysis System, DaYu-CLAS）、“大禹”降水分析系统（DaYu PRecipitation Analysis System, DaYu‐PRAS）和“大禹”短临预报系统（DaYu-Nowcast）。其中DaYu-RTM主要用于辐射模拟计算（W. Li et al., 2023）；DaYu-CLAS主要包括用于云物理特性反演的Cloud-ResUNet（Tong et al., 2023; Zhao et al., 2024），Cloud-SmaAtUNet（J. Li et al., 2023），DaYu-RTM与深度学习的混合算法（W. Li et al., 2022, 2024），CloudDiff（Xiao et al., 2025a）以及Overlap‐CloudDiff（J. Li et al., 2026）模型，以及用于云物理特性短临预测的Cloud-FNO模型（Zhang et al., 2026）；DaYu- PRAS主要包括用于降水监测和短临预测的TPWDiff‐CB（Xiao et al., 2025b）和RePPIC‐Net （Yang et al., 2026）模型；DaYu-Nowcast主要包括适用于静止卫星成像仪的亮温云图预报大模型（Wei et al., 2024）。</p>
+                        <p style="text-indent:2em; line-height:1.6;">目前，DaYu-RCPAS提供了中国新一代静止气象卫星风云四号AGRI成像仪多通道亮温、全天时云物理特性等实时监测和预报产品，已成功应用于东亚区域云辐射相互作用研究及极端天气诊断。其中，DaYu-CLAS中的静止卫星云物理特性全天时反演算法已在中国气象局“天擎”气象大数据云平台实现业务化运行，并在人工影响天气中心 “天工” 平台实时显示，面向全国省、市、县及自治区人影业务中心实时发布，在2024年西南林火和上海进博会期间、2025年“春雨” 行动和宁夏六盘山增雨试验中为无人机、飞机作业方案设计和跟踪指挥提供了重要的数据支撑。未来，团队将持续优化算法并拓展卫星数据应用范围。</p>
+                        <div class="mt-4 pt-3 border-top">
+                            <h5 class="fw-bold" style="font-size:1em;">研发团队成员</h5>
+                            <ul class="mb-3" style="line-height:1.7;">
+                                <li>张峰，复旦大学（邮箱：<a href="mailto:fengzhang@fudan.edu.cn">fengzhang@fudan.edu.cn</a>）</li>
+                                <li>李雯雯，上海理工大学（邮箱：<a href="mailto:liwenwen@usst.edu.cn">liwenwen@usst.edu.cn</a>）</li>
+                                <li>郭斌，浙江师范大学（邮箱：<a href="mailto:guobin1996@foxmail.com">guobin1996@foxmail.com</a>）</li>
+                                <li>周婷婷，浙江师范大学（邮箱：<a href="mailto:ttzhou1029@zjnu.edu.cn">ttzhou1029@zjnu.edu.cn</a>）</li>
+                                <li>付浩阳，浙江师范大学（邮箱：<a href="mailto:fuhaoyang@zjnu.edu.cn">fuhaoyang@zjnu.edu.cn</a>）</li>
+                            </ul>
+                            <h5 class="fw-bold" style="font-size:1em;">联系人</h5>
+                            <ul class="mb-0" style="line-height:1.7;">
+                                <li>王超，复旦大学（邮箱：<a href="mailto:806813119@qq.com">806813119@qq.com</a>）</li>
+                                <li>肖海霞，复旦大学（邮箱：<a href="mailto:haixiaxia3@gmail.com">haixiaxia3@gmail.com</a>）</li>
+                            </ul>
+                        </div>
+                        <br>
+                        <h5 class="fw-bold" style="font-size:1em; margin-left:0; padding-left:0;">
+                            主要参考文献（按年份排序）:
+                        </h5>
+
+
+                        <style>
+                            .ref-list {
+                                font-size: 0.78em;
+                                line-height: 1.6;
+                                padding-left: 1.2em;
+                            }
+                            .ref-list li {
+                                margin-bottom: 0.4em;
+                            }
+                        </style>
+
+                        <h6 class="fw-bold" style="font-size:0.88em; text-indent:0; margin:0.6em 0 0.4em 0;">
+                            1. “大禹”辐射传输模式（DaYu-RTM）
+                        </h6>
+                        <ul class="ref-list">
+                            <li>Wenwen Li, Feng Zhang, Yi-Ning Shi, Hironobu Iwabuchi, Mingwei Zhu, Jiangnan Li, Wei Han, Husi Letu, and Hiroshi Ishimoto. (2020). Efficient radiative transfer model for thermal infrared brightness temperature simulation in cloudy atmospheres. <i>Optics Express, 28</i>(18), 25730-25749.</li>
+                            <li>Wenwen Li, Feng Zhang, Cancan Lu, Jiaqi Jin, Yi-Ning Shi, Yue Cai, Shuai Hu, and Wei Han. (2023). Integrated efficient radiative transfer model named Dayu for simulating the imager measurements in cloudy atmospheres. <i>Optics Express, 31</i>(10), 15256-15288.</li>
+                            <li>Yue Cai, Feng Zhang, Han Lin, Jiangnan Li, Hua Zhang, Wenwen Li, Shuai Hu. (2023). Optimized alternate mapping correlated k-distribution method for atmospheric longwave radiative transfer. <i>Journal of Advances in Modeling Earth Systems, 15</i>(5), e2022MS003419.</li>
+                            <li>Yue Cai, Feng Zhang, Jiangnan Li, Kun Wu, Quan Yang. (2025). An accurate shortwave gaseous transmittance scheme using modified alternate mapping correlated K-distribution method. <i>Journal of Geophysical Research: Atmospheres, 130</i>(10), e2024JD041921.</li>
+                        </ul>
+
+                        <h6 class="fw-bold" style="font-size:0.88em; text-indent:0; margin:0.6em 0 0.4em 0;">
+                            2. “大禹”云分析系统（DaYu-CLAS）
+                        </h6>
+                        <ul class="ref-list">
+                            <li>Wenwen Li, Feng Zhang, Han Lin, Xiaoran Chen, Jun Li, Wei Han. (2022). Cloud detection and classification algorithms for Himawari-8 imager measurements based on deep learning. <i>IEEE Transactions on Geoscience and Remote Sensing, 60</i>, 1-17.</li>
+                            <li>Zhijun Zhao, Feng Zhang, Qiong Wu, Zhengqiang Li, Xuan Tong, Jingwei Li. (2023). Cloud identification and properties retrieval of the Fengyun-4A satellite using a ResUnet model. <i>IEEE Transactions on Geoscience and Remote Sensing, 61</i>, 1-18.</li>
+                            <li>Xuan Tong, Jingwei Li, Feng Zhang, Wenwen Li, BaoXiang Pan, Jun Li, Husi Letu. (2023). The Deep-Learning-Based fast efficient nighttime retrieval of thermodynamic phase from Himawari-8 AHI measurements. <i>Geophysical Research Letters, 50</i>(11), e2022GL100901.</li>
+                            <li>Jingwei Li, Feng Zhang, Wenwen Li, Xuan Tong, Baoxiang Pan, Jun Li. (2023). Transfer-learning-based approach to retrieve the cloud properties using diverse remote sensing datasets. <i>IEEE Transactions on Geoscience and Remote Sensing, 61</i>, 1-10.</li>
+                            <li>Bin Guo, Feng Zhang, Wenwen Li, Zhijun Zhao. (2024). Cloud classification by machine learning for geostationary radiation imager. <i>IEEE Transactions on Geoscience and Remote Sensing, 62</i>, 1-14.</li>
+                            <li>Zhijun Zhao, Feng Zhang, Wenwen Li, Jingwei Li. (2024). Image-based retrieval of all-day cloud physical parameters for FY4A/AGRI and its application over the Tibetan Plateau. <i>Journal of Geophysical Research: Atmospheres, 129</i>(18), e2024JD041032.</li>
+                            <li>Wenwen Li, Feng Zhang, Bin Guo, Haoyang Fu, Husi Letu. (2024). Physics-driven machine learning algorithm facilitates multilayer cloud property retrievals from geostationary passive imager measurements. <i>IEEE Transactions on Geoscience and Remote Sensing, 62</i>, 1-18.</li>
+                            <li>Bin Guo, Feng Zhang, Zhijun Zhao, Jinyu Guo, Wenwen Li. (2024). Retrieval of cloud macro-physical properties using the FY-4A advanced geostationary radiation imager (AGRI) and the geostationary interferometric infrared sounder (GIIRS). <i>Geophysical Research Letters, 51</i>(24), e2024GL109772.</li>
+                            <li>Zhixin Yang, Zhijun Zhao, Tingting Zhou, Haoyang Fu, Jingwei Li. (2025). All-day retrieval of cloud physical properties from Meteosat second generation satellite. <i>IEEE Transactions on Geoscience and Remote Sensing, 63</i>, 1-12.</li>
+                            <li>Cuiping Liu, Feng Zhang, Huiling Ouyang, Wenwen Li, Zhijun Zhao. (2025). Diurnal variation of cloud physical properties for tropical cyclones over North Atlantic in 2019-2023. <i>Geophysical Research Letters, 52</i>(13), e2025GL115566.</li>
+                            <li>Cuiping Liu, Feng Zhang, Huiling Ouyang, Wenwen Li, Zhijun Zhao. (2025). Identification and tracking of deep convection systems over the Tibetan Plateau and its surrounding areas in summer using all-day cloud physical properties. <i>Geophysical Research Letters, 52</i>, e2025GL118433.</li>
+                            <li>Haixia Xiao, Feng Zhang, Lingxiao Wang, Baoxiang Pan, Yannian Zhu, Minghuai Wang, Wenwen Li, Bin Guo, and Jun Li. (2025a). High-resolution ensemble retrieval of cloud properties for all-day based on geostationary satellite. <i>npj Climate and Atmospheric Science, 8</i>(1), 386.</li>
+                            <li>Jingwei Li, Baoxiang Pan, Feng Zhang, Bin Guo, Wenwen Li, Geng-Ming Jiang, Xin Wu, and Quan Wang. (2026). Probabilistic Retrieval of All-Day Overlapping Cloud Microphysical Properties. <i>Advances in Atmospheric Sciences</i>, 1-14.</li>
+                            <li>Feng Zhang, Xin Hong, Zhijun Zhao, Zeyu Gan, Pengxiang Ouyang, Haixia Xiao, Renhe Zhang, Xujun Wei, Miao Cai, Feng Lu. (2026). Short-term forecasting of cloud physical properties based on Fourier neural operator method. <i>Geophysical Research Letters, 53</i>(8), e2025GL119553.</li>
+                        </ul>
+
+                        <h6 class="fw-bold" style="font-size:0.88em; text-indent:0; margin:0.6em 0 0.4em 0;">
+                            3. “大禹”降水分析系统（DaYu-PRAS）
+                        </h6>
+                        <ul class="ref-list">
+                            <li>Haixia Xiao, Feng Zhang, Renhe Zhang, Feng Lu, Miao Cai, Lingxiao Wang. (2025b). Retrieval of total precipitable water under all-weather conditions from Himawari-8/AHI observations using the generative diffusion model. <i>Geophysical Research Letters, 52</i>(15), e2025GL117075.</li>
+                            <li>Chunlei Yang, Haoran Li, Runzhe Zhu, Yan Wang, Feng Zhang, Mingjian Gu, Geng-Ming Jiang, Renhe Zhang, and Xu Tang. (2026). Snow or rain? hybrid AI deciphers surface precipitation phase from satellite observations. <i>Nature Communications, 17</i>, 2813.</li>
+                        </ul>
+
+                        <h6 class="fw-bold" style="font-size:0.88em; text-indent:0; margin:0.6em 0 0.4em 0;">
+                            4. “大禹”短临预报系统（DaYu-Nowcast）
+                        </h6>
+                        <ul class="ref-list">
+                            <li>Xujun Wei, Feng Zhang, Renhe Zhang, Wenwen Li, Cuiping Liu, Bin Guo, Jingwei Li, Haoyang Fu, Xu Tang. (2024). DaYu: Data-Driven Model for Geostationary Satellite Observed Cloud Images Forecasting. <i>arXiv preprint arXiv:2411.10144</i>.</li>
+                            <li>Feng Zhang, Xin Hong, Zhijun Zhao, Zeyu Gan, Pengxiang Ouyang, Haixia Xiao, Renhe Zhang, Xujun Wei, Miao Cai, Feng Lu. (2026). Short-term forecasting of cloud physical properties based on Fourier neural operator method. <i>Geophysical Research Letters, 53</i>(8), e2025GL119553.</li>
+                        </ul>
+
+
+                        <p><!-- 这里填写一个段落的内容 --></p>
+
+<section class="mt-4 pt-3 border-top"><h5>项目支撑</h5><p>Shanghai Pilot Program for Basic Research–Fudan University (21TQ1400100 (25TQ008))</p></section>
+</section><details><summary>English introduction</summary><section lang="en">
+                        <h3 class="text-center fw-bold">DaYu Radiation-Cloud-Precipitation Analysis Systems</h3>
+                        <br>
+                        <p style="text-indent:2em; line-height:1.6;">DaYu Radiation-Cloud-Precipitation Analysis System (DaYu-RCPAS) is a comprehensive analysis platform for radiation, cloud, and precipitation properties, which was independently developed by the Remote Sensing Big Data and Artificial Intelligence Research Team. It focuses on radiation simulation calculations, real-time monitoring, accurate retrieval, and short-term nowcasting of clouds and precipitation, providing high-precision data support for weather and climate research and operational applications.</p>
+                        <p style="text-indent:2em; line-height:1.6;">This system primarily consists of the DaYu Radiation Transfer Model (DaYu‐RTM), the DaYu CLoud Analysis System (DaYu‐CLAS), the DaYu PRecipitation Analysis System (DaYu‐PRAS), and DaYu Nowcast system (DaYu-Nowcast) for Cloud Images. Among these, the DaYu‐RTM is used for radiation simulation and calculation (W. Li et al., 2023). The DaYu‐CLAS integrates the Cloud‐ResUNet (Tong et al., 2023; Zhao et al., 2024), Cloud‐SmaAtUNet (J. Li et al., 2023), a hybrid algorithm that combines DaYu‐RTM simulation with deep learning (W. Li et al., 2022, 2024), CloudDiff (Xiao et al., 2025a), Overlap‐CloudDiff (J. Li et al., 2026) and Cloud-FNO (Zhang et al., 2026) models for cloud retrieval and forecasting. The DaYu‐PRAS integrates the TPWDiff‐CB (Xiao, Zhang, Zhang, et al., 2025) and RePPIC‐Net (Yang et al., 2026) models for precipitation monitoring and nowcasting. DaYu-Nowcast primarily consists of a large foundation model for forecasting brightness temperature cloud imagery from geostationary satellite imagers (Wei et al., 2024).</p>
+                        <p style="text-indent:2em; line-height:1.6;">Currently, DaYu-RCPAS provides real-time and forecast products such as multi-channel brightness temperatures, all-day cloud physical properties, and radiation parameters derived from the Advanced Geosynchronous Radiation Imager (AGRI) aboard Fengyun-4 geostationary meteorological satellite, which has been applied to the research on cloud-radiation interactions in the East Asian region and the diagnosis of extreme weather events. The all-day cloud physical property retrieval algorithm for geostationary satellites in DaYu-CALS has been operationally deployed on the "Tianqing" meteorological big data cloud platform of China Meteorological Administration and also displayed in real time on the "Tiangong" platform at the Weather Modification Center, providing timely dissemination to operational weather modification centers at provincial, municipal, county, and autonomous region levels across China. It has provided critical data support for designing unmanned aerial vehicle operation plans and tracking command during events such as the Southwest China forest fires and the Shanghai International Import Expo in 2024, as well as the "Spring Rain" campaign and the rainfall enhancement experiment in Liupan Mountains in 2025. In the future, the research team will continue to optimize the algorithms and expand the application scope of satellite data.</p>
+                        <div class="mt-4 pt-3 border-top">
+                            <h5 class="fw-bold" style="font-size:1em;">Members of the Research Team</h5>
+                            <ul class="mb-3" style="line-height:1.7;">
+                                <li>Feng Zhang, Fudan University (Email: <a href="mailto:fengzhang@fudan.edu.cn">fengzhang@fudan.edu.cn</a>)</li>
+                                <li>Wenwen Li, University of Shanghai for Science and Technology (Email: <a href="mailto:liwenwen@usst.edu.cn">liwenwen@usst.edu.cn</a>)</li>
+                                <li>Bin Guo, Zhejiang Normal University (Email: <a href="mailto:guobin1996@foxmail.com">guobin1996@foxmail.com</a>)</li>
+                                <li>Tingting Zhou, Zhejiang Normal University (Email: <a href="mailto:ttzhou1029@zjnu.edu.cn">ttzhou1029@zjnu.edu.cn</a>)</li>
+                                <li>Haoyang Fu, Zhejiang Normal University (Email: <a href="mailto:fuhaoyang@zjnu.edu.cn">fuhaoyang@zjnu.edu.cn</a>)</li>
+                            </ul>
+                            <h5 class="fw-bold" style="font-size:1em;">Contact</h5>
+                            <ul class="mb-0" style="line-height:1.7;">
+                                <li>Chao Wang, Fudan University (Email: <a href="mailto:806813119@qq.com">806813119@qq.com</a>)</li>
+                                <li>Haixia Xiao, Fudan University (Email: <a href="mailto:haixiaxia3@gmail.com">haixiaxia3@gmail.com</a>)</li>
+                            </ul>
+                        </div>
+                        <br>
+                        <h5 class="fw-bold" style="font-size:1em; margin-left:0; padding-left:0;">
+                            References:
+                        </h5>
+                        <style>
+                            .ref-list {
+                                font-size: 0.78em;
+                                line-height: 1.6;
+                                padding-left: 1.2em;
+                            }
+                            .ref-list li {
+                                margin-bottom: 0.4em;
+                            }
+                        </style>
+
+                        <h6 class="fw-bold" style="font-size:0.88em; text-indent:0; margin:0.6em 0 0.4em 0;">
+                            1. DaYu Radiation Transfer Model (DaYu-RTM)
+                        </h6>
+                        <ul class="ref-list">
+                            <li>Wenwen Li, Feng Zhang, Yi-Ning Shi, Hironobu Iwabuchi, Mingwei Zhu, Jiangnan Li, Wei Han, Husi Letu, and Hiroshi Ishimoto. (2020). Efficient radiative transfer model for thermal infrared brightness temperature simulation in cloudy atmospheres. <i>Optics Express, 28</i>(18), 25730-25749.</li>
+                            <li>Wenwen Li, Feng Zhang, Cancan Lu, Jiaqi Jin, Yi-Ning Shi, Yue Cai, Shuai Hu, and Wei Han. (2023). Integrated efficient radiative transfer model named Dayu for simulating the imager measurements in cloudy atmospheres. <i>Optics Express, 31</i>(10), 15256-15288.</li>
+                            <li>Yue Cai, Feng Zhang, Han Lin, Jiangnan Li, Hua Zhang, Wenwen Li, Shuai Hu. (2023). Optimized alternate mapping correlated k-distribution method for atmospheric longwave radiative transfer. <i>Journal of Advances in Modeling Earth Systems, 15</i>(5), e2022MS003419.</li>
+                            <li>Yue Cai, Feng Zhang, Jiangnan Li, Kun Wu, Quan Yang. (2025). An accurate shortwave gaseous transmittance scheme using modified alternate mapping correlated K-distribution method. <i>Journal of Geophysical Research: Atmospheres, 130</i>(10), e2024JD041921.</li>
+                        </ul>
+
+                        <h6 class="fw-bold" style="font-size:0.88em; text-indent:0; margin:0.6em 0 0.4em 0;">
+                            2. DaYu Cloud Analysis System (DaYu-CLAS)
+                        </h6>
+                        <ul class="ref-list">
+                            <li>Wenwen Li, Feng Zhang, Han Lin, Xiaoran Chen, Jun Li, Wei Han. (2022). Cloud detection and classification algorithms for Himawari-8 imager measurements based on deep learning. <i>IEEE Transactions on Geoscience and Remote Sensing, 60</i>, 1-17.</li>
+                            <li>Zhijun Zhao, Feng Zhang, Qiong Wu, Zhengqiang Li, Xuan Tong, Jingwei Li. (2023). Cloud identification and properties retrieval of the Fengyun-4A satellite using a ResUnet model. <i>IEEE Transactions on Geoscience and Remote Sensing, 61</i>, 1-18.</li>
+                            <li>Xuan Tong, Jingwei Li, Feng Zhang, Wenwen Li, BaoXiang Pan, Jun Li, Husi Letu. (2023). The Deep-Learning-Based fast efficient nighttime retrieval of thermodynamic phase from Himawari-8 AHI measurements. <i>Geophysical Research Letters, 50</i>(11), e2022GL100901.</li>
+                            <li>Jingwei Li, Feng Zhang, Wenwen Li, Xuan Tong, Baoxiang Pan, Jun Li. (2023). Transfer-learning-based approach to retrieve the cloud properties using diverse remote sensing datasets. <i>IEEE Transactions on Geoscience and Remote Sensing, 61</i>, 1-10.</li>
+                            <li>Bin Guo, Feng Zhang, Wenwen Li, Zhijun Zhao. (2024). Cloud classification by machine learning for geostationary radiation imager. <i>IEEE Transactions on Geoscience and Remote Sensing, 62</i>, 1-14.</li>
+                            <li>Zhijun Zhao, Feng Zhang, Wenwen Li, Jingwei Li. (2024). Image-based retrieval of all-day cloud physical parameters for FY4A/AGRI and its application over the Tibetan Plateau. <i>Journal of Geophysical Research: Atmospheres, 129</i>(18), e2024JD041032.</li>
+                            <li>Wenwen Li, Feng Zhang, Bin Guo, Haoyang Fu, Husi Letu. (2024). Physics-driven machine learning algorithm facilitates multilayer cloud property retrievals from geostationary passive imager measurements. <i>IEEE Transactions on Geoscience and Remote Sensing, 62</i>, 1-18.</li>
+                            <li>Bin Guo, Feng Zhang, Zhijun Zhao, Jinyu Guo, Wenwen Li. (2024). Retrieval of cloud macro-physical properties using the FY-4A advanced geostationary radiation imager (AGRI) and the geostationary interferometric infrared sounder (GIIRS). <i>Geophysical Research Letters, 51</i>(24), e2024GL109772.</li>
+                            <li>Zhixin Yang, Zhijun Zhao, Tingting Zhou, Haoyang Fu, Jingwei Li. (2025). All-day retrieval of cloud physical properties from Meteosat second generation satellite. <i>IEEE Transactions on Geoscience and Remote Sensing, 63</i>, 1-12.</li>
+                            <li>Cuiping Liu, Feng Zhang, Huiling Ouyang, Wenwen Li, Zhijun Zhao. (2025). Diurnal variation of cloud physical properties for tropical cyclones over North Atlantic in 2019-2023. <i>Geophysical Research Letters, 52</i>(13), e2025GL115566.</li>
+                            <li>Cuiping Liu, Feng Zhang, Huiling Ouyang, Wenwen Li, Zhijun Zhao. (2025). Identification and tracking of deep convection systems over the Tibetan Plateau and its surrounding areas in summer using all-day cloud physical properties. <i>Geophysical Research Letters, 52</i>, e2025GL118433.</li>
+                            <li>Haixia Xiao, Feng Zhang, Lingxiao Wang, Baoxiang Pan, Yannian Zhu, Minghuai Wang, Wenwen Li, Bin Guo, and Jun Li. (2025a). High-resolution ensemble retrieval of cloud properties for all-day based on geostationary satellite. <i>npj Climate and Atmospheric Science, 8</i>(1), 386.</li>
+                            <li>Jingwei Li, Baoxiang Pan, Feng Zhang, Bin Guo, Wenwen Li, Geng-Ming Jiang, Xin Wu, and Quan Wang. (2026). Probabilistic Retrieval of All-Day Overlapping Cloud Microphysical Properties. <i>Advances in Atmospheric Sciences</i>, 1-14.</li>
+                            <li>Feng Zhang, Xin Hong, Zhijun Zhao, Zeyu Gan, Pengxiang Ouyang, Haixia Xiao, Renhe Zhang, Xujun Wei, Miao Cai, Feng Lu. (2026). Short-term forecasting of cloud physical properties based on Fourier neural operator method. <i>Geophysical Research Letters, 53</i>(8), e2025GL119553.</li>
+                        </ul>
+
+                        <h6 class="fw-bold" style="font-size:0.88em; text-indent:0; margin:0.6em 0 0.4em 0;">
+                            3. DaYu Precipitation Analysis System (DaYu-PRAS)
+                        </h6>
+                        <ul class="ref-list">
+                            <li>Haixia Xiao, Feng Zhang, Renhe Zhang, Feng Lu, Miao Cai, Lingxiao Wang. (2025b). Retrieval of total precipitable water under all-weather conditions from Himawari-8/AHI observations using the generative diffusion model. <i>Geophysical Research Letters, 52</i>(15), e2025GL117075.</li>
+                            <li>Chunlei Yang, Haoran Li, Runzhe Zhu, Yan Wang, Feng Zhang, Mingjian Gu, Geng-Ming Jiang, Renhe Zhang, and Xu Tang. (2026). Snow or rain? hybrid AI deciphers surface precipitation phase from satellite observations. <i>Nature Communications, 17</i>, 2813.</li>
+                        </ul>
+
+                        <h6 class="fw-bold" style="font-size:0.88em; text-indent:0; margin:0.6em 0 0.4em 0;">
+                            4. DaYu Nowcast System (DaYu-Nowcast)
+                        </h6>
+                        <ul class="ref-list">
+                            <li>Xujun Wei, Feng Zhang, Renhe Zhang, Wenwen Li, Cuiping Liu, Bin Guo, Jingwei Li, Haoyang Fu, Xu Tang. (2024). DaYu: Data-Driven Model for Geostationary Satellite Observed Cloud Images Forecasting. <i>arXiv preprint arXiv:2411.10144</i>.</li>
+                            <li>Feng Zhang, Xin Hong, Zhijun Zhao, Zeyu Gan, Pengxiang Ouyang, Haixia Xiao, Renhe Zhang, Xujun Wei, Miao Cai, Feng Lu. (2026). Short-term forecasting of cloud physical properties based on Fourier neural operator method. <i>Geophysical Research Letters, 53</i>(8), e2025GL119553.</li>
+                        </ul>
+
+
+                        <p><!-- 这里填写一个段落的内容 --></p>
+
+<section class="mt-4 pt-3 border-top"><h5>Project Support</h5><p>Shanghai Pilot Program for Basic Research–Fudan University (21TQ1400100 (25TQ008))</p></section>
+</section></details></dialog>
+  <dialog id="account"><div class="drawer-heading"><h2>账号与数据服务</h2><button data-close aria-label="关闭">✕</button></div><p>登录、注册、用途登记和数据下载沿用现有业务页面。</p><div class="service-list"><a href="/classic.html">登录 / 注册 / 数据检索与下载 →</a><a href="/admin.html">管理员 / 产品与下载统计 →</a><a href="/index_en.html">English / Data services →</a></div></dialog>
+</body></html>
