@@ -2,10 +2,11 @@ import {loadAdminOverview} from './admin-client.js';
 import {mountScans} from './admin-scans.js';
 import {mountProducts} from './admin-products.js';
 import {mountAudits} from './admin-audits.js';
+import {mountUsers} from './admin-users.js';
 const $=id=>document.getElementById(id);
 let generation=0,active;
-function denied(message){++generation;active?.abort();scans.reset();products.reset(true);audits.reset();$('admin-content').hidden=true;for(const id of ['admin-counts','admin-downloads','admin-scan','admin-health'])$(id).replaceChildren();$('admin-status').textContent=message;}
-const scans=mountScans(denied),products=mountProducts(denied),audits=mountAudits(denied);
+function denied(message){++generation;active?.abort();scans.reset();products.reset(true);audits.reset();users.reset();$('admin-content').hidden=true;for(const id of ['admin-counts','admin-downloads','admin-scan','admin-health'])$(id).replaceChildren();$('admin-status').textContent=message;}
+const scans=mountScans(denied),products=mountProducts(denied),audits=mountAudits(denied),users=mountUsers(denied);
 const utc=value=>value?new Date(value).toISOString().replace('T',' ').slice(0,19)+' UTC':'—';
 const healthNames={HEALTHY:'正常',STALE:'延迟',MISSING:'缺失',DISABLED:'未启用'};
 const scanNames={RUNNING:'运行中',SUCCEEDED:'成功',PARTIAL:'部分成功',FAILED:'失败',INTERRUPTED:'已中断'};
@@ -17,6 +18,7 @@ async function refresh(){
   scans.reset();
   products.reset();
   audits.reset();
+  users.reset();
   const token=++generation;active?.abort();const controller=new AbortController();active=controller;
   $('admin-content').hidden=true;for(const id of ['admin-counts','admin-downloads','admin-scan','admin-health'])$(id).replaceChildren();
   $('admin-status').textContent='正在读取管理数据…';const timer=setTimeout(()=>controller.abort(),15000);
@@ -32,6 +34,7 @@ async function refresh(){
     scans.load();
     products.load();
     audits.load();
+    users.load();
   }catch(error){if(token===generation){if([401,403].includes(error.status))denied(error.message);else $('admin-status').textContent=error.name==='AbortError'?'读取超时，请重试':error.message;}}
   finally{clearTimeout(timer);}
 }

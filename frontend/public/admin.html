@@ -26,7 +26,13 @@
 <div class="table-scroll"><table><thead><tr><th>任务</th><th>触发方式</th><th>状态</th><th>开始时间（UTC）</th><th>详情</th></tr></thead><tbody id="scans-list"></tbody></table></div>
 <div class="scan-actions"><button id="scans-prev" disabled>上一页</button><span id="scans-page"></span><button id="scans-next" disabled>下一页</button></div>
 <button id="scans-detail-refresh" disabled>刷新任务状态</button><div id="scans-detail" class="scan-detail"></div>
-<h2>产品状态</h2><p>时间统一使用 UTC</p>
+<h2>用户管理</h2><form id="users-form"><div class="audit-filters">
+<label>邮箱<input id="users-email" maxlength="254"></label><label>机构<input id="users-organization" maxlength="255"></label>
+<label>角色<select id="users-role"><option value="">全部</option value="USER">普通用户</option><option value="ADMIN">管理员</option></select></label>
+<label>状态<select id="users-status"><option value="">全部</option><option value="ACTIVE">启用</option><option value="DISABLED">禁用</option></select></label></div><button type="submit">查询用户</button></form>
+<p id="users-message" role="status"></p><div class="table-scroll"><table><thead><tr><th>ID</th><th>邮箱</th><th>机构</th><th>角色</th><th>状态</th><th>操作</th></tr></thead><tbody id="users-list"></tbody></table></div>
+<div class="scan-actions"><button id="users-prev" disabled>上一页</button><span id="users-page"></span><button id="users-next" disabled>下一页</button></div>
+<h2>产品模式状态</h2><p>时间统一使用 UTC</p>
 <div class="table-scroll"><table><thead><tr><th scope="col">产品</th><th scope="col">模式</th><th scope="col">状态</th><th scope="col">最新有效时间</th><th scope="col">延迟阈值（分钟）</th></tr></thead><tbody id="admin-health"></tbody></table></div>
 </section>
 <dialog id="product-editor" aria-labelledby="product-editor-title"><header><h2 id="product-editor-title">编辑产品</h2><button id="product-close" type="button" aria-label="关闭产品编辑">✕</button></header><p id="product-readonly"></p><p id="product-message" role="status" aria-live="polite"></p><form id="product-form"><div id="product-identity" hidden><label>产品编码<input id="product-code" maxlength="64" pattern="[A-Z][A-Z0-9_]{1,63}"></label><label>分类<input id="product-family" maxlength="64"></label></div><div id="product-fields"></div><button type="submit">保存资料</button></form></dialog>
