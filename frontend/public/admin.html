@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>管理概览 · 大禹</title><link rel="stylesheet" href="/flat-20260925/admin.css"><script type="module" src="/flat-20260925/admin.js"></script></head>
+<body><main id="admin-page">
+<header><div><p>大禹 DaYu</p><h1>管理概览</h1></div><nav><a href="/">返回观测台</a><button id="admin-refresh">刷新</button></nav></header>
+<p id="admin-status" role="status" aria-live="polite">正在验证身份…</p>
+<section id="admin-content" hidden>
+<h2>产品概况</h2><div id="admin-counts" class="metrics"></div>
+<h2>产品资料</h2><button id="products-create">创建产品草稿</button><button id="products-refresh">刷新产品列表</button><p id="products-status" role="status"></p>
+<div class="table-scroll"><table><thead><tr><th>编码</th><th>名称</th><th>分类</th><th>状态</th><th>操作</th></tr></thead><tbody id="products-list"></tbody></table></div>
+<div class="scan-actions"><button id="products-prev" disabled>上一页</button><span id="products-page"></span><button id="products-next" disabled>下一页</button></div>
+<h2>下载授权 · 最近 30 天</h2><div id="admin-downloads" class="metrics"></div>
+<h2>下载授权记录</h2><p>授权记录不代表文件已完整传输。</p>
+<form id="audit-form"><div class="audit-filters">
+<label>授权开始时间（UTC）<input id="audit-from" type="datetime-local" required></label>
+<label>授权结束时间（UTC）<input id="audit-to" type="datetime-local" required></label>
+<label>产品编码（可选）<input id="audit-product" placeholder="例如 BT108" maxlength="64"></label>
+<label>用户 ID（可选）<input id="audit-user" inputmode="numeric" pattern="[1-9][0-9]*"></label>
+<label>机构（可选）<input id="audit-organization" maxlength="255"></label></div><button type="submit">查询授权记录</button></form>
+<p id="audit-message" role="status" aria-live="polite"></p><div id="audit-list"></div>
+<div class="scan-actions"><button id="audit-prev" disabled>上一页</button><span id="audit-page"></span><button id="audit-next" disabled>下一页</button></div>
+<h2>最近扫描</h2><div id="admin-scan" class="panel"></div>
+<h2>扫描任务</h2>
+<div class="scan-actions"><button id="scans-start">手动扫描</button><button id="scans-refresh">刷新列表</button></div>
+<p id="scans-status" role="status" aria-live="polite"></p>
+<div class="table-scroll"><table><thead><tr><th>任务</th><th>触发方式</th><th>状态</th><th>开始时间（UTC）</th><th>详情</th></tr></thead><tbody id="scans-list"></tbody></table></div>
+<div class="scan-actions"><button id="scans-prev" disabled>上一页</button><span id="scans-page"></span><button id="scans-next" disabled>下一页</button></div>
+<button id="scans-detail-refresh" disabled>刷新任务状态</button><div id="scans-detail" class="scan-detail"></div>
+<h2>产品状态</h2><p>时间统一使用 UTC</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">产品</th><th scope="col">模式</th><th scope="col">状态</th><th scope="col">最新有效时间</th><th scope="col">延迟阈值（分钟）</th></tr></thead><tbody id="admin-health"></tbody></table></div>
+</section>
+<dialog id="product-editor" aria-labelledby="product-editor-title"><header><h2 id="product-editor-title">编辑产品</h2><button id="product-close" type="button" aria-label="关闭产品编辑">✕</button></header><p id="product-readonly"></p><p id="product-message" role="status" aria-live="polite"></p><form id="product-form"><div id="product-identity" hidden><label>产品编码<input id="product-code" maxlength="64" pattern="[A-Z][A-Z0-9_]{1,63}"></label><label>分类<input id="product-family" maxlength="64"></label></div><div id="product-fields"></div><button type="submit">保存资料</button></form></dialog>
+<dialog id="mode-editor" aria-labelledby="mode-title"><header><h2 id="mode-title">模式配置</h2><button id="mode-close" type="button" aria-label="关闭模式配置">✕</button></header>
+<p>延迟阈值用于判断数据是否更新及时，不是扫描间隔。</p><p id="mode-message" role="status" aria-live="polite"></p>
+<form id="mode-form"><label for="mode-kind">数据模式</label><select id="mode-kind"><option value="REALTIME">实况</option><option value="FORECAST">预报</option></select>
+<label><input id="mode-enabled" type="checkbox"> 启用此模式</label>
+<label for="mode-minutes">延迟阈值（分钟）</label><input id="mode-minutes" type="number" min="10" max="10080" step="1" required>
+<button type="submit">保存模式配置</button></form></dialog>
+</main></body></html>

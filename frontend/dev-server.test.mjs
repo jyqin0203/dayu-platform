@@ -64,8 +64,11 @@ test('does not expose project configuration, private paths or the classic page',
   const server = await createDevServer();
   const base = await listen(server);
   try {
-    for (const path of ['/.env','/%2eenv','/backend/pom.xml','/netcdf/test.nc','/classic.html','/admin.html','/index_en.html'])
+    for (const path of ['/.env','/%2eenv','/backend/pom.xml','/netcdf/test.nc','/classic.html','/index_en.html'])
       assert.notEqual((await fetch(base+path)).status,200);
+    const admin=await fetch(base+'/admin.html');
+    assert.equal(admin.status,200);
+    assert.match(await admin.text(),/id="admin-content" hidden/);
     const response=await fetch(base+'/flat-20260925/style.css',{method:'POST'});
     assert.equal(response.status,405);
   } finally { await close(server); }

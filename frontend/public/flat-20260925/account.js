@@ -7,7 +7,7 @@ dialog.setAttribute('aria-labelledby','account-title');
 dialog.innerHTML=`
   <div class="drawer-heading"><h2 id="account-title">账号与数据服务</h2><button id="account-close" type="button" aria-label="关闭账号窗口">✕</button></div>
   <p id="account-message" role="status" aria-live="polite"></p>
-  <div id="account-user" hidden><p id="account-summary"></p><button id="account-logout" type="button">退出登录</button></div>
+  <div id="account-user" hidden><p id="account-summary"></p><a id="account-admin" href="/admin.html" hidden>管理概览 →</a><button id="account-logout" type="button">退出登录</button></div>
   <form id="account-form">
     <div class="account-tabs"><button type="button" id="account-login-tab" aria-pressed="true">登录</button><button type="button" id="account-register-tab" aria-pressed="false">注册</button></div>
     <label for="account-email">邮箱</label><input id="account-email" name="email" type="email" autocomplete="username" required maxlength="254">
@@ -31,6 +31,7 @@ function render(state){
   const logged=state.authenticated===true;
   $('account-user').hidden=!logged;$('account-form').hidden=logged;
   opener.textContent=logged?'账号':'登录';
+  $('account-admin').hidden=!logged||state.user?.role!=='ADMIN';
   $('account-summary').textContent=logged?`${state.user.email} · ${state.user.organization}`:'';
 }
 function mode(value){
