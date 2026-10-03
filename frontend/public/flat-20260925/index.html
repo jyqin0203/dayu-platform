@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="/vendor/cesium/1.146.0/Widgets/widgets.css">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="about.css">
+  <link rel="stylesheet" href="account.css">
+  <link rel="stylesheet" href="scientific-search.css">
+  <script type="module" src="account.js"></script>
+  <script type="module" src="scientific-search.js"></script>
   <script src="/cesium-config.js"></script>
   <script src="/vendor/cesium/1.146.0/Cesium.js" defer></script>
   <script type="module" src="app.js"></script>
@@ -30,7 +34,7 @@
   <header class="topbar">
     <div class="brand panel"><span class="brand-mark">禹</span><div><b>大禹<span class="brand-en">DaYu</span></b><small>辐射 · 云 · 降水分析系统</small></div></div>
     <span class="preview-label">实时观测与预报</span>
-    <nav class="panel nav" aria-label="网站菜单"><button id="refresh" title="重新获取最新文件">↻ <span>刷新数据</span></button><button id="settings-open">设置</button><button id="about-open">关于</button><button id="account-open" class="account">登录</button></nav>
+    <nav class="panel nav" aria-label="网站菜单"><button id="refresh" title="重新获取最新文件">↻ <span>刷新数据</span></button><button id="science-open">数据检索</button><button id="settings-open">设置</button><button id="about-open">关于</button><button id="account-open" class="account">登录</button></nav>
   </header>
   <section class="location panel" aria-label="显示区域"><span class="label">定位</span><button data-region="china" class="active">中国</button><button data-region="disk">全圆盘</button><button data-region="mozambique">莫桑比克</button></section>
   <section class="observation" aria-live="polite"><div class="eyebrow">FY-4B / AGRI <span id="mode-label">卫星实况</span></div><h1 id="product-title">云顶高度</h1><div id="data-time">正在读取数据时间…</div><p id="data-status">数据时间以产品文件为准</p></section>
@@ -221,5 +225,5 @@
 
 <section class="mt-4 pt-3 border-top"><h5>Project Support</h5><p>Shanghai Pilot Program for Basic Research–Fudan University (21TQ1400100 (25TQ008))</p></section>
 </section></details></dialog>
-  <dialog id="account"><div class="drawer-heading"><h2>账号与数据服务</h2><button data-close aria-label="关闭">✕</button></div><p>登录、注册、用途登记和数据下载沿用现有业务页面。</p><div class="service-list"><a href="/classic.html">登录 / 注册 / 数据检索与下载 →</a><a href="/admin.html">管理员 / 产品与下载统计 →</a><a href="/index_en.html">English / Data services →</a></div></dialog>
+  <dialog id="account"><p>正在准备账号服务…</p></dialog>
 </body></html>

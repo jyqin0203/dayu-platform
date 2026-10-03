@@ -6,7 +6,7 @@
   "engines": { "node": ">=22" },
   "scripts": {
     "dev": "node dev-server.mjs",
-    "test": "node --test dev-server.test.mjs catalog-adapter.test.mjs timeline-data.test.mjs",
+    "test": "node --test dev-server.test.mjs catalog-adapter.test.mjs timeline-data.test.mjs session-client.test.mjs scientific-client.test.mjs",
     "build": "node build.mjs"
   },
   "dependencies": { "cesium": "1.146.0" }

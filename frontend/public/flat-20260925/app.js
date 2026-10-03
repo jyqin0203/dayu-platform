@@ -152,7 +152,7 @@ async function init(){
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{catalogMode=b.dataset.tab;buildCatalog();});
   $('catalog-open').onclick=()=>openCatalog(product.mode);$('catalog-close').onclick=()=>{$('catalog').hidden=true;$('catalog-open').focus();};
   $('realtime-tab').onclick=()=>openCatalog('realtime');$('forecast-tab').onclick=()=>openCatalog('forecast');
-  for(const name of ['settings','about','account'])$(name+'-open').onclick=()=>$(name).showModal();
+  for(const name of ['settings','about'])$(name+'-open').onclick=()=>$(name).showModal();
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
   $('play').onclick=()=>playing?stop():start();$('speed').onchange=()=>{if(playing)schedule();};$('autoplay').onchange=()=>{$('autoplay').checked?start():stop();};
   $('timeline').oninput=()=>{stop();$('selected-time').textContent=shortDate(frames[Number($('timeline').value)])+' UTC · 松开加载';};
