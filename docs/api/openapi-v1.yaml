@@ -1,0 +1,1022 @@
+openapi: 3.1.0
+info:
+  title: DaYu Platform HTTP API
+  version: 1.0.0-draft
+  description: |
+    大禹平台第一版 HTTP 契约。所有业务时间均为 UTC ISO-8601。
+    浏览器先通过 GET /api/v1/session 获取与当前 Session 绑定的 CSRF Token；
+    所有 POST、PUT、PATCH、DELETE 请求都必须携带 X-CSRF-TOKEN。
+    本契约不暴露服务器绝对路径、NC 相对路径或 Nginx 内部下载位置。
+servers:
+  - url: /
+tags:
+  - name: Catalog
+  - name: Discovery
+  - name: Identity
+  - name: Download
+  - name: Operations
+  - name: Copilot
+
+paths:
+  /api/v1/products:
+    get:
+      tags: [Catalog]
+      summary: 查询已发布产品
+      security: []
+      responses:
+        '200':
+          description: 按 sortOrder 排序的产品列表，只包含已启用模式
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicProductSummary'
+        '500': {$ref: '#/components/responses/InternalError'}
+
+  /api/v1/products/{productCode}:
+    get:
+      tags: [Catalog]
+      summary: 查询已发布产品详情
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/ProductCodePath'
+      responses:
+        '200':
+          description: 产品详情
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PublicProductDetail'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '500': {$ref: '#/components/responses/InternalError'}
+
+  /api/v1/preview-frames:
+    get:
+      tags: [Discovery]
+      summary: 查询近期 WebP 预览帧
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/ProductCodeQuery'
+        - $ref: '#/components/parameters/DataModeQuery'
+        - $ref: '#/components/parameters/FromRequired'
+        - $ref: '#/components/parameters/ToRequired'
+        - $ref: '#/components/parameters/CycleTimeOptional'
+        - $ref: '#/components/parameters/LeadMinutesOptional'
+      responses:
+        '200':
+          description: 按 validTime 正序排列；没有数据时 items 为空
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: {$ref: '#/components/schemas/PreviewFrame'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+        '500': {$ref: '#/components/responses/InternalError'}
+
+  /api/v1/forecast-cycles:
+    get:
+      tags: [Discovery]
+      summary: 查询可用预报批次
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/ProductCodeQuery'
+        - name: assetType
+          in: query
+          required: true
+          schema: {$ref: '#/components/schemas/AssetType'}
+        - $ref: '#/components/parameters/FromRequired'
+        - $ref: '#/components/parameters/ToRequired'
+      responses:
+        '200':
+          description: 按 cycleTime 倒序排列
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: {$ref: '#/components/schemas/ForecastCycle'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+
+  /api/v1/scientific-assets:
+    get:
+      tags: [Discovery]
+      summary: 分页检索 NetCDF 科学数据
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/ProductCodeQuery'
+        - $ref: '#/components/parameters/DataModeQuery'
+        - $ref: '#/components/parameters/FromRequired'
+        - $ref: '#/components/parameters/ToRequired'
+        - $ref: '#/components/parameters/CycleTimeOptional'
+        - $ref: '#/components/parameters/LeadMinutesOptional'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: 按 validTime 倒序排列的可用 NC 元数据
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ScientificAssetPage'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+
+  /api/v1/session:
+    get:
+      tags: [Identity]
+      summary: 获取当前 Session、身份和 CSRF Token
+      security: []
+      responses:
+        '200':
+          description: 未登录时也返回 200，并建立匿名 Session
+          headers:
+            Cache-Control:
+              schema: {type: string, const: no-store}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SessionView'}
+    post:
+      tags: [Identity]
+      summary: 登录并建立认证 Session
+      security:
+        - csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/LoginRequest'}
+      responses:
+        '200':
+          description: 登录成功，响应携带当前认证 Session 对应的 CSRF Token
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SessionView'}
+        '401': {$ref: '#/components/responses/Unauthenticated'}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+        '429': {$ref: '#/components/responses/RateLimited'}
+    delete:
+      tags: [Identity]
+      summary: 退出并销毁当前 Session
+      security:
+        - sessionCookie: []
+          csrfToken: []
+      responses:
+        '204': {description: Session 和原 CSRF Token 已失效}
+        '401': {$ref: '#/components/responses/Unauthenticated'}
+
+  /api/v1/users:
+    post:
+      tags: [Identity]
+      summary: 注册普通用户并在事务提交后建立认证 Session
+      security:
+        - csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RegisterRequest'}
+      responses:
+        '201':
+          description: 用户落库成功且认证 Session 已建立
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SessionView'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+
+  /api/v1/downloads:
+    post:
+      tags: [Download]
+      summary: 登记用途并申请短期 NC 下载授权
+      security:
+        - sessionCookie: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DownloadRequest'}
+      responses:
+        '201':
+          description: 授权成功；downloadUrl 不包含服务器路径
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DownloadAuthorization'}
+        '401': {$ref: '#/components/responses/Unauthenticated'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '410': {$ref: '#/components/responses/AssetGone'}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+
+  /api/v1/downloads/{downloadEventId}/content:
+    get:
+      tags: [Download]
+      summary: 使用短期授权下载 NC 文件
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/DownloadEventIdPath'
+      responses:
+        '200':
+          description: Nginx 通过内部转发传输文件
+          headers:
+            Content-Disposition: {schema: {type: string}}
+            Content-Length: {schema: {type: integer, format: int64}}
+            Cache-Control: {schema: {type: string, const: 'private, no-store'}}
+          content:
+            application/x-netcdf:
+              schema: {type: string, format: binary}
+        '401': {$ref: '#/components/responses/Unauthenticated'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '410': {$ref: '#/components/responses/AssetGone'}
+
+  /api/v1/copilot/queries:
+    post:
+      tags: [Copilot]
+      summary: 使用自然语言辅助查询产品和数据
+      security:
+        - csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CopilotRequest'}
+      responses:
+        '200':
+          description: AI 或安全降级结果
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CopilotResponse'}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+        '429': {$ref: '#/components/responses/RateLimited'}
+        '503': {$ref: '#/components/responses/AiUnavailable'}
+
+  /api/v1/admin/products:
+    get:
+      tags: [Catalog, Operations]
+      summary: 管理员查询全部产品
+      security: [{sessionCookie: []}]
+      parameters:
+        - {name: family, in: query, schema: {type: string}}
+        - {name: status, in: query, schema: {$ref: '#/components/schemas/ProductStatus'}}
+        - {name: code, in: query, schema: {$ref: '#/components/schemas/ProductCode'}}
+      responses:
+        '200':
+          description: 管理产品列表
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/AdminProduct'}
+        '401': {$ref: '#/components/responses/Unauthenticated'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      tags: [Catalog, Operations]
+      summary: 创建草稿产品
+      security: [{sessionCookie: [], csrfToken: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateProductRequest'}
+      responses:
+        '201':
+          description: 草稿产品
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminProduct'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+
+  /api/v1/admin/products/{productId}:
+    put:
+      tags: [Catalog, Operations]
+      summary: 完整更新产品可变资料
+      security: [{sessionCookie: [], csrfToken: []}]
+      parameters: [{$ref: '#/components/parameters/ProductIdPath'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UpdateProductRequest'}
+      responses:
+        '200':
+          description: 更新后的产品
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminProduct'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+
+  /api/v1/admin/products/{productId}/modes/{dataMode}:
+    put:
+      tags: [Catalog, Operations]
+      summary: 创建或更新产品模式策略
+      security: [{sessionCookie: [], csrfToken: []}]
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPath'
+        - $ref: '#/components/parameters/DataModePath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ConfigureModeRequest'}
+      responses:
+        '200':
+          description: 更新后的模式策略
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminProductMode'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+
+  /api/v1/admin/products/{productId}/publish:
+    post:
+      tags: [Catalog, Operations]
+      summary: 首次发布或重新发布产品
+      security: [{sessionCookie: [], csrfToken: []}]
+      parameters: [{$ref: '#/components/parameters/ProductIdPath'}]
+      responses:
+        '200':
+          description: PUBLISHED 产品；重新发布保留首次 publishedAt
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminProduct'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+
+  /api/v1/admin/products/{productId}/disable:
+    post:
+      tags: [Catalog, Operations]
+      summary: 停用已发布产品
+      security: [{sessionCookie: [], csrfToken: []}]
+      parameters: [{$ref: '#/components/parameters/ProductIdPath'}]
+      responses:
+        '200':
+          description: DISABLED 产品
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminProduct'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /api/v1/admin/dashboard:
+    get:
+      tags: [Operations]
+      summary: 查询管理仪表盘
+      security: [{sessionCookie: []}]
+      parameters:
+        - $ref: '#/components/parameters/FromOptional'
+        - $ref: '#/components/parameters/ToOptional'
+        - {name: productCode, in: query, schema: {$ref: '#/components/schemas/ProductCode'}}
+        - {name: dataMode, in: query, schema: {$ref: '#/components/schemas/DataMode'}}
+      responses:
+        '200':
+          description: 默认最近 30 天，最大范围 365 天
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Dashboard'}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+
+  /api/v1/admin/product-health:
+    get:
+      tags: [Operations]
+      summary: 查询产品数据健康状态
+      security: [{sessionCookie: []}]
+      parameters:
+        - {name: productCode, in: query, schema: {$ref: '#/components/schemas/ProductCode'}}
+        - {name: dataMode, in: query, schema: {$ref: '#/components/schemas/DataMode'}}
+      responses:
+        '200':
+          description: 产品健康状态列表
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: {type: array, items: {$ref: '#/components/schemas/ProductHealth'}}
+
+  /api/v1/admin/index-scans:
+    post:
+      tags: [Operations]
+      summary: 异步触发一次手动增量扫描
+      security: [{sessionCookie: [], csrfToken: []}]
+      responses:
+        '202':
+          description: 扫描任务已接受
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ScanRunSummary'}
+        '409':
+          description: 已有扫描运行
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorResponse'}
+    get:
+      tags: [Operations]
+      summary: 分页查询扫描历史
+      security: [{sessionCookie: []}]
+      parameters:
+        - $ref: '#/components/parameters/FromOptional'
+        - $ref: '#/components/parameters/ToOptional'
+        - {name: trigger, in: query, schema: {$ref: '#/components/schemas/ScanTrigger'}}
+        - {name: status, in: query, schema: {$ref: '#/components/schemas/ScanStatus'}}
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: 扫描历史
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ScanRunPage'}
+
+  /api/v1/admin/index-scans/{scanRunId}:
+    get:
+      tags: [Operations]
+      summary: 查询扫描任务详情和安全错误摘要
+      security: [{sessionCookie: []}]
+      parameters: [{$ref: '#/components/parameters/ScanRunIdPath'}]
+      responses:
+        '200':
+          description: 扫描详情
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ScanRunDetail'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /api/v1/admin/download-audits:
+    get:
+      tags: [Operations]
+      summary: 分页查询下载审计
+      security: [{sessionCookie: []}]
+      parameters:
+        - $ref: '#/components/parameters/FromOptional'
+        - $ref: '#/components/parameters/ToOptional'
+        - {name: productCode, in: query, schema: {$ref: '#/components/schemas/ProductCode'}}
+        - {name: userId, in: query, schema: {type: integer, format: int64}}
+        - {name: organization, in: query, schema: {type: string}}
+        - {name: status, in: query, schema: {$ref: '#/components/schemas/DownloadStatus'}}
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: 下载审计分页；不返回 IP、User-Agent 或路径
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DownloadAuditPage'}
+
+  /api/v1/admin/download-statistics:
+    get:
+      tags: [Operations]
+      summary: 查询授权下载统计
+      security: [{sessionCookie: []}]
+      parameters:
+        - $ref: '#/components/parameters/FromOptional'
+        - $ref: '#/components/parameters/ToOptional'
+        - {name: productCode, in: query, schema: {$ref: '#/components/schemas/ProductCode'}}
+      responses:
+        '200':
+          description: 统计只声称申请或授权，不声称客户端已保存
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DownloadStatistics'}
+
+  /api/v1/admin/users:
+    get:
+      tags: [Operations]
+      summary: 分页查询用户
+      security: [{sessionCookie: []}]
+      parameters:
+        - {name: email, in: query, schema: {type: string}}
+        - {name: organization, in: query, schema: {type: string}}
+        - {name: role, in: query, schema: {$ref: '#/components/schemas/UserRole'}}
+        - {name: status, in: query, schema: {$ref: '#/components/schemas/UserStatus'}}
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: 用户分页，不返回密码哈希
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserPage'}
+
+  /api/v1/admin/users/{userId}/status:
+    put:
+      tags: [Operations]
+      summary: 修改用户状态
+      security: [{sessionCookie: [], csrfToken: []}]
+      parameters: [{$ref: '#/components/parameters/UserIdPath'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: {$ref: '#/components/schemas/UserStatus'}
+      responses:
+        '200':
+          description: 更新后的用户
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserSummary'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /api/v1/admin/users/{userId}/role:
+    put:
+      tags: [Operations]
+      summary: 修改用户角色
+      security: [{sessionCookie: [], csrfToken: []}]
+      parameters: [{$ref: '#/components/parameters/UserIdPath'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role: {$ref: '#/components/schemas/UserRole'}
+      responses:
+        '200':
+          description: 更新后的用户
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserSummary'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: DAYUSESSID
+      description: HttpOnly、SameSite=Lax；生产 HTTPS 下 Secure=true
+    csrfToken:
+      type: apiKey
+      in: header
+      name: X-CSRF-TOKEN
+      description: 必须与当前匿名或认证 Session 匹配
+
+  parameters:
+    ProductCodePath:
+      name: productCode
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/ProductCode'}
+    ProductCodeQuery:
+      name: productCode
+      in: query
+      required: true
+      schema: {$ref: '#/components/schemas/ProductCode'}
+    ProductIdPath:
+      name: productId
+      in: path
+      required: true
+      schema: {type: integer, format: int64, minimum: 1}
+    UserIdPath:
+      name: userId
+      in: path
+      required: true
+      schema: {type: integer, format: int64, minimum: 1}
+    DownloadEventIdPath:
+      name: downloadEventId
+      in: path
+      required: true
+      schema: {type: integer, format: int64, minimum: 1}
+    ScanRunIdPath:
+      name: scanRunId
+      in: path
+      required: true
+      schema: {type: integer, format: int64, minimum: 1}
+    DataModePath:
+      name: dataMode
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/DataMode'}
+    DataModeQuery:
+      name: dataMode
+      in: query
+      required: true
+      schema: {$ref: '#/components/schemas/DataMode'}
+    FromRequired:
+      name: from
+      in: query
+      required: true
+      schema: {$ref: '#/components/schemas/UtcInstant'}
+    ToRequired:
+      name: to
+      in: query
+      required: true
+      schema: {$ref: '#/components/schemas/UtcInstant'}
+    FromOptional:
+      name: from
+      in: query
+      schema: {$ref: '#/components/schemas/UtcInstant'}
+    ToOptional:
+      name: to
+      in: query
+      schema: {$ref: '#/components/schemas/UtcInstant'}
+    CycleTimeOptional:
+      name: cycleTime
+      in: query
+      schema: {$ref: '#/components/schemas/UtcInstant'}
+    LeadMinutesOptional:
+      name: leadMinutes
+      in: query
+      schema: {type: integer, minimum: 0}
+    Page:
+      name: page
+      in: query
+      schema: {type: integer, minimum: 1, default: 1}
+    PageSize:
+      name: pageSize
+      in: query
+      schema: {type: integer, minimum: 1, maximum: 100, default: 20}
+
+  responses:
+    Unauthenticated:
+      description: 未登录或认证已失效
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    Forbidden:
+      description: 无权限、CSRF 失败或路径安全校验失败
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    NotFound:
+      description: 产品、资产或事件不存在；公开接口也用它隐藏未发布产品
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    AssetGone:
+      description: 已索引资产对应文件丢失或短期授权过期
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    Conflict:
+      description: 唯一性、状态机或并发任务冲突
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    ValidationFailed:
+      description: 参数格式正确但不满足业务校验
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    RateLimited:
+      description: 请求频率超限
+      headers:
+        Retry-After: {schema: {type: integer, minimum: 1}}
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    AiUnavailable:
+      description: AI 服务不可用且无法安全降级
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    InternalError:
+      description: 未预期系统错误
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+
+  schemas:
+    ProductCode: {type: string, pattern: '^[A-Z][A-Z0-9_]{1,63}$'}
+    UtcInstant: {type: string, format: date-time, pattern: 'Z$'}
+    DataMode: {type: string, enum: [REALTIME, FORECAST]}
+    AssetType: {type: string, enum: [WEBP, NETCDF]}
+    AssetStatus: {type: string, enum: [AVAILABLE, MISSING]}
+    ProductStatus: {type: string, enum: [DRAFT, PUBLISHED, DISABLED]}
+    UserRole: {type: string, enum: [USER, ADMIN]}
+    UserStatus: {type: string, enum: [ACTIVE, DISABLED]}
+    DownloadStatus: {type: string, enum: [REQUESTED, AUTHORIZED, DENIED, DELIVERED, INTERRUPTED]}
+    ScanTrigger: {type: string, enum: [STARTUP, SCHEDULED, MANUAL]}
+    ScanStatus: {type: string, enum: [RUNNING, SUCCEEDED, PARTIAL, FAILED]}
+
+    ErrorResponse:
+      type: object
+      required: [code, message, traceId]
+      properties:
+        code: {type: string}
+        message: {type: string}
+        traceId: {type: string}
+        details: {type: object, additionalProperties: true}
+
+    PublicProductMode:
+      type: object
+      required: [dataMode, staleAfterMinutes]
+      properties:
+        dataMode: {$ref: '#/components/schemas/DataMode'}
+        staleAfterMinutes: {type: integer, minimum: 1}
+    PublicProductSummary:
+      type: object
+      required: [productId, code, nameZh, nameEn, family, producer, colorbarRequired, sortOrder, modes]
+      properties:
+        productId: {type: integer, format: int64}
+        code: {$ref: '#/components/schemas/ProductCode'}
+        nameZh: {type: string}
+        nameEn: {type: string}
+        family: {type: string}
+        unit: {type: [string, 'null']}
+        producer: {type: string}
+        algorithmName: {type: [string, 'null']}
+        colorbarRequired: {type: boolean}
+        sortOrder: {type: integer}
+        modes: {type: array, items: {$ref: '#/components/schemas/PublicProductMode'}}
+    PublicProductDetail:
+      allOf:
+        - $ref: '#/components/schemas/PublicProductSummary'
+        - type: object
+          required: [descriptionZh, descriptionEn, sourceDescription]
+          properties:
+            descriptionZh: {type: string}
+            descriptionEn: {type: string}
+            sourceDescription: {type: string}
+            officialSourceUrl: {type: [string, 'null'], format: uri}
+            colorbarUrl: {type: [string, 'null'], format: uri-reference}
+    AdminProductMode:
+      type: object
+      required: [dataMode, enabled, staleAfterMinutes]
+      properties:
+        dataMode: {$ref: '#/components/schemas/DataMode'}
+        enabled: {type: boolean}
+        staleAfterMinutes: {type: integer, minimum: 1}
+    AdminProduct:
+      allOf:
+        - $ref: '#/components/schemas/PublicProductDetail'
+        - type: object
+          required: [status, modes, createdAt, updatedAt]
+          properties:
+            status: {$ref: '#/components/schemas/ProductStatus'}
+            modes: {type: array, items: {$ref: '#/components/schemas/AdminProductMode'}}
+            publishedAt: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
+            createdAt: {$ref: '#/components/schemas/UtcInstant'}
+            updatedAt: {$ref: '#/components/schemas/UtcInstant'}
+    CreateProductRequest:
+      type: object
+      required: [code, family, nameZh, nameEn, descriptionZh, descriptionEn, producer, sourceDescription, colorbarRequired, sortOrder]
+      properties:
+        code: {$ref: '#/components/schemas/ProductCode'}
+        family: {type: string, minLength: 1, maxLength: 64}
+        nameZh: {type: string, minLength: 2, maxLength: 255}
+        nameEn: {type: string, minLength: 2, maxLength: 255}
+        unit: {type: [string, 'null'], maxLength: 64}
+        descriptionZh: {type: string}
+        descriptionEn: {type: string}
+        producer: {type: string, minLength: 1, maxLength: 255}
+        algorithmName: {type: [string, 'null'], maxLength: 255}
+        sourceDescription: {type: string}
+        officialSourceUrl: {type: [string, 'null'], format: uri}
+        colorbarRequired: {type: boolean}
+        colorbarPath: {type: [string, 'null'], maxLength: 512}
+        sortOrder: {type: integer}
+    UpdateProductRequest:
+      type: object
+      required: [nameZh, nameEn, descriptionZh, descriptionEn, producer, sourceDescription, colorbarRequired, sortOrder]
+      properties:
+        nameZh: {type: string, minLength: 2, maxLength: 255}
+        nameEn: {type: string, minLength: 2, maxLength: 255}
+        unit: {type: [string, 'null'], maxLength: 64}
+        descriptionZh: {type: string}
+        descriptionEn: {type: string}
+        producer: {type: string}
+        algorithmName: {type: [string, 'null']}
+        sourceDescription: {type: string}
+        officialSourceUrl: {type: [string, 'null'], format: uri}
+        colorbarRequired: {type: boolean}
+        colorbarPath: {type: [string, 'null']}
+        sortOrder: {type: integer}
+    ConfigureModeRequest:
+      type: object
+      required: [enabled, staleAfterMinutes]
+      properties:
+        enabled: {type: boolean}
+        staleAfterMinutes: {type: integer, minimum: 10, maximum: 10080}
+
+    PreviewFrame:
+      type: object
+      required: [webpAssetId, previewUrl, validTime, downloadAvailable]
+      properties:
+        webpAssetId: {type: integer, format: int64}
+        previewUrl: {type: string, format: uri-reference}
+        validTime: {$ref: '#/components/schemas/UtcInstant'}
+        cycleTime: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
+        leadMinutes: {type: [integer, 'null'], minimum: 0}
+        downloadAvailable: {type: boolean}
+    ForecastCycle:
+      type: object
+      required: [cycleTime, firstValidTime, lastValidTime, frameCount]
+      properties:
+        cycleTime: {$ref: '#/components/schemas/UtcInstant'}
+        firstValidTime: {$ref: '#/components/schemas/UtcInstant'}
+        lastValidTime: {$ref: '#/components/schemas/UtcInstant'}
+        frameCount: {type: integer, minimum: 1}
+    ScientificAsset:
+      type: object
+      required: [assetId, fileName, fileSize, products, dataMode, validTime, status]
+      properties:
+        assetId: {type: integer, format: int64}
+        fileName: {type: string}
+        fileSize: {type: integer, format: int64, minimum: 0}
+        products: {type: array, uniqueItems: true, items: {$ref: '#/components/schemas/ProductCode'}}
+        dataMode: {$ref: '#/components/schemas/DataMode'}
+        cycleTime: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
+        validTime: {$ref: '#/components/schemas/UtcInstant'}
+        leadMinutes: {type: [integer, 'null'], minimum: 0}
+        status: {$ref: '#/components/schemas/AssetStatus'}
+    ScientificAssetPage:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/ScientificAsset'}}
+        page: {type: integer, minimum: 1}
+        pageSize: {type: integer, minimum: 1, maximum: 100}
+        total: {type: integer, format: int64, minimum: 0}
+
+    AuthenticatedUser:
+      type: object
+      required: [userId, email, organization, role]
+      properties:
+        userId: {type: integer, format: int64}
+        email: {type: string, format: email}
+        organization: {type: string}
+        role: {$ref: '#/components/schemas/UserRole'}
+    SessionView:
+      type: object
+      required: [authenticated, user, csrfToken]
+      properties:
+        authenticated: {type: boolean}
+        user: {oneOf: [{$ref: '#/components/schemas/AuthenticatedUser'}, {type: 'null'}]}
+        csrfToken: {type: string, minLength: 1}
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: {type: string, format: email, maxLength: 254}
+        password: {type: string, minLength: 1, maxLength: 128, writeOnly: true}
+    RegisterRequest:
+      type: object
+      required: [email, password, organization]
+      properties:
+        email: {type: string, format: email, maxLength: 254}
+        password: {type: string, minLength: 10, maxLength: 128, writeOnly: true}
+        organization: {type: string, minLength: 2, maxLength: 255}
+
+    DownloadRequest:
+      type: object
+      required: [assetId, purpose]
+      properties:
+        assetId: {type: integer, format: int64, minimum: 1}
+        purpose: {type: string, minLength: 10, maxLength: 2000}
+    DownloadAuthorization:
+      type: object
+      required: [downloadEventId, downloadUrl, fileName, expectedBytes, expiresAt]
+      properties:
+        downloadEventId: {type: integer, format: int64}
+        downloadUrl: {type: string, format: uri-reference}
+        fileName: {type: string}
+        expectedBytes: {type: integer, format: int64, minimum: 0}
+        expiresAt: {$ref: '#/components/schemas/UtcInstant'}
+
+    CopilotPageContext:
+      type: object
+      properties:
+        selectedProduct: {$ref: '#/components/schemas/ProductCode'}
+        visibleTime: {$ref: '#/components/schemas/UtcInstant'}
+        displayZone: {type: string, description: IANA 时区}
+    CopilotRequest:
+      type: object
+      required: [message, displayZone, recentMessages]
+      properties:
+        message: {type: string, minLength: 1, maxLength: 2000}
+        displayZone: {type: string, description: IANA 时区，例如 Asia/Shanghai}
+        pageContext: {oneOf: [{$ref: '#/components/schemas/CopilotPageContext'}, {type: 'null'}]}
+        recentMessages: {type: array, maxItems: 6, items: {type: string, maxLength: 2000}}
+    InterpretedCriteria:
+      type: object
+      properties:
+        productCode: {$ref: '#/components/schemas/ProductCode'}
+        dataMode: {oneOf: [{$ref: '#/components/schemas/DataMode'}, {type: 'null'}]}
+        from: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
+        to: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
+        queryKind: {type: string, enum: [PREVIEW, SCIENTIFIC_ASSET, PRODUCT_HELP]}
+        cycleTime: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
+        leadMinutes: {type: [integer, 'null'], minimum: 0}
+    SuggestedAction:
+      type: object
+      required: [type, label, parameters]
+      properties:
+        type: {type: string, enum: [APPLY_PREVIEW_FILTER, APPLY_SCIENTIFIC_SEARCH, OPEN_PRODUCT_DETAILS]}
+        label: {type: string}
+        parameters: {type: object, additionalProperties: {type: string}}
+    CopilotResponse:
+      type: object
+      required: [understanding, criteria, answer, suggestedActions, degraded]
+      properties:
+        understanding: {type: string}
+        criteria: {oneOf: [{$ref: '#/components/schemas/InterpretedCriteria'}, {type: 'null'}]}
+        answer: {type: string}
+        suggestedActions: {type: array, items: {$ref: '#/components/schemas/SuggestedAction'}}
+        degraded: {type: boolean}
+
+    ScanRunSummary:
+      type: object
+      required: [scanRunId, trigger, status, startedAt]
+      properties:
+        scanRunId: {type: integer, format: int64}
+        trigger: {$ref: '#/components/schemas/ScanTrigger'}
+        status: {$ref: '#/components/schemas/ScanStatus'}
+        startedAt: {$ref: '#/components/schemas/UtcInstant'}
+        finishedAt: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
+        scannedFiles: {type: integer, format: int64, minimum: 0}
+        createdAssets: {type: integer, format: int64, minimum: 0}
+        updatedAssets: {type: integer, format: int64, minimum: 0}
+        removedWebpAssets: {type: integer, format: int64, minimum: 0}
+        missingNetcdfAssets: {type: integer, format: int64, minimum: 0}
+        errorCount: {type: integer, minimum: 0}
+    ScanError:
+      type: object
+      required: [relativePath, errorCode, safeMessage]
+      properties:
+        relativePath: {type: string}
+        errorCode: {type: string}
+        safeMessage: {type: string}
+    ScanRunDetail:
+      allOf:
+        - $ref: '#/components/schemas/ScanRunSummary'
+        - type: object
+          required: [errors]
+          properties:
+            errors: {type: array, items: {$ref: '#/components/schemas/ScanError'}}
+    ScanRunPage:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/ScanRunSummary'}}
+        page: {type: integer}
+        pageSize: {type: integer}
+        total: {type: integer, format: int64}
+    ProductHealth:
+      type: object
+      required: [productCode, dataMode, status, staleAfterMinutes]
+      properties:
+        productCode: {$ref: '#/components/schemas/ProductCode'}
+        dataMode: {$ref: '#/components/schemas/DataMode'}
+        status: {type: string, enum: [HEALTHY, STALE, MISSING, DISABLED]}
+        latestValidTime: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
+        staleAfterMinutes: {type: integer, minimum: 1}
+    DownloadStatistics:
+      type: object
+      required: [authorizedRequests, uniqueUsers, uniqueOrganizations, uniqueAssets]
+      properties:
+        authorizedRequests: {type: integer, format: int64, minimum: 0}
+        uniqueUsers: {type: integer, format: int64, minimum: 0}
+        uniqueOrganizations: {type: integer, format: int64, minimum: 0}
+        uniqueAssets: {type: integer, format: int64, minimum: 0}
+    Dashboard:
+      type: object
+      required: [publishedProducts, previewAvailableProducts, downloadAvailableProducts, missingProducts, staleProducts, downloads]
+      properties:
+        publishedProducts: {type: integer, format: int64}
+        previewAvailableProducts: {type: integer, format: int64}
+        downloadAvailableProducts: {type: integer, format: int64}
+        missingProducts: {type: integer, format: int64}
+        staleProducts: {type: integer, format: int64}
+        latestScan: {oneOf: [{$ref: '#/components/schemas/ScanRunSummary'}, {type: 'null'}]}
+        downloads: {$ref: '#/components/schemas/DownloadStatistics'}
+    DownloadAudit:
+      type: object
+      required: [downloadEventId, userId, organizationSnapshot, assetId, productSnapshot, fileName, expectedBytes, purpose, authorizedAt, status]
+      properties:
+        downloadEventId: {type: integer, format: int64}
+        userId: {type: integer, format: int64}
+        organizationSnapshot: {type: string}
+        assetId: {type: integer, format: int64}
+        productSnapshot: {type: array, uniqueItems: true, items: {$ref: '#/components/schemas/ProductCode'}}
+        fileName: {type: string}
+        expectedBytes: {type: integer, format: int64}
+        purpose: {type: string}
+        authorizedAt: {oneOf: [{$ref: '#/components/schemas/UtcInstant'}, {type: 'null'}]}
+        status: {$ref: '#/components/schemas/DownloadStatus'}
+    DownloadAuditPage:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/DownloadAudit'}}
+        page: {type: integer}
+        pageSize: {type: integer}
+        total: {type: integer, format: int64}
+    UserSummary:
+      type: object
+      required: [userId, email, organization, role, status]
+      properties:
+        userId: {type: integer, format: int64}
+        email: {type: string, format: email}
+        organization: {type: string}
+        role: {$ref: '#/components/schemas/UserRole'}
+        status: {$ref: '#/components/schemas/UserStatus'}
+    UserPage:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/UserSummary'}}
+        page: {type: integer}
+        pageSize: {type: integer}
+        total: {type: integer, format: int64}

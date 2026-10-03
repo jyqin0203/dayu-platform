@@ -18,4 +18,7 @@ public interface DownloadAssetLookup {
      * @return 找到时返回受限下载视图，否则返回空 Optional
      */
     Optional<DownloadableAsset> findDownloadableAsset(AssetId assetId);
+
+    /** Legacy 下载适配器按经过规范化的逻辑存储空间和相对路径查找资产。 */
+    Optional<DownloadableAsset> findByStoragePath(String storageKey, String relativePath);
 }

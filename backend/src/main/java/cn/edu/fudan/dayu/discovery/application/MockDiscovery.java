@@ -60,7 +60,8 @@ class MockDiscovery implements DiscoveryQueryService {
     @Override
     public List<ForecastCycleSummary> listForecastCycles(ForecastCycleQuery query) {
         requirePublished(query.productCode());
-        return assets.listForecastCycles(new AssetForecastCycleCriteria(query.productCode(), query.from(), query.to()))
+        return assets.listForecastCycles(new AssetForecastCycleCriteria(
+                        query.productCode(), query.assetType(), query.from(), query.to()))
                 .stream().map(c -> new ForecastCycleSummary(c.cycleTime(), c.firstValidTime(), c.lastValidTime(),
                         c.leadMinutes(), c.complete())).toList();
     }

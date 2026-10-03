@@ -51,7 +51,8 @@ class MockCopilot implements CopilotService {
             return new CopilotResponse("查询PRECIP预报科学数据",
                     new InterpretedCriteria(product, DataMode.FORECAST, from, to, "SCIENTIFIC_ASSET"),
                     "找到" + result.total() + "个真实索引结果。",
-                    List.of(new SuggestedAction("VIEW_RESULTS", "查看检索结果", Map.of("productCode", "PRECIP"))),
+                    List.of(new SuggestedAction("APPLY_SCIENTIFIC_SEARCH", "查看检索结果", Map.of(
+                            "productCode", "PRECIP", "dataMode", "FORECAST", "from", from.toString(), "to", to.toString()))),
                     false);
         }
         Instant from = Instant.parse("2026-09-26T00:00:00Z");
@@ -61,6 +62,7 @@ class MockCopilot implements CopilotService {
         return new CopilotResponse("查询BT855近期实况预览",
                 new InterpretedCriteria(product, DataMode.REALTIME, from, to, "PREVIEW"),
                 "找到" + frames.size() + "个真实索引帧。",
-                List.of(new SuggestedAction("VIEW_PREVIEW", "查看预览", Map.of("productCode", "BT855"))), false);
+                List.of(new SuggestedAction("APPLY_PREVIEW_FILTER", "查看预览", Map.of(
+                        "productCode", "BT855", "dataMode", "REALTIME", "from", from.toString(), "to", to.toString()))), false);
     }
 }

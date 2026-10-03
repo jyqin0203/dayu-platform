@@ -10,5 +10,10 @@ import java.time.Instant;
  */
 public record PreviewFrame(
         AssetId webpAssetId, URI previewUrl, Instant validTime,
-        Instant cycleTime, Integer leadMinutes, boolean downloadAvailable
-) {}
+        Instant cycleTime, Integer leadMinutes, boolean downloadAvailable, long fileSize
+) {
+    /** 兼容已有骨架调用；真实实现应提供大小供 Legacy 查询显示。 */
+    public PreviewFrame(AssetId id, URI url, Instant valid, Instant cycle, Integer lead, boolean downloadable) {
+        this(id, url, valid, cycle, lead, downloadable, 0);
+    }
+}

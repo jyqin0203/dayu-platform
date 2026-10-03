@@ -15,6 +15,14 @@ import cn.edu.fudan.dayu.assetindex.api.IndexedAssetView;
 import cn.edu.fudan.dayu.assetindex.api.ScanHistoryQuery;
 import cn.edu.fudan.dayu.assetindex.api.ScanHistorySummary;
 import cn.edu.fudan.dayu.assetindex.api.ScanTrigger;
+import cn.edu.fudan.dayu.assetindex.api.AssetScanTaskService;
+import cn.edu.fudan.dayu.assetindex.api.ScanRunView;
+import cn.edu.fudan.dayu.assetindex.api.ScanRunQuery;
+import cn.edu.fudan.dayu.assetindex.api.ScanStatus;
+import cn.edu.fudan.dayu.shared.kernel.ActorContext;
+import cn.edu.fudan.dayu.shared.kernel.BusinessException;
+import cn.edu.fudan.dayu.shared.kernel.ErrorCode;
+import cn.edu.fudan.dayu.shared.kernel.UserRole;
 import cn.edu.fudan.dayu.catalog.api.CatalogQueryService;
 import cn.edu.fudan.dayu.shared.kernel.AssetId;
 import cn.edu.fudan.dayu.shared.kernel.AssetStatus;
@@ -38,7 +46,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Profile("skeleton")
-class MockAssetIndex implements AssetIndexCommandService, AssetQueryService, DownloadAssetLookup, AssetAdminQueryService {
+class MockAssetIndex implements AssetIndexCommandService, AssetQueryService, DownloadAssetLookup, AssetAdminQueryService, AssetScanTaskService {
     private static final ProductCode BT855 = new ProductCode("BT855");
     private static final ProductCode PRECIP = new ProductCode("PRECIP");
     private static final ProductCode PLP = new ProductCode("PLP");
@@ -47,6 +55,8 @@ class MockAssetIndex implements AssetIndexCommandService, AssetQueryService, Dow
     private final CatalogQueryService catalog;
     private final List<IndexedAssetView> assets;
     private AssetScanResult latestScan;
+    private final java.util.Map<Long, ScanRunView> tasks = new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.concurrent.atomic.AtomicLong sequence = new java.util.concurrent.atomic.AtomicLong();
 
     MockAssetIndex(CatalogQueryService catalog) {
         this.catalog = catalog;
@@ -89,7 +99,7 @@ class MockAssetIndex implements AssetIndexCommandService, AssetQueryService, Dow
 
     @Override
     public List<ForecastCycleSummary> listForecastCycles(AssetForecastCycleCriteria criteria) {
-        boolean exists = assets.stream().anyMatch(a -> a.assetType() == AssetType.NETCDF
+        boolean exists = assets.stream().anyMatch(a -> a.assetType() == criteria.assetType()
                 && a.products().contains(criteria.productCode()) && a.dataMode() == DataMode.FORECAST);
         return exists ? List.of(new ForecastCycleSummary(CYCLE, FORECAST_VALID, FORECAST_VALID, Set.of(120), true))
                 : List.of();
@@ -119,6 +129,14 @@ class MockAssetIndex implements AssetIndexCommandService, AssetQueryService, Dow
     }
 
     @Override
+    public Optional<DownloadableAsset> findByStoragePath(String storageKey, String relativePath) {
+        if (!"netcdf-science".equals(storageKey) && !"netcdf-data".equals(storageKey)) return Optional.empty();
+        return assets.stream().filter(a -> a.assetType() == AssetType.NETCDF)
+                .filter(a -> ("forecast/202609020600/" + a.fileName()).equals(relativePath))
+                .findFirst().flatMap(a -> findDownloadableAsset(a.assetId()));
+    }
+
+    @Override
     public Optional<AssetScanResult> getLatestScanResult() {
         return Optional.of(latestScan);
     }
@@ -129,5 +147,33 @@ class MockAssetIndex implements AssetIndexCommandService, AssetQueryService, Dow
                 latestScan.finishedAt(), latestScan.scannedFiles(),
                 latestScan.createdAssets() + latestScan.updatedAssets(), latestScan.errors().size());
         return new PageResult<>(List.of(summary), query.pageRequest().page(), query.pageRequest().size(), 1);
+    }
+
+    /** 仅骨架：提交快照为 RUNNING，立即模拟完成，真实服务使用数据库 ID 和后台线程。 */
+    @Override
+    public ScanRunView submitScan(ScanTrigger trigger, ActorContext actor) {
+        if (actor == null) throw new BusinessException(ErrorCode.UNAUTHENTICATED, "Login required");
+        if (actor.role() != UserRole.ADMIN) throw new BusinessException(ErrorCode.FORBIDDEN, "Administrator required");
+        if (trigger != ScanTrigger.MANUAL) throw new BusinessException(ErrorCode.VALIDATION_FAILED, "Manual trigger required");
+        long id = sequence.incrementAndGet();
+        Instant started = Instant.now();
+        var accepted = new ScanRunView(id,trigger,ScanStatus.RUNNING,actor.userId(),started,null,0,0,0,0,0,0,List.of());
+        tasks.put(id, new ScanRunView(id,trigger,ScanStatus.SUCCEEDED,actor.userId(),started,Instant.now(),2,0,0,0,0,0,List.of()));
+        latestScan = new AssetScanResult(trigger,started,Instant.now(),2,0,0,0,0,Set.of(),List.of());
+        return accepted;
+    }
+
+    @Override
+    public Optional<ScanRunView> findScanRun(long id) { return Optional.ofNullable(tasks.get(id)); }
+
+    @Override
+    public PageResult<ScanRunView> searchScanRuns(ScanRunQuery q) {
+        var found=tasks.values().stream().filter(r -> q.from()==null || !r.startedAt().isBefore(q.from()))
+                .filter(r -> q.to()==null || !r.startedAt().isAfter(q.to()))
+                .filter(r -> q.trigger()==null || r.trigger()==q.trigger())
+                .filter(r -> q.status()==null || r.status()==q.status())
+                .sorted(java.util.Comparator.comparing(ScanRunView::startedAt).thenComparingLong(ScanRunView::scanRunId).reversed()).toList();
+        var p=q.pageRequest();
+        return new PageResult<>(found.stream().skip((p.page()-1L)*p.size()).limit(p.size()).toList(),p.page(),p.size(),found.size());
     }
 }

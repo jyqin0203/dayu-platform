@@ -104,12 +104,16 @@ class ArchitectureTest {
                 }).check(classes);
     }
 
-    /** 验证 Copilot 不能依赖下载、运维或基础设施实现。 */
+    /** Copilot 禁止特权模块；模型适配器只实现本模块端口，不被应用层反向引用。 */
     @Test
     void copilotCannotDependOnDownloadOperationsOrInfrastructure() {
         noClasses().that().resideInAPackage("..copilot..")
                 .should().dependOnClassesThat().resideInAnyPackage(
-                        "..download..", "..operations..", "..infrastructure..")
+                        "..download..", "..operations..")
+                .check(classes);
+        // 其他模块 infrastructure 仍由 crossModuleDependenciesUseOnlyTargetApiAndFollowMatrix 全面禁止。
+        noClasses().that().resideInAPackage("..copilot.application..")
+                .should().dependOnClassesThat().resideInAPackage("..copilot.infrastructure..")
                 .check(classes);
     }
 

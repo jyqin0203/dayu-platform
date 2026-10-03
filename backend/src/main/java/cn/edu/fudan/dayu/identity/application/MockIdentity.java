@@ -10,11 +10,13 @@ import cn.edu.fudan.dayu.identity.api.RegisterCommand;
 import cn.edu.fudan.dayu.identity.api.UserAdminService;
 import cn.edu.fudan.dayu.identity.api.UserStatus;
 import cn.edu.fudan.dayu.identity.api.UserSummary;
+import cn.edu.fudan.dayu.identity.api.UserQuery;
 import cn.edu.fudan.dayu.shared.kernel.ActorContext;
 import cn.edu.fudan.dayu.shared.kernel.BusinessException;
 import cn.edu.fudan.dayu.shared.kernel.ErrorCode;
 import cn.edu.fudan.dayu.shared.kernel.UserId;
 import cn.edu.fudan.dayu.shared.kernel.UserRole;
+import cn.edu.fudan.dayu.shared.kernel.PageResult;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,7 +38,8 @@ class MockIdentity implements IdentityService, UserAdminService {
 
     private final AtomicLong sequence = new AtomicLong(100);
     private final Map<String, MockAccount> accounts = new LinkedHashMap<>();
-    private AuthenticatedUser currentUser;
+    // Only non-HTTP direct-call skeleton stories use this thread-local identity.
+    private final ThreadLocal<AuthenticatedUser> directUser = new ThreadLocal<>();
 
     MockIdentity() {
         addAccount(1, "user@example.test", "user-password", "复旦大学", UserRole.USER);
@@ -56,8 +59,9 @@ class MockIdentity implements IdentityService, UserAdminService {
         UserSummary user = new UserSummary(new UserId(sequence.incrementAndGet()), command.email(),
                 command.organization(), UserRole.USER, UserStatus.ACTIVE);
         accounts.put(command.email(), new MockAccount(user, command.password()));
-        currentUser = authenticated(user);
-        return currentUser;
+        AuthenticatedUser userView = authenticated(user);
+        if (org.springframework.web.context.request.RequestContextHolder.getRequestAttributes() == null) directUser.set(userView);
+        return userView;
     }
 
     @Override
@@ -67,20 +71,42 @@ class MockIdentity implements IdentityService, UserAdminService {
             throw new BusinessException(ErrorCode.UNAUTHENTICATED, "邮箱或密码错误");
         }
         if (account.summary().status() == UserStatus.DISABLED) {
-            throw new BusinessException(ErrorCode.FORBIDDEN, "账号当前不可用");
+            throw new BusinessException(ErrorCode.UNAUTHENTICATED, "邮箱或密码错误");
         }
-        currentUser = authenticated(account.summary());
-        return currentUser;
+        AuthenticatedUser userView = authenticated(account.summary());
+        if (org.springframework.web.context.request.RequestContextHolder.getRequestAttributes() == null) directUser.set(userView);
+        return userView;
     }
 
     @Override
     public Optional<AuthenticatedUser> getCurrentUser() {
-        return Optional.ofNullable(currentUser);
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof AuthenticatedUser principal) {
+            return accounts.values().stream().map(MockAccount::summary)
+                    .filter(user -> user.id().equals(principal.id()) && user.status() == UserStatus.ACTIVE)
+                    .findFirst().map(MockIdentity::authenticated);
+        }
+        if (auth != null || org.springframework.web.context.request.RequestContextHolder.getRequestAttributes() != null) return Optional.empty();
+        return Optional.ofNullable(directUser.get());
     }
 
     @Override
     public void logout() {
-        currentUser = null;
+        directUser.remove();
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
+    }
+
+    @Override
+    public PageResult<UserSummary> searchUsers(UserQuery query, ActorContext actor) {
+        requireAdmin(actor);
+        var found = accounts.values().stream().map(MockAccount::summary)
+                .filter(user -> query.email() == null || user.email().contains(query.email()))
+                .filter(user -> query.organization() == null
+                        || user.organization().contains(query.organization()))
+                .filter(user -> query.role() == null || user.role() == query.role())
+                .filter(user -> query.status() == null || user.status() == query.status())
+                .toList();
+        return new PageResult<>(found, query.pageRequest().page(), query.pageRequest().size(), found.size());
     }
 
     @Override

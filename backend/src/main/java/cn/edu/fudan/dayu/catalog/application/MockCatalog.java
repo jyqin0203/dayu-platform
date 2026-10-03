@@ -3,6 +3,7 @@ package cn.edu.fudan.dayu.catalog.application;
 import cn.edu.fudan.dayu.catalog.api.AssetFamilyProductMapping;
 import cn.edu.fudan.dayu.catalog.api.CatalogAdminService;
 import cn.edu.fudan.dayu.catalog.api.CatalogQueryService;
+import cn.edu.fudan.dayu.catalog.api.ConfigureProductModeCommand;
 import cn.edu.fudan.dayu.catalog.api.CreateProductCommand;
 import cn.edu.fudan.dayu.catalog.api.ManagedProductQuery;
 import cn.edu.fudan.dayu.catalog.api.ProductDetail;
@@ -80,6 +81,14 @@ class MockCatalog implements CatalogQueryService, CatalogAdminService {
     }
 
     @Override
+    public List<ProductDetail> listPublishedProductDetails() {
+        return products.values().stream()
+                .filter(product -> product.summary().status() == ProductStatus.PUBLISHED)
+                .sorted(Comparator.comparingInt(product -> product.summary().sortOrder()))
+                .toList();
+    }
+
+    @Override
     public Optional<ProductDetail> findProduct(ProductCode code) {
         return Optional.ofNullable(products.get(code));
     }
@@ -99,6 +108,13 @@ class MockCatalog implements CatalogQueryService, CatalogAdminService {
                 .filter(p -> p.family().equals(familyCode)).map(ProductSummary::code)
                 .collect(java.util.stream.Collectors.toUnmodifiableSet());
         return new AssetFamilyProductMapping(familyCode, mapped);
+    }
+
+    @Override
+    public List<ProductDetail> listManagedProductDetails(ManagedProductQuery query) {
+        return listManagedProducts(query).stream().map(p -> products.get(p.code()))
+                .sorted(Comparator.comparingInt((ProductDetail p) -> p.summary().sortOrder())
+                        .thenComparingLong(p -> p.summary().id().value())).toList();
     }
 
     @Override
@@ -150,7 +166,42 @@ class MockCatalog implements CatalogQueryService, CatalogAdminService {
     }
 
     @Override
+    public ProductModePolicy configureProductMode(ConfigureProductModeCommand command, ActorContext actor) {
+        requireAdmin(actor);
+        ProductDetail existing = byId(command.productId());
+
+        boolean anotherModeRemainsEnabled = existing.modePolicies().stream()
+                .anyMatch(policy -> policy.dataMode() != command.dataMode() && policy.enabled());
+        if (existing.summary().status() == ProductStatus.PUBLISHED
+                && !command.enabled() && !anotherModeRemainsEnabled) {
+            throw new BusinessException(ErrorCode.CONFLICT,
+                    "已发布产品必须至少保留一种启用的数据模式");
+        }
+
+        ProductModePolicy configured = new ProductModePolicy(
+                existing.summary().code(), command.dataMode(), command.enabled(), command.staleAfter());
+        List<ProductModePolicy> policies = java.util.stream.Stream.concat(
+                        existing.modePolicies().stream()
+                                .filter(policy -> policy.dataMode() != command.dataMode()),
+                        java.util.stream.Stream.of(configured))
+                .sorted(Comparator.comparing(ProductModePolicy::dataMode))
+                .toList();
+
+        ProductDetail updated = new ProductDetail(existing.summary(), existing.descriptionZh(),
+                existing.descriptionEn(), existing.colorbarRequired(), existing.colorbarPath(),
+                policies, existing.publishedAt(), existing.createdAt(), FIXED_NOW);
+        products.put(existing.summary().code(), updated);
+        return configured;
+    }
+
+    @Override
     public ProductDetail publishProduct(ProductId productId, ActorContext actor) {
+        requireAdmin(actor);
+        ProductDetail product = byId(productId);
+        if (product.modePolicies().stream().noneMatch(ProductModePolicy::enabled)) {
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED,
+                    "发布产品前必须至少启用一种数据模式");
+        }
         return changeStatus(productId, actor, Set.of(ProductStatus.DRAFT, ProductStatus.DISABLED),
                 ProductStatus.PUBLISHED);
     }
