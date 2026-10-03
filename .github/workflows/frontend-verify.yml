@@ -24,10 +24,7 @@ jobs:
       - name: Install locked dependencies without lifecycle scripts
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Check production entry scripts
-        run: |
-          node --check public/flat-20260925/app.js
-          node --check public/flat-20260925/product-geometry.js
-          node --check public/cesium-config.js
+        run: npm run check
       - name: Test static server and backend proxy
         run: npm test
       - name: Build static deployment package

@@ -1,0 +1,11 @@
+/* 仅作用于原有账号弹窗，复用页面变量与按钮交互。 */
+#account { max-height:90dvh; overflow:auto; }
+#account [hidden] { display:none!important; }
+#account label { display:block; margin:14px 0 6px; }
+#account input { width:100%; min-width:0; padding:10px 12px; border:1px solid #ffffff26; border-radius:8px; background:#08121b; color:var(--text); }
+#account .account-tabs { display:flex; gap:8px; }
+#account button { padding:9px 12px; }
+#account button[aria-pressed="true"],#account-submit,#account-logout { background:#69d9d21c; color:var(--accent); }
+#account-submit { margin-top:16px; width:100%; }
+#account-message,#account-summary { overflow-wrap:anywhere; }
+#account .account-note,#account-password-help { font-size:13px; color:var(--muted); line-height:1.7; }
