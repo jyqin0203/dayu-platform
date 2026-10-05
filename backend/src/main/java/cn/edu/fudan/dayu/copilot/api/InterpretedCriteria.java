@@ -9,10 +9,16 @@ import java.time.Instant;
  */
 public record InterpretedCriteria(
         ProductCode productCode, DataMode dataMode, Instant from, Instant to, String queryKind,
-        Instant cycleTime, Integer leadMinutes
+        Instant cycleTime, Integer leadMinutes, String interpretedZone
 ) {
     /** Compatibility constructor for callers without forecast-cycle constraints. */
     public InterpretedCriteria(ProductCode productCode, DataMode dataMode, Instant from, Instant to, String queryKind) {
-        this(productCode, dataMode, from, to, queryKind, null, null);
+        this(productCode, dataMode, from, to, queryKind, null, null, null);
+    }
+
+    /** Compatibility constructor for callers without a separately reported interpretation zone. */
+    public InterpretedCriteria(ProductCode productCode, DataMode dataMode, Instant from, Instant to, String queryKind,
+            Instant cycleTime, Integer leadMinutes) {
+        this(productCode, dataMode, from, to, queryKind, cycleTime, leadMinutes, null);
     }
 }

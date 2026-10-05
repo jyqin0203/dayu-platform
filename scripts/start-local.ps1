@@ -34,8 +34,9 @@ $stdout = Join-Path $logDir "backend-local-$stamp.out.log"
 $stderr = Join-Path $logDir "backend-local-$stamp.err.log"
 $java = (Get-DayuJdk).Java
 
-# The password is inherited through the child environment, never a command-line argument.
-# Replace inherited JSON/config with the validated local settings and bind exclusively to loopback.
+# Secrets are passed only through the child environment, never a command-line argument.
+# Start-Process -Environment is required here: mutating the parent process environment through
+# System.Environment does not reliably populate the child block in current PowerShell releases.
 $overrides = @{
     SPRING_DATASOURCE_PASSWORD = $password
     SPRING_APPLICATION_JSON = $runtime.Json
@@ -43,26 +44,22 @@ $overrides = @{
     DASHSCOPE_API_KEY = $runtime.ApiKey
     DAYU_COPILOT_QWEN_API_KEY = $null
 }
-$previous = @{}
 try {
-    foreach ($name in $overrides.Keys) {
-        $previous[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
-        [Environment]::SetEnvironmentVariable($name, $overrides[$name], 'Process')
-    }
     $arguments = @('-Xmx384m', '-jar', ('"{0}"' -f $jar), '--debug=false',
         '--spring.config.location=classpath:/application.yml', '--spring.profiles.active=local',
         "--spring.datasource.url=jdbc:mariadb://127.0.0.1:$($settings.DbPort)/dayu", '--spring.datasource.username=dayu',
         '--spring.flyway.enabled=true', '--server.address=127.0.0.1', "--server.port=$($settings.HttpPort)",
         '--dayu.indexing.enabled=false', '--dayu.cache.enabled=false')
     $backend = Start-Process -FilePath $java -ArgumentList $arguments -WorkingDirectory $repo `
-        -WindowStyle Hidden -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
+        -WindowStyle Hidden -RedirectStandardOutput $stdout -RedirectStandardError $stderr `
+        -Environment $overrides -PassThru
     New-Item -ItemType Directory -Path (Split-Path -Parent $settings.StateFile) -Force | Out-Null
     @{Pid=$backend.Id;StartedAt=$backend.StartTime.ToUniversalTime().ToString('o');Jar=$jar;Port=$settings.HttpPort} |
         ConvertTo-Json | Set-Content -LiteralPath $settings.StateFile -Encoding UTF8
 } finally {
-    foreach ($name in $previous.Keys) { [Environment]::SetEnvironmentVariable($name, $previous[$name], 'Process') }
     $password = $null
     $runtime.ApiKey = $null
+    $overrides.Clear()
 }
 
 $ready = $false

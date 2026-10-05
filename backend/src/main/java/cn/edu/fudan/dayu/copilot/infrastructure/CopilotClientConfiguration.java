@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 
@@ -12,12 +14,16 @@ import org.springframework.context.annotation.*;
 @Configuration
 @Profile("!skeleton")
 public class CopilotClientConfiguration {
+    private static final Logger LOG = LoggerFactory.getLogger(CopilotClientConfiguration.class);
+
     @Bean AiClient qwenAiClient(ObjectMapper mapper,
             @Value("${dayu.copilot.qwen.base-url:https://dashscope.aliyuncs.com/compatible-mode/v1}") URI baseUrl,
             @Value("${dayu.copilot.qwen.api-key:${DASHSCOPE_API_KEY:}}") String apiKey,
             @Value("${dayu.copilot.qwen.model:qwen-plus}") String model,
             @Value("${dayu.copilot.timeout:10s}") Duration timeout,
             @Value("${dayu.copilot.max-response-bytes:65536}") int maxResponseBytes) {
+        LOG.info("Qwen adapter configured: keyPresent={}, modelPresent={}, endpointHost={}",
+                apiKey != null && !apiKey.isBlank(), model != null && !model.isBlank(), baseUrl.getHost());
         return new QwenAiClient(mapper, baseUrl, apiKey, model, timeout, maxResponseBytes);
     }
     @Bean @Primary ChatClient chatClient(List<AiClient> clients,

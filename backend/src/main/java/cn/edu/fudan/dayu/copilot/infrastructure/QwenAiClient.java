@@ -14,12 +14,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Flow;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Bailian OpenAI-compatible HTTP adapter. No OpenAI SDK, redirects, retries, or paid startup probe. */
 public final class QwenAiClient implements AiClient {
+    private static final Logger LOG = LoggerFactory.getLogger(QwenAiClient.class);
     private final ObjectMapper json;
     private final HttpClient http;
     private final URI endpoint;
@@ -45,7 +50,10 @@ public final class QwenAiClient implements AiClient {
 
     /** Total deadline covers headers and body; bounded subscriber cancels oversized responses immediately. */
     @Override public String complete(ChatRequest request) {
-        if (key == null || key.isBlank() || model == null || model.isBlank()) throw new AiUnavailableException();
+        if (key == null || key.isBlank() || model == null || model.isBlank()) {
+            LOG.warn("Qwen request rejected before network call: provider configuration is incomplete");
+            throw new AiUnavailableException();
+        }
         CompletableFuture<HttpResponse<byte[]>> response = null;
         try {
             byte[] body = json.writeValueAsBytes(Map.of("model", model, "stream", false, "enable_thinking", false,
@@ -58,21 +66,40 @@ public final class QwenAiClient implements AiClient {
                     .POST(HttpRequest.BodyPublishers.ofByteArray(body)).build();
             response = http.sendAsync(httpRequest, info -> new LimitedBody(maxResponseBytes));
             var result = response.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-            if (result.statusCode() != 200) throw new AiUnavailableException();
+            if (result.statusCode() != 200) {
+                LOG.warn("Qwen request failed with HTTP status {}", result.statusCode());
+                throw new AiUnavailableException();
+            }
             var tree = json.readTree(result.body());
             var message = tree.path("choices").path(0).path("message");
             if (message.has("tool_calls") || !message.path("content").isTextual()
-                    || !tree.path("choices").path(0).path("finish_reason").asText().equals("stop"))
+                    || !tree.path("choices").path(0).path("finish_reason").asText().equals("stop")) {
+                LOG.warn("Qwen response rejected because its completion shape is not allowed");
                 throw new AiUnavailableException();
+            }
             return message.path("content").asText();
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
+            LOG.warn("Qwen request interrupted");
             throw new AiUnavailableException();
+        } catch (TimeoutException timeoutFailure) {
+            LOG.warn("Qwen request exceeded the configured deadline");
+            throw new AiUnavailableException();
+        } catch (ExecutionException transportFailure) {
+            LOG.warn("Qwen transport failed: {}", safeType(transportFailure.getCause()));
+            throw new AiUnavailableException();
+        } catch (AiUnavailableException unavailable) {
+            throw unavailable;
         } catch (Exception unavailable) {
+            LOG.warn("Qwen response processing failed: {}", safeType(unavailable));
             throw new AiUnavailableException();
         } finally {
             if (response != null && !response.isDone()) response.cancel(true);
         }
+    }
+
+    private static String safeType(Throwable failure) {
+        return failure == null ? "unknown" : failure.getClass().getSimpleName();
     }
 
     private static final class LimitedBody implements HttpResponse.BodySubscriber<byte[]> {
