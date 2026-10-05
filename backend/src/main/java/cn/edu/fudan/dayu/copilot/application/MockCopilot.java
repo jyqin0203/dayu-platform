@@ -49,10 +49,12 @@ class MockCopilot implements CopilotService {
             var result = discovery.searchScientificAssets(new ScientificAssetQuery(product, DataMode.FORECAST,
                     from, to, Instant.parse("2026-09-02T06:00:00Z"), null, new PageRequest(1, 20)));
             return new CopilotResponse("查询PRECIP预报科学数据",
-                    new InterpretedCriteria(product, DataMode.FORECAST, from, to, "SCIENTIFIC_ASSET"),
+                    new InterpretedCriteria(product, DataMode.FORECAST, from, to, "SCIENTIFIC_SEARCH", null, null,
+                            command.displayZone().getId()),
                     "找到" + result.total() + "个真实索引结果。",
                     List.of(new SuggestedAction("APPLY_SCIENTIFIC_SEARCH", "查看检索结果", Map.of(
-                            "productCode", "PRECIP", "dataMode", "FORECAST", "from", from.toString(), "to", to.toString()))),
+                            "productCode", "PRECIP", "dataMode", "FORECAST", "from", from.toString(), "to", to.toString(),
+                            "displayZone", command.displayZone().getId()))),
                     false);
         }
         Instant from = Instant.parse("2026-09-26T00:00:00Z");
@@ -60,9 +62,11 @@ class MockCopilot implements CopilotService {
         var frames = discovery.listPreviewFrames(new PreviewQuery(product, DataMode.REALTIME, from, to,
                 null, null, 48));
         return new CopilotResponse("查询BT855近期实况预览",
-                new InterpretedCriteria(product, DataMode.REALTIME, from, to, "PREVIEW"),
+                new InterpretedCriteria(product, DataMode.REALTIME, from, to, "PREVIEW_SEARCH", null, null,
+                        command.displayZone().getId()),
                 "找到" + frames.size() + "个真实索引帧。",
                 List.of(new SuggestedAction("APPLY_PREVIEW_FILTER", "查看预览", Map.of(
-                        "productCode", "BT855", "dataMode", "REALTIME", "from", from.toString(), "to", to.toString()))), false);
+                        "productCode", "BT855", "dataMode", "REALTIME", "from", from.toString(), "to", to.toString(),
+                        "displayZone", command.displayZone().getId()))), false);
     }
 }

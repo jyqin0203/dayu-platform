@@ -21,9 +21,10 @@ class CopilotApplicationServiceTest {
     private final CopilotApplicationService service = new CopilotApplicationService(catalog, discovery, chat, new ObjectMapper());
     private static final ProductCode CODE = new ProductCode("PRECIP");
     private static final String SEARCH = """
-            {"productCode":"PRECIP","dataMode":"FORECAST","from":"2026-09-02T06:00:00Z",
-             "to":"2026-09-02T09:00:00Z","queryKind":"SCIENTIFIC_ASSET",
-             "cycleTime":"2026-09-02T06:00:00Z","leadMinutes":120}
+            {"intent":"SCIENTIFIC_SEARCH","aboutTopic":null,"productCode":"PRECIP","dataMode":"FORECAST",
+             "from":"2026-09-02T06:00:00Z","to":"2026-09-02T09:00:00Z",
+             "cycleTime":"2026-09-02T06:00:00Z","leadMinutes":120,
+             "interpretedZone":"Asia/Shanghai","missingFields":[]}
             """;
 
     @BeforeEach void products() {
@@ -39,7 +40,7 @@ class CopilotApplicationServiceTest {
         when(discovery.searchScientificAssets(any())).thenReturn(new PageResult<>(List.of(), 1, 20, 7));
         var actor = new ActorContext(new UserId(999), "private-organization", UserRole.ADMIN);
         var response = service.query(command(null), Optional.of(actor));
-        assertThat(response.answer()).contains("7个NC");
+        assertThat(response.answer()).contains("文件数：7");
         assertThat(response.suggestedActions().get(0).type()).isEqualTo("APPLY_SCIENTIFIC_SEARCH");
         assertThat(response.suggestedActions().get(0).parameters()).containsEntry("leadMinutes", "120")
                 .containsEntry("cycleTime", "2026-09-02T06:00:00Z");
@@ -49,17 +50,18 @@ class CopilotApplicationServiceTest {
         var prompt = ArgumentCaptor.forClass(ChatClient.ChatRequest.class);
         verify(chat).complete(prompt.capture());
         assertThat(prompt.getValue().userContent()).contains("Asia/Shanghai").doesNotContain("private-organization", "999", "ADMIN");
+        assertThat(response.criteria().interpretedZone()).isEqualTo("Asia/Shanghai");
     }
     @Test void emptyResultsAreNotFabricated() {
         when(chat.complete(any())).thenReturn(SEARCH);
         when(discovery.searchScientificAssets(any())).thenReturn(new PageResult<>(List.of(), 1, 20, 0));
-        assertThat(service.query(command(null), Optional.empty()).answer()).contains("没有可用的NC");
+        assertThat(service.query(command(null), Optional.empty()).answer()).contains("没有可用的 NetCDF");
     }
     @Test void previewIntentUsesOnlyPreviewQueryAndWhitelistedAction() {
-        when(chat.complete(any())).thenReturn(SEARCH.replace("SCIENTIFIC_ASSET", "PREVIEW"));
+        when(chat.complete(any())).thenReturn(SEARCH.replace("SCIENTIFIC_SEARCH", "PREVIEW_SEARCH"));
         when(discovery.listPreviewFrames(any())).thenReturn(List.of());
         var response = service.query(command(null), Optional.empty());
-        assertThat(response.answer()).contains("没有可用的WebP");
+        assertThat(response.answer()).contains("没有可用的 WebP");
         assertThat(response.suggestedActions().get(0).type()).isEqualTo("APPLY_PREVIEW_FILTER");
         verify(discovery).listPreviewFrames(any());
         verify(discovery, never()).searchScientificAssets(any());
@@ -68,13 +70,13 @@ class CopilotApplicationServiceTest {
         when(chat.complete(any())).thenReturn(SEARCH.replace("PRECIP", "UNKNOWN"));
         var unknown = service.query(command(null), Optional.empty());
         assertThat(unknown.criteria()).isNull(); assertThat(unknown.suggestedActions()).isEmpty();
-        when(chat.complete(any())).thenReturn("{\"productCode\":\"PRECIP\",\"queryKind\":\"SCIENTIFIC_ASSET\"}");
-        assertThat(service.query(command(null), Optional.empty()).answer()).contains("补充");
+        when(chat.complete(any())).thenReturn("{\"intent\":\"SCIENTIFIC_SEARCH\",\"productCode\":\"PRECIP\",\"missingFields\":[\"dataMode\",\"from\",\"to\"]}");
+        assertThat(service.query(command(null), Optional.empty()).answer()).contains("实况", "预报");
         verifyNoInteractions(discovery);
     }
     @Test void promptInjectionUnknownFieldsAndDuplicateKeysCannotBecomeTools() {
-        for (String invalid : List.of(SEARCH.replace("120}", "120,\"action\":\"DOWNLOAD_ASSET\"}"),
-                SEARCH.replace("SCIENTIFIC_ASSET", "RUN_SCAN"), "{\"productCode\":\"PRECIP\",\"productCode\":\"BT855\"}", "{}{}")) {
+        for (String invalid : List.of(SEARCH.replace("\"missingFields\":[]", "\"missingFields\":[],\"action\":\"DOWNLOAD_ASSET\""),
+                SEARCH.replace("SCIENTIFIC_SEARCH", "RUN_SCAN"), "{\"intent\":\"PRODUCT_HELP\",\"productCode\":\"PRECIP\",\"productCode\":\"BT855\"}", "{}{}")) {
             when(chat.complete(any())).thenReturn(invalid);
             assertThatThrownBy(() -> service.query(command(null), Optional.empty())).isInstanceOf(BusinessException.class)
                     .satisfies(ex -> assertThat(((BusinessException) ex).errorCode()).isEqualTo(ErrorCode.AI_UNAVAILABLE));
@@ -105,7 +107,8 @@ class CopilotApplicationServiceTest {
     }
     @Test void validatesIanaZoneContextConsistencyAndTotalPromptBudgetBeforeNetwork() {
         var conflicting = new CopilotCommand("查询数据", ZoneId.of("UTC"), new PageContext(CODE, null, ZoneId.of("Asia/Shanghai")), List.of());
-        var tooMuch = new CopilotCommand("x".repeat(2000), ZoneId.of("UTC"), null, Collections.nCopies(4, "x".repeat(2000)));
+        var tooMuch = new CopilotCommand("x".repeat(2000), ZoneId.of("UTC"), null,
+                Collections.nCopies(4, new ConversationMessage("USER", "x".repeat(2000))));
         var secret = new CopilotCommand("api_key=do-not-send-this", ZoneId.of("UTC"), null, List.of());
         var offset = new CopilotCommand("查询数据", ZoneId.of("+08:00"), null, List.of());
         for (var invalid : List.of(conflicting, tooMuch, secret, offset))
@@ -113,11 +116,45 @@ class CopilotApplicationServiceTest {
         verifyNoInteractions(chat);
     }
     @Test void productHelpComesFromCatalogNotModelWrittenAnswers() {
-        when(chat.complete(any())).thenReturn("{\"productCode\":\"PRECIP\",\"queryKind\":\"PRODUCT_HELP\"}");
+        when(chat.complete(any())).thenReturn("{\"intent\":\"PRODUCT_HELP\",\"productCode\":\"PRECIP\",\"missingFields\":[]}");
         var response = service.query(command(null), Optional.empty());
         assertThat(response.answer()).contains("降水率科学数据");
         assertThat(response.criteria().from()).isNull();
         verifyNoInteractions(discovery);
+    }
+    @Test void aboutCapabilitiesAndProductListComeFromTrustedApplicationData() {
+        when(chat.complete(any())).thenReturn("{\"intent\":\"ABOUT_DAYU\",\"aboutTopic\":\"SYSTEMS\",\"missingFields\":[]}");
+        var about = service.query(command(null), Optional.empty());
+        assertThat(about.answer()).contains("DaYu-RTM", "DaYu-CLAS", "DaYu-PRAS", "DaYu-Nowcast");
+        assertThat(about.suggestedActions().get(0).type()).isEqualTo("OPEN_ABOUT");
+        when(chat.complete(any())).thenReturn("{\"intent\":\"LIST_PRODUCTS\",\"missingFields\":[]}");
+        var products = service.query(command(null), Optional.empty());
+        assertThat(products.answer()).contains("PRECIP", "降水");
+        assertThat(products.suggestedActions().get(0).type()).isEqualTo("OPEN_PRODUCT_CATALOG");
+        verifyNoInteractions(discovery);
+    }
+    @Test void simpleGreetingIsPoliteAndDoesNotExposeInternalReleaseLanguage() {
+        var response = service.query(new CopilotCommand("你好", ZoneId.of("Asia/Shanghai"), null, List.of()), Optional.empty());
+        assertThat(response.criteria().queryKind()).isEqualTo("GREETING");
+        assertThat(response.answer()).contains("你好～", "大禹 AI 助手", "可以帮你")
+                .doesNotContain("第一版", "能力边界", "开放式气象知识问答");
+        verifyNoInteractions(chat, discovery);
+    }
+    @Test void modelClassifiedGreetingUsesTheSameTrustedReply() {
+        when(chat.complete(any())).thenReturn("{\"intent\":\"GREETING\",\"missingFields\":[]}");
+        var response = service.query(new CopilotCommand("早上好呀", ZoneId.of("Asia/Shanghai"), null, List.of()), Optional.empty());
+        assertThat(response.answer()).isEqualTo("你好～我是大禹 AI 助手。我可以为你介绍大禹平台和公开产品，也可以帮你整理地图预览或科学数据的检索条件。请问你想了解什么？");
+        verifyNoInteractions(discovery);
+    }
+    @Test void roleBasedRecentMessagesAreSentAsDataForFollowUpResolution() {
+        when(chat.complete(any())).thenReturn(SEARCH);
+        when(discovery.searchScientificAssets(any())).thenReturn(new PageResult<>(List.of(), 1, 20, 0));
+        var command = new CopilotCommand("昨天下午", ZoneId.of("Asia/Shanghai"), null, List.of(
+                new ConversationMessage("USER", "帮我查降水预报"),
+                new ConversationMessage("ASSISTANT", "请补充时间范围")));
+        service.query(command, Optional.empty());
+        var prompt = ArgumentCaptor.forClass(ChatClient.ChatRequest.class);verify(chat).complete(prompt.capture());
+        assertThat(prompt.getValue().userContent()).contains("USER", "ASSISTANT", "昨天下午");
     }
     private static CopilotCommand command(PageContext page) {
         return new CopilotCommand("查询北京时间降水预报", ZoneId.of("Asia/Shanghai"), page, List.of());
