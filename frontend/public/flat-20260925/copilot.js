@@ -1,4 +1,4 @@
-import {queryCopilot,safeAction} from './copilot-client.js';
+import {publicProductDescription,queryCopilot,safeAction} from './copilot-client.js';
 import {openScientificSearch} from './scientific-search.js';
 
 const launcher=document.getElementById('copilot-open');
@@ -96,7 +96,7 @@ async function productDetails(parameters,token){
   if(!response.ok)throw Error('产品详情读取失败，请打开产品目录查看');
   const product=await response.json();if(token!==generation)return;
   const card=document.createElement('section'),title=document.createElement('strong'),description=document.createElement('p');
-  card.className='copilot-detail-card';title.textContent=`${product.nameZh} · ${parameters.productCode}`;description.textContent=product.descriptionZh||'暂无产品说明';card.append(title,description);
+  card.className='copilot-detail-card';title.textContent=`${product.nameZh} · ${parameters.productCode}`;description.textContent=publicProductDescription(product.descriptionZh)||'详细产品信息请以公开目录为准';card.append(title,description);
   $('copilot-summary').replaceChildren(card);$('copilot-summary').hidden=false;
 }
 

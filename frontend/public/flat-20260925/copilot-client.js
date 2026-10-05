@@ -1,4 +1,9 @@
 import {createSessionClient} from './session-client.js';
+/** Copilot 不展示本地初始化、索引等运维占位文案。 */
+export function publicProductDescription(value){
+  if(typeof value!=='string')return '';
+  return value.replace(/本地目录初始化；数据是否可用由后续文件索引决定[。．]?/g,'').replace(/本地目录初始化[；;]/g,'').trim();
+}
 /** 白名单动作转为本地参数，不接受模型提供的URL或管理命令。 */
 export function safeAction(action){
   if(!['APPLY_SCIENTIFIC_SEARCH','APPLY_PREVIEW_FILTER','OPEN_PRODUCT_DETAILS','OPEN_PRODUCT_CATALOG','OPEN_ABOUT'].includes(action?.type))throw Error('不支持的建议操作');

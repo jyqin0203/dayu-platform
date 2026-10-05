@@ -30,7 +30,7 @@ class CopilotApplicationServiceTest {
     @BeforeEach void products() {
         var product = new ProductDetail(new ProductSummary(new ProductId(1), CODE, "降水", "Precipitation", "REPPIC_PRECIP",
                 "mm/h", "课题组", "RePPIC-Net", "AGRI", null, ProductStatus.PUBLISHED, 1),
-                "降水率科学数据", "Scientific precipitation", false, null,
+                "降水率科学数据。本地目录初始化；数据是否可用由后续文件索引决定。", "Scientific precipitation", false, null,
                 List.of(new ProductModePolicy(CODE, DataMode.FORECAST, true, Duration.ofHours(6))), null, Instant.EPOCH, Instant.EPOCH);
         when(catalog.listPublishedProductDetails()).thenReturn(List.of(product));
         when(catalog.findProduct(CODE)).thenReturn(Optional.of(product));
@@ -48,8 +48,9 @@ class CopilotApplicationServiceTest {
         verify(discovery).searchScientificAssets(criteria.capture());
         assertThat(criteria.getValue().leadMinutes()).isEqualTo(120);
         var prompt = ArgumentCaptor.forClass(ChatClient.ChatRequest.class);
-        verify(chat).complete(prompt.capture());
-        assertThat(prompt.getValue().userContent()).contains("Asia/Shanghai").doesNotContain("private-organization", "999", "ADMIN");
+        verify(chat, times(2)).complete(prompt.capture());
+        assertThat(prompt.getAllValues().get(0).userContent()).contains("Asia/Shanghai").doesNotContain("private-organization", "999", "ADMIN");
+        assertThat(prompt.getAllValues().get(1).userContent()).doesNotContain("private-organization", "999", "ADMIN");
         assertThat(response.criteria().interpretedZone()).isEqualTo("Asia/Shanghai");
     }
     @Test void emptyResultsAreNotFabricated() {
@@ -115,12 +116,30 @@ class CopilotApplicationServiceTest {
             assertThatThrownBy(() -> service.query(invalid, Optional.empty())).isInstanceOf(BusinessException.class);
         verifyNoInteractions(chat);
     }
-    @Test void productHelpComesFromCatalogNotModelWrittenAnswers() {
-        when(chat.complete(any())).thenReturn("{\"intent\":\"PRODUCT_HELP\",\"productCode\":\"PRECIP\",\"missingFields\":[]}");
+    @Test void invalidPolishFallsBackToSanitizedCatalogFacts() {
+        when(chat.complete(any())).thenReturn(
+                "{\"intent\":\"PRODUCT_HELP\",\"productCode\":\"PRECIP\",\"missingFields\":[]}",
+                "{\"answer\":\"本地目录初始化后返回的产品。\"}");
         var response = service.query(command(null), Optional.empty());
-        assertThat(response.answer()).contains("降水率科学数据");
+        assertThat(response.answer()).contains("降水率科学数据").doesNotContain("本地目录初始化", "文件索引", "未说明");
+        assertThat(response.degraded()).isTrue();
         assertThat(response.criteria().from()).isNull();
         verifyNoInteractions(discovery);
+    }
+    @Test void toolFactsArePolishedByASecondModelCallWithoutChangingActions() {
+        when(chat.complete(any())).thenReturn(
+                "{\"intent\":\"PRODUCT_HELP\",\"productCode\":\"PRECIP\",\"missingFields\":[]}",
+                "{\"answer\":\"降水产品用于查看平台中的降水率科学数据，单位为 mm/h，目前提供预报数据。\"}");
+        var response = service.query(command(null), Optional.empty());
+        assertThat(response.answer()).startsWith("降水产品用于").doesNotContain("本地目录", "未说明");
+        assertThat(response.degraded()).isFalse();
+        assertThat(response.suggestedActions()).singleElement().satisfies(action ->
+                assertThat(action.type()).isEqualTo("OPEN_PRODUCT_DETAILS"));
+        var prompts = ArgumentCaptor.forClass(ChatClient.ChatRequest.class);
+        verify(chat, times(2)).complete(prompts.capture());
+        assertThat(prompts.getAllValues().get(1).systemPrompt()).contains("trusted Java tool", "single key answer");
+        assertThat(prompts.getAllValues().get(1).userContent()).contains("降水率科学数据")
+                .doesNotContain("本地目录初始化", "文件索引");
     }
     @Test void aboutCapabilitiesAndProductListComeFromTrustedApplicationData() {
         when(chat.complete(any())).thenReturn("{\"intent\":\"ABOUT_DAYU\",\"aboutTopic\":\"SYSTEMS\",\"missingFields\":[]}");
@@ -153,8 +172,8 @@ class CopilotApplicationServiceTest {
                 new ConversationMessage("USER", "帮我查降水预报"),
                 new ConversationMessage("ASSISTANT", "请补充时间范围")));
         service.query(command, Optional.empty());
-        var prompt = ArgumentCaptor.forClass(ChatClient.ChatRequest.class);verify(chat).complete(prompt.capture());
-        assertThat(prompt.getValue().userContent()).contains("USER", "ASSISTANT", "昨天下午");
+        var prompt = ArgumentCaptor.forClass(ChatClient.ChatRequest.class);verify(chat, times(2)).complete(prompt.capture());
+        assertThat(prompt.getAllValues().get(0).userContent()).contains("USER", "ASSISTANT", "昨天下午");
     }
     private static CopilotCommand command(PageContext page) {
         return new CopilotCommand("查询北京时间降水预报", ZoneId.of("Asia/Shanghai"), page, List.of());
