@@ -23,6 +23,12 @@
     </properties>
 
     <dependencies>
+        <!-- Spring Security Argon2 verification for migrated legacy password hashes. -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.86</version>
+        </dependency>
         <!-- Web 后端能力：HTTP 接口、Controller、JSON 等 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
