@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+@org.junit.jupiter.api.extension.ExtendWith(org.springframework.boot.test.system.OutputCaptureExtension.class)
 class CopilotApplicationServiceTest {
     private final CatalogQueryService catalog = mock(CatalogQueryService.class);
     private final DiscoveryQueryService discovery = mock(DiscoveryQueryService.class);
@@ -77,10 +78,13 @@ class CopilotApplicationServiceTest {
     }
     @Test void promptInjectionUnknownFieldsAndDuplicateKeysCannotBecomeTools() {
         for (String invalid : List.of(SEARCH.replace("\"missingFields\":[]", "\"missingFields\":[],\"action\":\"DOWNLOAD_ASSET\""),
-                SEARCH.replace("SCIENTIFIC_SEARCH", "RUN_SCAN"), "{\"intent\":\"PRODUCT_HELP\",\"productCode\":\"PRECIP\",\"productCode\":\"BT855\"}", "{}{}")) {
+                SEARCH.replace("SCIENTIFIC_SEARCH", "RUN_SCAN"), "{\"intent\":\"PRODUCT_HELP\",\"productCode\":\"PRECIP\",\"productCode\":\"BT855\"}", "{}{}", "{}", "{\"intent\":null}")) {
             when(chat.complete(any())).thenReturn(invalid);
-            assertThatThrownBy(() -> service.query(command(null), Optional.empty())).isInstanceOf(BusinessException.class)
-                    .satisfies(ex -> assertThat(((BusinessException) ex).errorCode()).isEqualTo(ErrorCode.AI_UNAVAILABLE));
+            var response = service.query(command(null), Optional.empty());
+            assertThat(response.answer()).contains("查询条件");
+            assertThat(response.criteria()).isNull();
+            assertThat(response.suggestedActions()).isEmpty();
+            assertThat(response.degraded()).isFalse();
         }
         verifyNoInteractions(discovery);
     }
@@ -102,7 +106,12 @@ class CopilotApplicationServiceTest {
         for (String invalid : List.of(SEARCH.replace("2026-09-02T09:00:00Z", "2026-09-01T09:00:00Z"),
                 SEARCH.replace("2026-09-02T06:00:00Z", "not-a-dateZ"), SEARCH.replace("FORECAST", "REALTIME"))) {
             when(chat.complete(any())).thenReturn(invalid);
-            try { service.query(command(null), Optional.empty()); } catch (BusinessException safe) { assertThat(safe.errorCode()).isEqualTo(ErrorCode.AI_UNAVAILABLE); }
+            var response = service.query(command(null), Optional.empty());
+            assertThat(response.criteria()).isNull();
+            assertThat(response.suggestedActions()).isEmpty();
+            assertThat(response.answer()).contains(invalid.contains("\"dataMode\":\"REALTIME\"")
+                    ? "尚未启用所选的数据模式" : "查询条件");
+            assertThat(response.degraded()).isFalse();
         }
         verifyNoInteractions(discovery);
     }
@@ -174,6 +183,47 @@ class CopilotApplicationServiceTest {
         service.query(command, Optional.empty());
         var prompt = ArgumentCaptor.forClass(ChatClient.ChatRequest.class);verify(chat, times(2)).complete(prompt.capture());
         assertThat(prompt.getAllValues().get(0).userContent()).contains("USER", "ASSISTANT", "昨天下午");
+    }
+    @Test void unscopedInventoryCountIsExplainedWithoutModelOrDatabaseQueries() {
+        for (String question : List.of("目前有多少nc数据可以下载？", "现在一共有多少个NC文件？", "全库有多少NetCDF文件？")) {
+            var response = service.query(new CopilotCommand(question, ZoneId.of("Asia/Shanghai"), null, List.of()), Optional.empty());
+            assertThat(response.answer()).contains("不能直接汇总", "指定产品和时间段", "实况还是预报");
+            assertThat(response.degraded()).isFalse();
+            assertThat(response.criteria()).isNull();
+            assertThat(response.suggestedActions()).isEmpty();
+        }
+        verifyNoInteractions(chat, discovery, catalog);
+    }
+    @Test void modelCanClassifyParaphrasedGlobalCountWithoutInventingTotals() {
+        when(chat.complete(any())).thenReturn("{\"intent\":\"INVENTORY_COUNT\",\"missingFields\":[]}");
+        var response = service.query(new CopilotCommand("平台全部可下载文件占多少空间？", ZoneId.of("UTC"), null, List.of()), Optional.empty());
+        assertThat(response.answer()).contains("不能直接汇总");
+        assertThat(response.degraded()).isFalse();
+        verify(chat).complete(any());
+        verifyNoInteractions(discovery);
+    }
+    @Test void scopedCountAndFollowUpAreNotInterceptedAsGlobalInventory() {
+        when(chat.complete(any())).thenReturn(SEARCH, "{\"answer\":\"该时间段有7个文件。\"}");
+        when(discovery.searchScientificAssets(any())).thenReturn(new PageResult<>(List.of(), 1, 20, 7));
+        var response = service.query(new CopilotCommand("9月2日PRECIP预报有多少NC？", ZoneId.of("UTC"), null, List.of()), Optional.empty());
+        assertThat(response.answer()).contains("7");
+        verify(discovery).searchScientificAssets(any());
+        clearInvocations(chat);
+        when(chat.complete(any())).thenReturn("{\"intent\":\"SCIENTIFIC_SEARCH\",\"productCode\":\"PRECIP\",\"missingFields\":[\"dataMode\"]}");
+        response = service.query(new CopilotCommand("目前有多少nc数据可以下载？", ZoneId.of("UTC"), null,
+                List.of(new ConversationMessage("USER", "我想查PRECIP"))), Optional.empty());
+        assertThat(response.answer()).contains("实况还是预报");
+        verify(chat).complete(any());
+    }
+    @Test void invalidOutputIsLoggedWithoutModelTextAndOutageStillFails(org.springframework.boot.test.system.CapturedOutput output) {
+        when(chat.complete(any())).thenReturn("private-model-output");
+        assertThat(service.query(command(null), Optional.empty()).answer()).contains("查询条件");
+        assertThat(output.getOut()).contains("stage=INTERPRET reason=INVALID_MODEL_OUTPUT", "elapsedMs=")
+                .doesNotContain("private-model-output");
+        when(chat.complete(any())).thenThrow(new AiUnavailableException());
+        assertThatThrownBy(() -> service.query(command(null), Optional.empty())).isInstanceOf(BusinessException.class)
+                .satisfies(e -> assertThat(((BusinessException)e).errorCode()).isEqualTo(ErrorCode.AI_UNAVAILABLE));
+        assertThat(output.getOut()).contains("stage=INTERPRET reason=MODEL_CALL_FAILED");
     }
     private static CopilotCommand command(PageContext page) {
         return new CopilotCommand("查询北京时间降水预报", ZoneId.of("Asia/Shanghai"), page, List.of());

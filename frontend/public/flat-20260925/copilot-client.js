@@ -29,7 +29,26 @@ export async function queryCopilot(message,recentMessages=[],fetcher=fetch){
     return {role:item.role,content:item.content.slice(0,2000)};
   });
   const session=await createSessionClient(fetcher).current();if(!session.csrfToken)throw Error('会话校验失败，请重试');
-  let response;try{response=await fetcher('/api/v1/copilot/queries',{method:'POST',credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(45000),headers:{'Content-Type':'application/json','X-CSRF-TOKEN':session.csrfToken},body:JSON.stringify({message:message.trim(),displayZone:'Asia/Shanghai',recentMessages:recent})});}catch{throw Error('AI 请求超时或网络异常，可使用数据检索');}
-  if(!response.ok)throw Error(response.status===429?'请求过于频繁，请稍后再试':response.status===503?'AI 暂不可用，可使用数据检索':'AI 查询失败，请稍后重试');
+  let response;try{response=await fetcher('/api/v1/copilot/queries',{method:'POST',credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(55000),headers:{'Content-Type':'application/json','X-CSRF-TOKEN':session.csrfToken},body:JSON.stringify({message:message.trim(),displayZone:'Asia/Shanghai',recentMessages:recent})});}catch{throw Object.assign(Error('AI 请求超时或网络异常'),{retryable:true});}
+  if(!response.ok)throw Object.assign(Error(response.status===429?'请求过于频繁，请稍后再试':'AI 查询失败，请稍后重试'),{retryable:response.status>=500});
   const result=await response.json();if(typeof result.answer!=='string'||!Array.isArray(result.suggestedActions))throw Error('AI 响应格式异常');return result;
+}
+
+/** 每次用户提交只调用一次；连续临时失败第三次才提示不可用，成功（含可信降级结果）或清空对话时复位。 */
+export function createCopilotClient(query=queryCopilot){
+  let failures=0,generation=0;
+  return {
+    reset(){failures=0;++generation;},
+    async query(...args){
+      const token=generation;
+      try{const result=await query(...args);if(token===generation)failures=0;return result;}
+      catch(error){
+        if(error.retryable&&token===generation){
+          ++failures;
+          error.message=failures<3?'本次请求未成功，请点击“重试”':'AI 暂不可用，请稍后再试，或使用数据检索';
+        }
+        throw error;
+      }
+    }
+  };
 }

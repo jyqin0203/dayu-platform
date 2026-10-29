@@ -1,4 +1,4 @@
-import {publicProductDescription,queryCopilot,safeAction} from './copilot-client.js';
+import {publicProductDescription,createCopilotClient,safeAction} from './copilot-client.js';
 import {openScientificSearch} from './scientific-search.js';
 
 const launcher=document.getElementById('copilot-open');
@@ -29,6 +29,7 @@ document.body.append(dialog);
 
 const $=id=>document.getElementById(id);
 let history=[],generation=0,busy=false;
+const copilot=createCopilotClient();
 
 function message(who,text){
   const item=document.createElement('article'),label=document.createElement('small'),content=document.createElement('p');
@@ -47,7 +48,7 @@ function resetResult(){
 }
 
 function clearConversation(){
-  ++generation;history=[];$('copilot-messages').replaceChildren();resetResult();$('copilot-question').value='';welcome();
+  ++generation;history=[];copilot.reset();$('copilot-messages').replaceChildren();resetResult();$('copilot-question').value='';$('copilot-send').textContent='发送';welcome();
 }
 
 function open(){
@@ -122,18 +123,20 @@ function renderActions(actions){
 $('copilot-question').addEventListener('keydown',event=>{
   if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();$('copilot-form').requestSubmit();}
 });
+$('copilot-question').addEventListener('input',()=>{$('copilot-send').textContent='发送';});
 
 $('copilot-form').onsubmit=async event=>{
   event.preventDefault();if(busy)return;
   const text=$('copilot-question').value.trim();if(!text)return;
-  busy=true;const token=++generation;$('copilot-send').disabled=true;resetResult();$('copilot-status').textContent='大禹助手正在整理…';message('你',text);$('copilot-question').value='';
+  busy=true;const token=++generation;$('copilot-send').disabled=true;$('copilot-question').disabled=true;resetResult();$('copilot-status').textContent='大禹助手正在整理…';message('你',text);
   try{
-    const result=await queryCopilot(text,history);if(token!==generation)return;
+    const result=await copilot.query(text,history);if(token!==generation)return;
+    $('copilot-question').value='';$('copilot-send').textContent='发送';
     history.push({role:'USER',content:text},{role:'ASSISTANT',content:result.answer});history=history.slice(-12);
-    message('大禹助手',result.answer);$('copilot-status').textContent=result.degraded?'AI 暂不可用，已返回可信的产品信息':'';
+    message('大禹助手',result.answer);$('copilot-status').textContent=result.degraded?'已返回查询结果，回答整理未完成':'';
     renderSummary(result);renderActions(result.suggestedActions);
-  }catch(error){if(token===generation)$('copilot-status').textContent=error.message;}
-  finally{busy=false;$('copilot-send').disabled=false;}
+  }catch(error){if(token===generation){$('copilot-status').textContent=error.message;$('copilot-send').textContent=error.retryable?'重试':'发送';}}
+  finally{busy=false;$('copilot-send').disabled=false;$('copilot-question').disabled=false;}
 };
 
 welcome();
