@@ -249,6 +249,95 @@ class AssetIndexIntegrationTest {
         assertThatThrownBy(() -> scanner.submitScan(ScanTrigger.MANUAL,new ActorContext(new UserId(1),"Lab",UserRole.USER))).isInstanceOf(BusinessException.class);
     }
 
+    @Test void batchesAcrossBoundaryPreserveIdsAndDetectHistoricalBackfillAndSameSizeOverwrite() throws Exception {
+        List<Path> files=new ArrayList<>();
+        var format=java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneOffset.UTC);
+        for(int i=0;i<205;i++) files.add(write(nc,"realtime/FY4B_AGRI_REPPIC_PRECIP_"+
+                format.format(cycle.plusSeconds(i*1800L))+".nc","abc"));
+        assertThat(scanner.runInitialFullScan().createdAssets()).isEqualTo(205);
+        var ids=sql.queryForList("SELECT id,indexed_at FROM data_assets ORDER BY id");
+        var repeat=scanner.runIncrementalScan(ScanTrigger.SCHEDULED);
+        assertThat(repeat.errors()).isEmpty(); assertThat(repeat.updatedAssets()).isZero();
+        assertThat(sql.queryForList("SELECT id,indexed_at FROM data_assets ORDER BY id")).isEqualTo(ids);
+        Files.writeString(files.get(0),"xyz");
+        Files.setLastModifiedTime(files.get(0),java.nio.file.attribute.FileTime.from(cycle.plusSeconds(123)));
+        write(nc,"realtime/FY4B_AGRI_REPPIC_PRECIP_202001010000.nc","backfill");
+        var changed=scanner.runIncrementalScan(ScanTrigger.SCHEDULED);
+        assertThat(changed.updatedAssets()).isEqualTo(1); assertThat(changed.createdAssets()).isEqualTo(1);
+        assertThat(changed.errors()).isEmpty();
+        Files.delete(files.get(200));
+        assertThat(scanner.runIncrementalScan(ScanTrigger.SCHEDULED).missingNetcdfAssets()).isEqualTo(1);
+        verify(publisher,atLeastOnce()).publishEvent(any(AssetIndexChanged.class));
+    }
+
+    @Test void batchRollbackIncludesSeenMarkersAndProductAssociations() {
+        var asset=new DataAsset(null,AssetType.NETCDF,DataMode.REALTIME,null,cycle,null,"netcdf-data",
+                "realtime/test.nc","test.nc",1,null,null,cycle,AssetStatus.AVAILABLE,cycle);
+        store.upsert(asset,Set.of(1L),cycle);
+        var bad=new DataAsset(null,AssetType.NETCDF,DataMode.REALTIME,null,cycle,null,"netcdf-data",
+                "realtime/bad.nc","bad.nc",1,null,null,cycle,AssetStatus.AVAILABLE,cycle);
+        assertThatThrownBy(() -> store.upsertBatch(List.of(new AssetIndexStore.IndexedWrite(asset,Set.of(1L)),
+                new AssetIndexStore.IndexedWrite(bad,Set.of(99999L))),cycle.plusSeconds(10)))
+                .isInstanceOf(RuntimeException.class);
+        assertThat(sql.queryForObject("SELECT COUNT(*) FROM data_assets",Long.class)).isEqualTo(1);
+        assertThat(sql.queryForObject("SELECT last_seen_at FROM data_assets",java.sql.Timestamp.class).toLocalDateTime())
+                .isEqualTo(java.time.LocalDateTime.ofInstant(cycle,ZoneOffset.UTC));
+        var updated=store.upsertBatch(List.of(new AssetIndexStore.IndexedWrite(asset,Set.of(1L,2L))),cycle.plusSeconds(20));
+        assertThat(updated.get(0).changed()).isTrue();
+        assertThat(store.findByPath("netcdf-data","realtime/test.nc").orElseThrow().productIds()).containsExactlyInAnyOrder(1L,2L);
+        assertThat(store.upsertBatch(List.of(new AssetIndexStore.IndexedWrite(asset,Set.of(1L,2L))),cycle.plusSeconds(30)).get(0).changed()).isFalse();
+    }
+
+    @Test void failedBatchFallsBackPerFileAndDoesNotCleanRoot() throws Exception {
+        Path old=write(webp,preview(60),"old");scanner.runInitialFullScan();Files.delete(old);
+        var products=new ArrayList<>(catalog.listManagedProducts(new ManagedProductQuery(null,null,null)));
+        products.add(new ProductSummary(new ProductId(99999),new ProductCode("FAKE"),"fake","fake","FAKE",null,"Lab",null,"Lab",null,ProductStatus.DRAFT,0));
+        when(catalog.listManagedProducts(any())).thenReturn(products);
+        write(webp,"realtime/BT855/FY4B_AGRI_BT855_202609020600_Dpi500.webp","valid");
+        write(webp,"realtime/FAKE/FY4B_AGRI_FAKE_202609020600_Dpi500.webp","invalid-foreign-key");
+        var result=scanner.runIncrementalScan(ScanTrigger.SCHEDULED);
+        assertThat(result.createdAssets()).isEqualTo(1);assertThat(result.errors()).hasSize(1);
+        assertThat(result.errors().get(0).errorCode()).isEqualTo("INDEX_FILE_FAILED");
+        assertThat(result.removedWebpAssets()).isZero();
+        assertThat(sql.queryForObject("SELECT COUNT(*) FROM data_assets",Long.class)).isEqualTo(2);
+    }
+
+    @Test void batchDoesNotSilentlyMergeCaseInsensitiveDatabasePaths() throws Exception {
+        String path="realtime/FY4B_AGRI_REPPIC_PRECIP_202609020600.nc";
+        var existing=new DataAsset(null,AssetType.NETCDF,DataMode.REALTIME,null,cycle,null,"netcdf-data",
+                path.toLowerCase(Locale.ROOT),"fixture.nc",1,null,null,cycle,AssetStatus.AVAILABLE,cycle);
+        store.upsert(existing,Set.of(1L,2L),cycle);
+        write(nc,path,"x");
+        var result=scanner.runIncrementalScan(ScanTrigger.SCHEDULED);
+        assertThat(result.errors()).hasSize(1);assertThat(result.missingNetcdfAssets()).isZero();
+        assertThat(sql.queryForObject("SELECT relative_path FROM data_assets",String.class)).isEqualTo(path.toLowerCase(Locale.ROOT));
+    }
+
+    @Test void chunkingKeepsReleaseGateAndRechecksCyclesWhoseFilesDisappear() throws Exception {
+        List<Path> images=new ArrayList<>();
+        for(int h=1;h<=3;h++) images.add(write(webp,"forecast/202609020600/PRECIP_"+h+"H/"+
+                "FY4B_AGRI_REPPIC_PRECIP_"+h+"H_202609020600_20260902"+String.format("%02d",6+h)+
+                "00_palettev2_Dpi500.webp","synthetic"));
+        assertThat(scanner.runInitialFullScan().createdAssets()).isZero();
+        Path marker=write(webp,"forecast/202609020600/.reppic-complete.json",
+                "{\"schema\":\"fducrias-reppic-complete/v1\",\"complete\":true,\"cycle12\":\"202609020600\",\"archive_sha256\":\""+"a".repeat(64)+"\"}");
+        assertThat(scanner.runIncrementalScan(ScanTrigger.SCHEDULED).createdAssets()).isEqualTo(3);
+        assertThat(scanner.runIncrementalScan(ScanTrigger.SCHEDULED).updatedAssets()).isZero();
+        Files.delete(images.get(2));
+        assertThat(scanner.runIncrementalScan(ScanTrigger.SCHEDULED).removedWebpAssets()).isEqualTo(3);
+        Files.writeString(images.get(2),"synthetic");
+        assertThat(scanner.runIncrementalScan(ScanTrigger.SCHEDULED).createdAssets()).isEqualTo(3);
+        Path offline=temp.resolve("offline");Files.move(webp,offline);
+        try {
+            assertThat(scanner.runIncrementalScan(ScanTrigger.SCHEDULED).errors()).isNotEmpty();
+            assertThat(sql.queryForObject("SELECT COUNT(*) FROM data_assets",Long.class)).isEqualTo(3);
+        } finally {Files.move(offline,webp);}
+        for(Path image:images) Files.delete(image);
+        Files.delete(marker);
+        assertThat(scanner.runIncrementalScan(ScanTrigger.SCHEDULED).removedWebpAssets()).isEqualTo(3);
+        assertThat(store.reppicCycles("webp-preview")).isEmpty();
+    }
+
     private PageResult<IndexedAssetView> search(int page,int size) {
         return queries.searchNetcdfAssets(new AssetSearchCriteria(precip,DataMode.FORECAST,cycle,cycle.plusSeconds(10800),null,null,new PageRequest(page,size)));
     }

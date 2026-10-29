@@ -1,0 +1,94 @@
+{
+  "unchanged": {
+    "a": {
+      "seconds": [
+        54.706496150999996,
+        56.897830818,
+        56.474991157
+      ],
+      "medianSeconds": 56.474991157,
+      "sqlExecutions": [
+        27388,
+        27388,
+        27388
+      ],
+      "commits": [
+        9129,
+        9129,
+        9129
+      ],
+      "assets": 9127,
+      "links": 9619,
+      "created": 0
+    },
+    "b": {
+      "seconds": [
+        1.219217417,
+        1.070903393,
+        0.39347770600000004
+      ],
+      "medianSeconds": 1.070903393,
+      "sqlExecutions": [
+        148,
+        148,
+        148
+      ],
+      "commits": [
+        49,
+        49,
+        49
+      ],
+      "assets": 9127,
+      "links": 9619,
+      "created": 0
+    },
+    "medianTimeReductionPct": 98.1037564219835,
+    "sqlReductionPct": 99.45961735066452
+  },
+  "new-half-hour": {
+    "a": {
+      "seconds": [
+        51.917000750999996,
+        52.247654133999994,
+        53.711268469000004
+      ],
+      "medianSeconds": 52.247654133999994,
+      "sqlExecutions": [
+        27452,
+        27452,
+        27452
+      ],
+      "commits": [
+        9145,
+        9145,
+        9145
+      ],
+      "assets": 9143,
+      "links": 9635,
+      "created": 16
+    },
+    "b": {
+      "seconds": [
+        1.7016541790000002,
+        1.279720517,
+        1.083682303
+      ],
+      "medianSeconds": 1.279720517,
+      "sqlExecutions": [
+        212,
+        212,
+        212
+      ],
+      "commits": [
+        49,
+        49,
+        49
+      ],
+      "assets": 9143,
+      "links": 9635,
+      "created": 16
+    },
+    "medianTimeReductionPct": 97.55066416241792,
+    "sqlReductionPct": 99.22774296954685
+  }
+}

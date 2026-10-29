@@ -1,0 +1,24 @@
+{
+  "variant" : "a",
+  "round" : 2,
+  "phase" : "unchanged",
+  "wallMs" : 56897.830818,
+  "storeMs" : 56810.814762,
+  "jdbcExecuteMs" : 19787.299442,
+  "sqlExecutions" : 27388,
+  "sqlKinds" : {
+    "INSERT" : 1,
+    "SELECT" : 18259,
+    "UPDATE" : 9128
+  },
+  "commits" : 9129,
+  "scannedFiles" : 9127,
+  "created" : 0,
+  "heldOutHalfHour" : "2026-10-08T02:30:00Z",
+  "errors" : 0,
+  "memory" : [ "VmHWM:\t  182888 kB", "VmRSS:\t  175980 kB" ],
+  "heapUsed" : 21433032,
+  "assets" : 9127,
+  "links" : 9619,
+  "businessStateSha256" : "09ad907262f58db00d1deab7a6bb53ccc3c0f7991801cc66eca4cab323ec1705"
+}

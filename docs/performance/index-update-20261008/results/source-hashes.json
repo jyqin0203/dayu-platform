@@ -1,0 +1,6 @@
+{
+  "backend/src/main/java/cn/edu/fudan/dayu/assetindex/application/AssetIndexStore.java": "2b9fe9311cfca81f3473633b9d8fefacc512f08b2b69baa7ccdf33d2c94383e3",
+  "backend/src/main/java/cn/edu/fudan/dayu/assetindex/application/PersistentAssetScanner.java": "1b8cbd87ad3ab2200d7196ac8f481622ba4c834f9dd68a2d38ebe76e55c8ee09",
+  "backend/src/main/java/cn/edu/fudan/dayu/assetindex/infrastructure/JdbcAssetIndexStore.java": "e55cade79942270e82dd2d80ee2e00f340a27de980ba5216c98df50afebe638f",
+  "backend/src/test/java/cn/edu/fudan/dayu/assetindex/infrastructure/AssetIndexIntegrationTest.java": "9c5f81e9986cb3aacc87cbc5e9fd99ee455e8f5ba5093227ca93ad450efabd42"
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "name": "cn.edu.fudan.dayu.assetindex.infrastructure.LocalFileInventoryTest",
+    "tests": "1",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.042"
+  },
+  {
+    "name": "cn.edu.fudan.dayu.assetindex.domain.AssetFilenameParserTest",
+    "tests": "4",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.096"
+  },
+  {
+    "name": "cn.edu.fudan.dayu.architecture.ArchitectureTest",
+    "tests": "5",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "7.869"
+  },
+  {
+    "name": "cn.edu.fudan.dayu.assetindex.infrastructure.ReppicReleaseInspectorTest",
+    "tests": "7",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.197"
+  }
+]

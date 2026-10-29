@@ -70,6 +70,39 @@ public class JdbcAssetIndexStore implements AssetIndexStore {
         });
     }
 
+    @Override
+    public List<Change> upsertBatch(List<IndexedWrite> writes, Instant seenAt) {
+        if (writes.isEmpty()) return List.of();
+        String storage=writes.get(0).asset().storageKey();
+        Set<String> paths=new HashSet<>();
+        if (writes.size()>200 || writes.stream().anyMatch(w -> !storage.equals(w.asset().storageKey())
+                || !paths.add(w.asset().relativePath()))) throw new IllegalArgumentException("Invalid indexing batch");
+        return tx.execute(status -> {
+            Map<String,Row> existing=new HashMap<>();
+            // Lock only this bounded chunk, not the historical index. Associations are fetched once by rows().
+            for (Row row : rows("SELECT a.* FROM data_assets a WHERE storage_key=:storage AND relative_path IN (:paths) FOR UPDATE",
+                    new MapSqlParameterSource("storage",storage).addValue("paths",paths))) {
+                if (!storage.equals(row.asset().storageKey())) throw new IllegalArgumentException("Case-sensitive storage path collision");
+                existing.put(row.asset().relativePath(),row);
+            }
+            List<Long> seen=new ArrayList<>();
+            List<Change> changes=new ArrayList<>(writes.size());
+            for (IndexedWrite write : writes) {
+                Row old=existing.get(write.asset().relativePath());
+                if (old!=null && same(old.asset(),write.asset()) && old.productIds().equals(write.productIds())) {
+                    seen.add(old.asset().id().value());
+                    changes.add(new Change(false,false,write.productIds()));
+                } else {
+                    // Keep existing validation, case-sensitive collision detection and association updates.
+                    changes.add(upsert(write.asset(),write.productIds(),seenAt));
+                }
+            }
+            if (!seen.isEmpty()) jdbc.update("UPDATE data_assets SET last_seen_at=:seen WHERE id IN (:ids)",
+                    new MapSqlParameterSource("seen",utc(seenAt)).addValue("ids",seen));
+            return List.copyOf(changes);
+        });
+    }
+
     private boolean same(DataAsset a, DataAsset b) {
         return a.status() == AssetStatus.AVAILABLE && a.assetType() == b.assetType()
                 && a.dataMode() == b.dataMode() && Objects.equals(a.cycleTime(), b.cycleTime())

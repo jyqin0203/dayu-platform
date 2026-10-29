@@ -15,6 +15,12 @@ public interface AssetIndexStore {
     record IndexedWrite(DataAsset asset, Set<Long> productIds) {}
     record BatchChange(long created, long updated, long removed, Set<Long> affectedProductIds) {}
     Change upsert(DataAsset asset, Set<Long> productIds, Instant seenAt);
+    /**
+     * Atomically index at most 200 distinct paths in one storage; results retain input order.
+     * Unchanged rows must still be marked seen. Any exception rolls back the entire batch,
+     * allowing the scanner to fall back to per-file writes without counting partial commits twice.
+     */
+    List<Change> upsertBatch(List<IndexedWrite> assets, Instant seenAt);
     /** Existing precipitation WebP cycles must be rechecked even when their files or marker disappear. */
     Set<Instant> reppicCycles(String storageKey);
     /** Publish the three verified rows or withdraw a whole indexed batch atomically; never deletes files. */

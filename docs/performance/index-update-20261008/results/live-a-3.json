@@ -1,0 +1,23 @@
+{
+  "variant" : "a",
+  "round" : 3,
+  "priming" : false,
+  "wallMs" : 50471.415669,
+  "inventoryExclusiveMs" : 144.652129,
+  "storeMs" : 50289.619195,
+  "jdbcExecuteMs" : 15957.079755,
+  "sqlExecutions" : 27733,
+  "commits" : 9244,
+  "scannedFiles" : 9242,
+  "created" : 0,
+  "updated" : 0,
+  "removed" : 0,
+  "missing" : 0,
+  "errors" : 0,
+  "sourceMetadataSha256" : "a98db5a02152e282d532d2f6575b5dff59e63dd66b0bfcccf715c85b126924ac",
+  "stableSincePrevious" : true,
+  "memory" : [ "VmHWM:\t  271524 kB", "VmRSS:\t  271524 kB" ],
+  "businessStateSha256" : "20527dbe016117e71f5122e81dcc87b31dddaed251d8734288eca414cfba270a",
+  "assetRows" : 9242,
+  "linkRows" : 9734
+}

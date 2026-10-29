@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-08T03:47:30.178998+00:00",
+  "isolatedSchemas": [
+    "dayu_scan_a",
+    "dayu_scan_b",
+    "dayu_scan_correctness"
+  ],
+  "liveIndexedData": [
+    {
+      "type": "NETCDF",
+      "rows": "492",
+      "logicalBytes": "10136190694"
+    },
+    {
+      "type": "WEBP",
+      "rows": "8750",
+      "logicalBytes": "2604205222"
+    }
+  ],
+  "productionServices": [
+    "active",
+    "active",
+    "active",
+    "active"
+  ],
+  "cleanup": "NOT performed; awaiting user confirmation",
+  "isolatedDatabaseProcess": "stopped; data directory retained"
+}

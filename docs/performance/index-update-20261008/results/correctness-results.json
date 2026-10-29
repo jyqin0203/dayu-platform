@@ -1,0 +1,57 @@
+[ {
+  "status" : "PASS",
+  "ms" : 1516.436891,
+  "test" : "batchDoesNotSilentlyMergeCaseInsensitiveDatabasePaths"
+}, {
+  "status" : "PASS",
+  "ms" : 238.07869,
+  "test" : "batchRollbackIncludesSeenMarkersAndProductAssociations"
+}, {
+  "status" : "PASS",
+  "ms" : 1004.834637,
+  "test" : "batchesAcrossBoundaryPreserveIdsAndDetectHistoricalBackfillAndSameSizeOverwrite"
+}, {
+  "status" : "PASS",
+  "ms" : 978.468781,
+  "test" : "chunkingKeepsReleaseGateAndRechecksCyclesWhoseFilesDisappear"
+}, {
+  "status" : "PASS",
+  "ms" : 298.182595,
+  "test" : "commitsTaskBeforeReturningEvenWhenCallerTransactionRollsBack"
+}, {
+  "status" : "PASS",
+  "ms" : 469.430706,
+  "test" : "failedBatchFallsBackPerFileAndDoesNotCleanRoot"
+}, {
+  "status" : "PASS",
+  "ms" : 679.702769,
+  "test" : "filtersProductTypeModeTimeCycleLeadAndPaginatesWithoutJoinDuplicates"
+}, {
+  "status" : "PASS",
+  "ms" : 416.880935,
+  "test" : "incompleteOrUnavailableRootNeverDeletesOrMarksOtherFilesMissing"
+}, {
+  "status" : "PASS",
+  "ms" : 775.964373,
+  "test" : "indexesIdempotentlyUpdatesMetadataAndReconcilesMissingFiles"
+}, {
+  "status" : "PASS",
+  "ms" : 316.525311,
+  "test" : "persistsAsyncTaskBeforeDispatchRejectsOverlapAndRecoversInterruptedRuns"
+}, {
+  "status" : "PASS",
+  "ms" : 198.754671,
+  "test" : "preservesTotalErrorsWhenDetailsAreCappedAndIgnoresTempDirectories"
+}, {
+  "status" : "PASS",
+  "ms" : 2802.526872,
+  "test" : "reconcilesMoreThanOneBatchWithoutLoadingAllMissingAssets"
+}, {
+  "status" : "PASS",
+  "ms" : 178.279326,
+  "test" : "rollsBackAssetAndRelationshipTogetherWhenForeignKeyFails"
+}, {
+  "status" : "PASS",
+  "ms" : 166.863837,
+  "test" : "rollsBackWholeReleasedBatchWhenSecondRelationshipFails"
+} ]

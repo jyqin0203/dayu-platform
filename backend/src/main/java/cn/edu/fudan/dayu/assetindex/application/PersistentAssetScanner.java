@@ -17,7 +17,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-/** 单实例有界扫描：正式文件元数据逐个入库，根完整遍历后才处理缺失。 */
+/** 单实例有界扫描：文件元数据按至多 200 条分块比对，根完整遍历后才处理缺失。 */
 @Service
 @Profile("!skeleton")
 @DependsOnDatabaseInitialization
@@ -106,6 +106,7 @@ public class PersistentAssetScanner implements AssetIndexCommandService, AssetSc
                 AssetType type=settings.typeOf(storage);
                 int errorsBefore=counts.errorCount;
                 Set<Instant> releaseCycles=type==AssetType.WEBP ? new LinkedHashSet<>(store.reppicCycles(storage)) : new LinkedHashSet<>();
+                List<AssetIndexStore.IndexedWrite> pending=new ArrayList<>(200);
                 boolean complete=files.visit(root.getValue(),file -> {
                     // Other-type files in a root are never claimed as indexed assets.
                     if (type==AssetType.WEBP && !file.relativePath().endsWith(".webp")
@@ -121,16 +122,13 @@ public class PersistentAssetScanner implements AssetIndexCommandService, AssetSc
                         String name=file.relativePath().substring(file.relativePath().lastIndexOf('/')+1);
                         DataAsset asset=new DataAsset(null,type,parsed.mode(),parsed.cycleTime(),parsed.validTime(),parsed.leadMinutes(),storage,
                                 file.relativePath(),name,file.size(),null,parsed.dpi(),file.modifiedAt(),AssetStatus.AVAILABLE,run.startedAt());
-                        var change=store.upsert(asset,productIds,run.startedAt());
-                        if (change.created()) counts.created++;
-                        else if (change.changed()) counts.updated++;
-                        if (change.changed()) change.affectedProductIds().forEach(id -> {
-                            if (products.containsKey(id)) counts.affected.add(products.get(id).code());
-                        });
+                        pending.add(new AssetIndexStore.IndexedWrite(asset,productIds));
+                        if (pending.size()==200) flush(pending,run.startedAt(),counts,products);
                     } catch (RuntimeException e) {
                         counts.error(new AssetScanError(safePath(file.relativePath()),"INDEX_FILE_FAILED","File name, product mapping or metadata could not be indexed"));
                     }
                 },counts::error);
+                flush(pending,run.startedAt(),counts,products);
                 // Gate-controlled images are never inserted individually: publish/retract a whole batch.
                 for(Instant cycle:releaseCycles) {
                     try {
@@ -191,6 +189,35 @@ public class PersistentAssetScanner implements AssetIndexCommandService, AssetSc
             return new AssetScanResult(run.trigger(),run.startedAt(),finished,counts.scanned,counts.created,counts.updated,
                     counts.removed,counts.missing,counts.affected,counts.errors);
         } finally { running.set(false); }
+    }
+
+    private void flush(List<AssetIndexStore.IndexedWrite> pending, Instant seenAt, Counts counts,
+            Map<Long,ProductSummary> products) {
+        if (pending.isEmpty()) return;
+        List<AssetIndexStore.IndexedWrite> batch=List.copyOf(pending);
+        pending.clear();
+        List<AssetIndexStore.Change> changes;
+        try { changes=store.upsertBatch(batch,seenAt); }
+        catch (RuntimeException failedBatch) {
+            // Batch was rolled back. Preserve per-file progress/error reporting and root cleanup protection.
+            for (var write : batch) {
+                try { recordChange(store.upsert(write.asset(),write.productIds(),seenAt),counts,products); }
+                catch (RuntimeException failedFile) {
+                    counts.error(new AssetScanError(safePath(write.asset().relativePath()),"INDEX_FILE_FAILED",
+                            "File name, product mapping or metadata could not be indexed"));
+                }
+            }
+            return;
+        }
+        changes.forEach(change -> recordChange(change,counts,products));
+    }
+
+    private void recordChange(AssetIndexStore.Change change, Counts counts, Map<Long,ProductSummary> products) {
+        if (change.created()) counts.created++;
+        else if (change.changed()) counts.updated++;
+        if (change.changed()) change.affectedProductIds().forEach(id -> {
+            if (products.containsKey(id)) counts.affected.add(products.get(id).code());
+        });
     }
 
     @Override public Optional<ScanRunView> findScanRun(long id) { return id<1 ? Optional.empty() : store.findRun(id,true); }

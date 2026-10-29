@@ -1,0 +1,36 @@
+{
+  "snapshotSha256": "8e76fdcf9c03152bdf99aef706a9d2ef03b52bf8643b62299e8507a93b1d429e",
+  "snapshotMtimeUtc": "2026-10-08T03:24:35.986524+00:00",
+  "sourceMetadata": {
+    "webp-preview": {
+      "files": 8651,
+      "logicalBytes": 2577417952
+    },
+    "netcdf-data": {
+      "files": 492,
+      "logicalBytes": 10136190694
+    }
+  },
+  "dbSettings": {
+    "version": "10.6.23-MariaDB-0ubuntu0.22.04.1",
+    "bufferPoolBytes": "134217728",
+    "flushLogAtCommit": "1",
+    "syncBinlog": "0",
+    "maxConnections": "10",
+    "skipNetworking": "1"
+  },
+  "dbCpu": 2,
+  "probeCpu": 3,
+  "probeXmxMiB": 256,
+  "nice": 15,
+  "ioClass": "idle",
+  "transport": "private Unix socket / MariaDB JDBC JNA",
+  "concurrency": 1,
+  "productionServices": [
+    "active",
+    "active",
+    "active",
+    "active"
+  ],
+  "kernel": "Linux 6.8.0-138-generic"
+}
