@@ -1,0 +1,1766 @@
+[
+  {
+    "case": "rt_short",
+    "concurrency": 1,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 3.603795,
+        "p95RoundsMs": [
+          4.544949,
+          2.709373,
+          1.823934
+        ],
+        "throughputRps": 729.8899711544392,
+        "throughputRoundsRps": [
+          608.1209293993552,
+          801.0485384821728,
+          821.3991072917569
+        ],
+        "rowsPerRequest": 152.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 14.0,
+            "meanServerMs": 0.13474017433333335,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 14.0,
+            "meanServerMs": 0.15105029966666667,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 1.347193,
+        "p95RoundsMs": [
+          1.668424,
+          1.796905,
+          1.101747
+        ],
+        "throughputRps": 873.0796415055303,
+        "throughputRoundsRps": [
+          835.727237783826,
+          870.3469841680976,
+          916.9407932389372
+        ],
+        "rowsPerRequest": 152.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 14.0,
+            "meanServerMs": 0.13120584466666665,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 14.0,
+            "meanServerMs": 0.14042408666666667,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 1.638036,
+        "p95RoundsMs": [
+          1.077079,
+          2.916464,
+          1.854368
+        ],
+        "throughputRps": 862.3415551327257,
+        "throughputRoundsRps": [
+          948.2724186996625,
+          797.3507812443778,
+          854.5565904440899
+        ],
+        "rowsPerRequest": 152.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 14.0,
+            "meanServerMs": 0.12762201533333334,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 14.0,
+            "meanServerMs": 0.14016384466666668,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 62.617379734418854,
+      "throughputIncreasePct": 19.61798024496946,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "rt_short",
+    "concurrency": 4,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 4.988833,
+        "p95RoundsMs": [
+          6.56292,
+          3.794407,
+          3.781112
+        ],
+        "throughputRps": 1318.556282030578,
+        "throughputRoundsRps": [
+          1003.8497329721147,
+          1572.0707866604168,
+          1555.3380761527972
+        ],
+        "rowsPerRequest": 152.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 14.004668222740914,
+            "meanServerMs": 0.23724593797932644,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 14.004668222740914,
+            "meanServerMs": 0.21007733777925974,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 101435
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 4.380961,
+        "p95RoundsMs": [
+          4.592807,
+          4.355008,
+          4.063139
+        ],
+        "throughputRps": 1421.0545662687884,
+        "throughputRoundsRps": [
+          1274.3795821356637,
+          1530.5604914359194,
+          1485.7577077080375
+        ],
+        "rowsPerRequest": 152.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 14.0,
+            "meanServerMs": 0.23350891966666665,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 14.0,
+            "meanServerMs": 0.2183478106666667,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 95511
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 4.497468,
+        "p95RoundsMs": [
+          4.466247,
+          4.793627,
+          4.161884
+        ],
+        "throughputRps": 1395.5761207206465,
+        "throughputRoundsRps": [
+          1389.8883941346166,
+          1333.224949442142,
+          1470.3576247546905
+        ],
+        "rowsPerRequest": 152.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 14.0,
+            "meanServerMs": 0.23339045500000002,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 14.004668222740914,
+            "meanServerMs": 0.2145177065688563,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 69961
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 12.184653204466844,
+      "throughputIncreasePct": 7.773523636045554,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "rt_long_first",
+    "concurrency": 1,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 1.799966,
+        "p95RoundsMs": [
+          1.433335,
+          1.861785,
+          1.955161
+        ],
+        "throughputRps": 738.0998509755143,
+        "throughputRoundsRps": [
+          751.9493998061562,
+          739.3416555207094,
+          723.5579276836819
+        ],
+        "rowsPerRequest": 436.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.16502836033333335,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.22763563,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 1.326941,
+        "p95RoundsMs": [
+          1.266668,
+          4.091506,
+          1.247497
+        ],
+        "throughputRps": 761.1763513375123,
+        "throughputRoundsRps": [
+          803.5862394214129,
+          687.1837128280232,
+          805.3918956862965
+        ],
+        "rowsPerRequest": 436.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.165310606,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.22676771666666665,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 2.425693,
+        "p95RoundsMs": [
+          1.319704,
+          3.207319,
+          3.158977
+        ],
+        "throughputRps": 735.0447111831994,
+        "throughputRoundsRps": [
+          776.905352228551,
+          709.3548796469768,
+          722.2851861446505
+        ],
+        "rowsPerRequest": 436.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.16183124899999998,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.22568715733333333,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 26.279663060302248,
+      "throughputIncreasePct": 3.126474057879669,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "rt_long_first",
+    "concurrency": 4,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 6.219792,
+        "p95RoundsMs": [
+          7.884178,
+          4.598569,
+          5.049118
+        ],
+        "throughputRps": 1068.2597887726545,
+        "throughputRoundsRps": [
+          822.8160953796585,
+          1265.3870352509296,
+          1245.8028888550568
+        ],
+        "rowsPerRequest": 436.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.327401182,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.43585543666666665,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 256179
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 5.472662,
+        "p95RoundsMs": [
+          5.814315,
+          4.582899,
+          5.518944
+        ],
+        "throughputRps": 1079.0480472684762,
+        "throughputRoundsRps": [
+          1085.062083576907,
+          1271.775956717345,
+          932.5573525673301
+        ],
+        "rowsPerRequest": 436.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.34585191633333334,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.47539060000000005,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 238627
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 5.452795,
+        "p95RoundsMs": [
+          5.516322,
+          5.650753,
+          5.10955
+        ],
+        "throughputRps": 1077.4446577634612,
+        "throughputRoundsRps": [
+          930.0932787668853,
+          1146.1132102840668,
+          1195.1849158823563
+        ],
+        "rowsPerRequest": 435.9866666666667,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.33879536112037345,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.47244398066666665,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 101089
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 12.012138026480635,
+      "throughputIncreasePct": 1.009890909421629,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "rt_long_last",
+    "concurrency": 1,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 3.491372,
+        "p95RoundsMs": [
+          3.491372,
+          2.099784,
+          3.863816
+        ],
+        "throughputRps": 668.3678015676323,
+        "throughputRoundsRps": [
+          665.6521979664611,
+          717.938792869196,
+          627.5950531201257
+        ],
+        "rowsPerRequest": 731.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 369.0,
+            "meanServerMs": 0.2926268363333333,
+            "sortRowsPerStatement": 123.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.21444839333333335,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 2.416962,
+        "p95RoundsMs": [
+          1.659512,
+          3.429301,
+          2.385377
+        ],
+        "throughputRps": 695.1094182138361,
+        "throughputRoundsRps": [
+          739.3446527720429,
+          662.1438169783381,
+          688.1970533642816
+        ],
+        "rowsPerRequest": 731.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 369.0,
+            "meanServerMs": 0.2980838866666667,
+            "sortRowsPerStatement": 123.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.21594942233333334,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 3.081455,
+        "p95RoundsMs": [
+          1.930671,
+          3.296336,
+          3.689835
+        ],
+        "throughputRps": 683.2846186172621,
+        "throughputRoundsRps": [
+          712.1169883437502,
+          662.7370499209137,
+          676.8651320454046
+        ],
+        "rowsPerRequest": 731.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 369.0,
+            "meanServerMs": 0.28992339699999997,
+            "sortRowsPerStatement": 123.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.21130863833333335,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 30.773289125306626,
+      "throughputIncreasePct": 4.00103305148487,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "rt_long_last",
+    "concurrency": 4,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 8.067619,
+        "p95RoundsMs": [
+          10.093786,
+          5.077986,
+          5.807205
+        ],
+        "throughputRps": 914.2284282586952,
+        "throughputRoundsRps": [
+          722.9222746253241,
+          1118.1205508245225,
+          996.191474168656
+        ],
+        "rowsPerRequest": 731.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 369.0,
+            "meanServerMs": 0.5503065316666667,
+            "sortRowsPerStatement": 123.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.37442904266666666,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 555401
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 5.93238,
+        "p95RoundsMs": [
+          5.292303,
+          5.892868,
+          5.969821
+        ],
+        "throughputRps": 1003.9469775106942,
+        "throughputRoundsRps": [
+          1121.1686199655862,
+          1092.6863484146538,
+          846.6659107449694
+        ],
+        "rowsPerRequest": 731.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 369.0,
+            "meanServerMs": 0.6965611266666667,
+            "sortRowsPerStatement": 123.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.47370644433333337,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 478343
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 5.909944,
+        "p95RoundsMs": [
+          6.023395,
+          5.622552,
+          5.451753
+        ],
+        "throughputRps": 1000.4929830245571,
+        "throughputRoundsRps": [
+          864.777666097318,
+          1108.830339858111,
+          1063.4858899091694
+        ],
+        "rowsPerRequest": 731.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 369.0,
+            "meanServerMs": 0.657302816,
+            "sortRowsPerStatement": 123.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.4839031893333333,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 460081
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 26.466780347460638,
+      "throughputIncreasePct": 9.813581209991828,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "fc_short",
+    "concurrency": 1,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 1.537492,
+        "p95RoundsMs": [
+          2.139351,
+          1.237295,
+          1.170187
+        ],
+        "throughputRps": 840.2865871209706,
+        "throughputRoundsRps": [
+          768.2596300382182,
+          872.1426733512772,
+          891.2927519906668
+        ],
+        "rowsPerRequest": 200.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 30.0,
+            "meanServerMs": 0.13874666500000002,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 30.0,
+            "meanServerMs": 0.156061254,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 1.254056,
+        "p95RoundsMs": [
+          1.292591,
+          1.157564,
+          1.531747
+        ],
+        "throughputRps": 847.2039303864494,
+        "throughputRoundsRps": [
+          846.8892064626439,
+          859.8904707984666,
+          835.1921577650867
+        ],
+        "rowsPerRequest": 200.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 30.0,
+            "meanServerMs": 0.14899367533333333,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 30.0,
+            "meanServerMs": 0.16346811,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 1.762182,
+        "p95RoundsMs": [
+          1.210113,
+          3.937661,
+          1.259819
+        ],
+        "throughputRps": 803.068674858069,
+        "throughputRoundsRps": [
+          856.2398558702624,
+          732.5042964518182,
+          831.5359695246573
+        ],
+        "rowsPerRequest": 200.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 30.0,
+            "meanServerMs": 0.138740778,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 30.0,
+            "meanServerMs": 0.15673161966666668,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 18.434957710349064,
+      "throughputIncreasePct": 0.8232123862858876,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "fc_short",
+    "concurrency": 4,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 5.498473,
+        "p95RoundsMs": [
+          6.568168,
+          4.929354,
+          4.773438
+        ],
+        "throughputRps": 1152.6637388905235,
+        "throughputRoundsRps": [
+          1090.2497761151865,
+          1032.7126214346442,
+          1394.4618903867895
+        ],
+        "rowsPerRequest": 200.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 30.0,
+            "meanServerMs": 0.2631748126666667,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 30.0,
+            "meanServerMs": 0.25809413733333336,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 45532
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 5.024793,
+        "p95RoundsMs": [
+          5.30239,
+          5.017278,
+          4.482416
+        ],
+        "throughputRps": 1237.0655635825567,
+        "throughputRoundsRps": [
+          1350.2907144284306,
+          1004.1455385257748,
+          1452.1355642833298
+        ],
+        "rowsPerRequest": 200.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 30.0,
+            "meanServerMs": 0.274048642,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 30.0,
+            "meanServerMs": 0.2716184543333333,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 81631
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 4.361673,
+        "p95RoundsMs": [
+          5.186163,
+          4.223773,
+          4.250594
+        ],
+        "throughputRps": 1419.4369623958892,
+        "throughputRoundsRps": [
+          1456.9508111003604,
+          1354.0190320056654,
+          1452.2070323305654
+        ],
+        "rowsPerRequest": 200.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 30.0,
+            "meanServerMs": 0.23457273166666667,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 30.0,
+            "meanServerMs": 0.20264625,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 148741
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 8.614755405728102,
+      "throughputIncreasePct": 7.322328433205749,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "fc_long_first",
+    "concurrency": 1,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 3.673231,
+        "p95RoundsMs": [
+          4.64382,
+          1.808468,
+          2.373816
+        ],
+        "throughputRps": 598.2012457157374,
+        "throughputRoundsRps": [
+          511.0476826870168,
+          673.004852856983,
+          635.9718122033181
+        ],
+        "rowsPerRequest": 928.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.16106807433333334,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 738.0,
+            "meanServerMs": 0.39530478366666666,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 33945
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 1.96169,
+        "p95RoundsMs": [
+          3.64838,
+          1.488682,
+          1.418213
+        ],
+        "throughputRps": 662.3898198357891,
+        "throughputRoundsRps": [
+          604.3376148587806,
+          682.0995578751049,
+          710.081398412755
+        ],
+        "rowsPerRequest": 928.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.17470328266666668,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 738.0,
+            "meanServerMs": 0.39764589,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 2.467725,
+        "p95RoundsMs": [
+          2.003491,
+          3.574588,
+          2.486984
+        ],
+        "throughputRps": 644.4980144980302,
+        "throughputRoundsRps": [
+          663.2741686365223,
+          620.5124396948371,
+          651.2358158735783
+        ],
+        "rowsPerRequest": 928.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.16433795666666667,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 738.0,
+            "meanServerMs": 0.3874245476666667,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 46.594973199344125,
+      "throughputIncreasePct": 10.730264201180528,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "fc_long_first",
+    "concurrency": 4,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 6.327978,
+        "p95RoundsMs": [
+          6.139368,
+          6.430422,
+          5.858253
+        ],
+        "throughputRps": 957.2373963494081,
+        "throughputRoundsRps": [
+          968.1420904714001,
+          876.208133235623,
+          1041.8498347631046
+        ],
+        "rowsPerRequest": 928.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.33967560199999997,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 738.0,
+            "meanServerMs": 0.754155332,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 534687
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 6.511556,
+        "p95RoundsMs": [
+          5.707746,
+          6.17853,
+          6.702433
+        ],
+        "throughputRps": 921.1276156476924,
+        "throughputRoundsRps": [
+          1035.2777980453263,
+          966.2982069378379,
+          796.1300590923037
+        ],
+        "rowsPerRequest": 928.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.38221745366666665,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 738.0,
+            "meanServerMs": 0.8410055086666667,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 534792
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 6.519838,
+        "p95RoundsMs": [
+          6.356427,
+          5.886051,
+          6.738723
+        ],
+        "throughputRps": 1004.6736302591838,
+        "throughputRoundsRps": [
+          1044.6540605653036,
+          1045.0463457616593,
+          932.9278247423641
+        ],
+        "rowsPerRequest": 928.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.339942333,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 738.0,
+            "meanServerMs": 0.7525247966666667,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 673594
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": -2.901053069400672,
+      "throughputIncreasePct": -3.7722910575189172,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "fc_long_last",
+    "concurrency": 1,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 3.765119,
+        "p95RoundsMs": [
+          3.299292,
+          3.662431,
+          4.598778
+        ],
+        "throughputRps": 491.82780663841,
+        "throughputRoundsRps": [
+          485.62499627326616,
+          500.89401001692784,
+          489.22162347309427
+        ],
+        "rowsPerRequest": 1973.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 1107.0,
+            "meanServerMs": 0.617540859,
+            "sortRowsPerStatement": 369.0
+          },
+          "count": {
+            "rowsPerStatement": 738.0,
+            "meanServerMs": 0.3946176383333333,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 4.184009,
+        "p95RoundsMs": [
+          1.87822,
+          4.974347,
+          4.62232
+        ],
+        "throughputRps": 489.74365650474016,
+        "throughputRoundsRps": [
+          539.3964025006142,
+          449.76699692000085,
+          488.19637678127407
+        ],
+        "rowsPerRequest": 1973.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 1107.0,
+            "meanServerMs": 0.628672319,
+            "sortRowsPerStatement": 369.0
+          },
+          "count": {
+            "rowsPerStatement": 738.0,
+            "meanServerMs": 0.3888640666666667,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 3.008917,
+        "p95RoundsMs": [
+          2.545741,
+          4.674602,
+          2.067988
+        ],
+        "throughputRps": 505.1886779028227,
+        "throughputRoundsRps": [
+          511.72419308682214,
+          472.84954377290074,
+          534.9424210347033
+        ],
+        "rowsPerRequest": 1973.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 1107.0,
+            "meanServerMs": 0.619902394,
+            "sortRowsPerStatement": 369.0
+          },
+          "count": {
+            "rowsPerStatement": 738.0,
+            "meanServerMs": 0.38838178866666667,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": -11.125544770298102,
+      "throughputIncreasePct": -0.42375605964916074,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "fc_long_last",
+    "concurrency": 4,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 10.979072,
+        "p95RoundsMs": [
+          10.979072,
+          9.885951,
+          28.648907
+        ],
+        "throughputRps": 683.592796022095,
+        "throughputRoundsRps": [
+          670.4455553277851,
+          677.9312866906841,
+          703.256452505842
+        ],
+        "rowsPerRequest": 1973.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 1107.0,
+            "meanServerMs": 1.3183252066666666,
+            "sortRowsPerStatement": 369.0
+          },
+          "count": {
+            "rowsPerStatement": 738.0,
+            "meanServerMs": 0.80122649,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 1525054
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 8.481796,
+        "p95RoundsMs": [
+          8.051299,
+          9.24846,
+          26.220268
+        ],
+        "throughputRps": 671.7766398357576,
+        "throughputRoundsRps": [
+          649.3378097386973,
+          679.6449110951511,
+          687.5767753352953
+        ],
+        "rowsPerRequest": 1973.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 1107.0,
+            "meanServerMs": 1.3867898823333336,
+            "sortRowsPerStatement": 369.0
+          },
+          "count": {
+            "rowsPerStatement": 738.0,
+            "meanServerMs": 0.792184367,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 1622994
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 23.433895,
+        "p95RoundsMs": [
+          28.903389,
+          20.145674,
+          19.536494
+        ],
+        "throughputRps": 689.7933455940947,
+        "throughputRoundsRps": [
+          699.7006179329165,
+          669.4158257059438,
+          701.2100608532259
+        ],
+        "rowsPerRequest": 1973.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 1107.0,
+            "meanServerMs": 1.474243213,
+            "sortRowsPerStatement": 369.0
+          },
+          "count": {
+            "rowsPerStatement": 738.0,
+            "meanServerMs": 0.7469121076666667,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 2164702
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 22.745783978828094,
+      "throughputIncreasePct": -1.7285372600613913,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "fc_cycle",
+    "concurrency": 1,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 1.212615,
+        "p95RoundsMs": [
+          1.290201,
+          1.174904,
+          1.101205
+        ],
+        "throughputRps": 917.0343973420638,
+        "throughputRoundsRps": [
+          880.4700689643283,
+          933.4163997815075,
+          939.5628661221076
+        ],
+        "rowsPerRequest": 128.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 6.0,
+            "meanServerMs": 0.12319521433333333,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 6.0,
+            "meanServerMs": 0.140922605,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 1.144636,
+        "p95RoundsMs": [
+          1.092919,
+          1.169526,
+          1.14132
+        ],
+        "throughputRps": 920.9001220636856,
+        "throughputRoundsRps": [
+          921.8443908844077,
+          912.453186227509,
+          928.5448928016464
+        ],
+        "rowsPerRequest": 128.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 6.0,
+            "meanServerMs": 0.12820207433333333,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 6.0,
+            "meanServerMs": 0.14143334466666665,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 1.184904,
+        "p95RoundsMs": [
+          1.336926,
+          1.094984,
+          1.184904
+        ],
+        "throughputRps": 929.9935654955008,
+        "throughputRoundsRps": [
+          876.269102809348,
+          980.6180268448902,
+          939.0890222774436
+        ],
+        "rowsPerRequest": 128.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 6.0,
+            "meanServerMs": 0.12280839666666667,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 6.0,
+            "meanServerMs": 0.13573722933333332,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 5.605983762364808,
+      "throughputIncreasePct": 0.4215463163460553,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "fc_cycle",
+    "concurrency": 4,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 5.715444,
+        "p95RoundsMs": [
+          7.701378,
+          4.283726,
+          4.104001
+        ],
+        "throughputRps": 1271.7096407975444,
+        "throughputRoundsRps": [
+          934.2015041249448,
+          1529.1615234912083,
+          1575.6889224901454
+        ],
+        "rowsPerRequest": 128.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 6.0,
+            "meanServerMs": 0.202094289,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 6.0,
+            "meanServerMs": 0.186983279,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 341852
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 4.807725,
+        "p95RoundsMs": [
+          3.689075,
+          4.464436,
+          5.362703
+        ],
+        "throughputRps": 1376.8520414252753,
+        "throughputRoundsRps": [
+          1554.3047501345761,
+          1508.5034018384024,
+          1146.0001900747175
+        ],
+        "rowsPerRequest": 128.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 6.0,
+            "meanServerMs": 0.23659462666666664,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 6.0,
+            "meanServerMs": 0.22829374233333333,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 77190
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 4.075711,
+        "p95RoundsMs": [
+          4.069734,
+          4.042242,
+          4.10061
+        ],
+        "throughputRps": 1520.7264081917986,
+        "throughputRoundsRps": [
+          1502.4355112845622,
+          1525.715690083726,
+          1534.3886644312645
+        ],
+        "rowsPerRequest": 128.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 6.0,
+            "meanServerMs": 0.20894481866666667,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 6.0,
+            "meanServerMs": 0.20773211066666666,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 101025
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 15.881863246319972,
+      "throughputIncreasePct": 8.267799288034938,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "fc_lead",
+    "concurrency": 1,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 2.136934,
+        "p95RoundsMs": [
+          3.58336,
+          1.472244,
+          2.136934
+        ],
+        "throughputRps": 652.6751075052656,
+        "throughputRoundsRps": [
+          594.9525128296904,
+          711.6989017057132,
+          662.0006095717201
+        ],
+        "rowsPerRequest": 1215.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 81.0,
+            "meanServerMs": 0.19704305933333335,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 984.0,
+            "meanServerMs": 0.37525813366666666,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 1.351241,
+        "p95RoundsMs": [
+          1.513474,
+          1.452333,
+          1.257646
+        ],
+        "throughputRps": 760.8046230866897,
+        "throughputRoundsRps": [
+          736.0826510646687,
+          746.8170275944691,
+          802.8036826118603
+        ],
+        "rowsPerRequest": 436.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.1773387713333333,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.23639994533333333,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 1.94342,
+        "p95RoundsMs": [
+          1.586955,
+          2.455773,
+          1.869982
+        ],
+        "throughputRps": 658.8201238399604,
+        "throughputRoundsRps": [
+          684.6326581288102,
+          636.8760848234286,
+          656.6878537829164
+        ],
+        "rowsPerRequest": 1215.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 81.0,
+            "meanServerMs": 0.199807381,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 984.0,
+            "meanServerMs": 0.383202387,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 36.76730306130186,
+      "throughputIncreasePct": 16.567127248766987,
+      "rowsReductionPct": 64.11522633744856
+    }
+  },
+  {
+    "case": "fc_lead",
+    "concurrency": 4,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 6.67183,
+        "p95RoundsMs": [
+          6.704549,
+          6.766125,
+          6.61004
+        ],
+        "throughputRps": 864.5737906728385,
+        "throughputRoundsRps": [
+          941.8583331756467,
+          852.6195120738645,
+          809.499697046154
+        ],
+        "rowsPerRequest": 1215.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 81.0,
+            "meanServerMs": 0.4612862993333333,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 984.0,
+            "meanServerMs": 0.8730173316666666,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 236336
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 5.613264,
+        "p95RoundsMs": [
+          5.671813,
+          4.818756,
+          5.648576
+        ],
+        "throughputRps": 1015.0159211426301,
+        "throughputRoundsRps": [
+          974.8327839343498,
+          1248.4322045742501,
+          885.8988369287798
+        ],
+        "rowsPerRequest": 436.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 40.0,
+            "meanServerMs": 0.37723098233333335,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 246.0,
+            "meanServerMs": 0.527890483,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 150628
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 6.638115,
+        "p95RoundsMs": [
+          6.521571,
+          6.500146,
+          6.690798
+        ],
+        "throughputRps": 928.3073213109101,
+        "throughputRoundsRps": [
+          925.6568040537417,
+          1012.7065525115531,
+          859.1644528587342
+        ],
+        "rowsPerRequest": 1215.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 81.0,
+            "meanServerMs": 0.40495724499999997,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 984.0,
+            "meanServerMs": 0.8453522093333333,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 732339
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 15.866201626840015,
+      "throughputIncreasePct": 17.400727629357448,
+      "rowsReductionPct": 64.11522633744856
+    }
+  },
+  {
+    "case": "empty_range",
+    "concurrency": 1,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 2.525808,
+        "p95RoundsMs": [
+          3.444393,
+          1.773207,
+          1.689247
+        ],
+        "throughputRps": 902.2853369210733,
+        "throughputRoundsRps": [
+          831.4068826500439,
+          955.4517843026422,
+          929.8132729138449
+        ],
+        "rowsPerRequest": 110.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 0.0,
+            "meanServerMs": 0.110175862,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 0.0,
+            "meanServerMs": 0.11819413633333332,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 1.437818,
+        "p95RoundsMs": [
+          1.639318,
+          2.709696,
+          0.973309
+        ],
+        "throughputRps": 962.6233081024673,
+        "throughputRoundsRps": [
+          947.6369689569289,
+          900.4236672575199,
+          1051.9238879958227
+        ],
+        "rowsPerRequest": 110.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 0.0,
+            "meanServerMs": 0.11157569233333334,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 0.0,
+            "meanServerMs": 0.114567026,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 2.716325,
+        "p95RoundsMs": [
+          2.022914,
+          3.770789,
+          1.439851
+        ],
+        "throughputRps": 903.4159960299943,
+        "throughputRoundsRps": [
+          931.8395513231164,
+          819.4766765381611,
+          973.4328466963373
+        ],
+        "rowsPerRequest": 110.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 0.0,
+            "meanServerMs": 0.11062086666666666,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 0.0,
+            "meanServerMs": 0.11065806466666667,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 0
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 43.07492889404103,
+      "throughputIncreasePct": 6.687238361568548,
+      "rowsReductionPct": 0.0
+    }
+  },
+  {
+    "case": "empty_range",
+    "concurrency": 4,
+    "variants": {
+      "ab-a-before": {
+        "requests": 3000,
+        "p95PooledMs": 3.946661,
+        "p95RoundsMs": [
+          4.546712,
+          3.404886,
+          3.76373
+        ],
+        "throughputRps": 1676.1546472645034,
+        "throughputRoundsRps": [
+          1523.5885531879949,
+          1758.8781276015213,
+          1770.1571864236307
+        ],
+        "rowsPerRequest": 110.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 0.0,
+            "meanServerMs": 0.17770404666666664,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 0.0,
+            "meanServerMs": 0.17421245666666668,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 33088
+      },
+      "ab-b-indexed": {
+        "requests": 3000,
+        "p95PooledMs": 3.805462,
+        "p95RoundsMs": [
+          3.778133,
+          3.626455,
+          4.29219
+        ],
+        "throughputRps": 1687.0783774414335,
+        "throughputRoundsRps": [
+          1661.451011541978,
+          1705.9169120927181,
+          1694.503070116149
+        ],
+        "rowsPerRequest": 110.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 0.0,
+            "meanServerMs": 0.19163739,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 0.0,
+            "meanServerMs": 0.189939588,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 132167
+      },
+      "ab-a-return": {
+        "requests": 3000,
+        "p95PooledMs": 4.154171,
+        "p95RoundsMs": [
+          4.240352,
+          4.360548,
+          3.318415
+        ],
+        "throughputRps": 1477.4670608388149,
+        "throughputRoundsRps": [
+          1221.4674717402347,
+          1553.1367018463643,
+          1760.6984830893557
+        ],
+        "rowsPerRequest": 110.0,
+        "sql": {
+          "list": {
+            "rowsPerStatement": 0.0,
+            "meanServerMs": 0.22659665366666665,
+            "sortRowsPerStatement": 0.0
+          },
+          "count": {
+            "rowsPerStatement": 0.0,
+            "meanServerMs": 0.24743741666666666,
+            "sortRowsPerStatement": 0.0
+          }
+        },
+        "cpuThrottledUsec": 45748
+      }
+    },
+    "beforeVsIndexed": {
+      "p95ReductionPct": 3.577682501740087,
+      "throughputIncreasePct": 0.6517137422109354,
+      "rowsReductionPct": 0.0
+    }
+  }
+]

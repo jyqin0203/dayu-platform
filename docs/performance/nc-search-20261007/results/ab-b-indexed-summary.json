@@ -1,0 +1,2162 @@
+[
+  {
+    "round": 1,
+    "case": "rt_long_last",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.891926497220993,
+    "p50Ms": 2.842241,
+    "p95Ms": 5.292303,
+    "throughputRps": 1121.1686199655862,
+    "total": 123,
+    "returned": 3,
+    "rowsExamined": 731000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 904017,
+        "user_usec": 750274,
+        "system_usec": 153742,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 9,
+        "nr_throttled": 8,
+        "throttled_usec": 257266,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 363380,
+        "user_usec": 293877,
+        "system_usec": 69503,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 9,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "fc_cycle",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.6433744733221829,
+    "p50Ms": 2.42656,
+    "p95Ms": 3.689075,
+    "throughputRps": 1554.3047501345761,
+    "total": 3,
+    "returned": 3,
+    "rowsExamined": 128000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 637147,
+        "user_usec": 496996,
+        "system_usec": 140151,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 6,
+        "nr_throttled": 4,
+        "throttled_usec": 27847,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 363447,
+        "user_usec": 285961,
+        "system_usec": 77486,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 6,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "fc_long_last",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.5400304510258138,
+    "p50Ms": 5.923471,
+    "p95Ms": 8.051299,
+    "throughputRps": 649.3378097386973,
+    "total": 369,
+    "returned": 9,
+    "rowsExamined": 1973000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 1351847,
+        "user_usec": 1209593,
+        "system_usec": 142253,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 16,
+        "nr_throttled": 4,
+        "throttled_usec": 164497,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 368899,
+        "user_usec": 290132,
+        "system_usec": 78768,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 16,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "fc_short",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.7405812609940767,
+    "p50Ms": 2.572685,
+    "p95Ms": 5.30239,
+    "throughputRps": 1350.2907144284306,
+    "total": 15,
+    "returned": 15,
+    "rowsExamined": 200000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 682364,
+        "user_usec": 550483,
+        "system_usec": 131882,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 8,
+        "nr_throttled": 3,
+        "throttled_usec": 39648,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 391382,
+        "user_usec": 301046,
+        "system_usec": 90336,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 8,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "fc_long_first",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.6547042173333466,
+    "p50Ms": 1.371823,
+    "p95Ms": 3.64838,
+    "throughputRps": 604.3376148587806,
+    "total": 369,
+    "returned": 20,
+    "rowsExamined": 928000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 919998,
+        "user_usec": 796882,
+        "system_usec": 123116,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 17,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 395774,
+        "user_usec": 335370,
+        "system_usec": 60404,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 17,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "empty_range",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.601883530151099,
+    "p50Ms": 2.165747,
+    "p95Ms": 3.778133,
+    "throughputRps": 1661.451011541978,
+    "total": 0,
+    "returned": 0,
+    "rowsExamined": 110000,
+    "selectStatements": 4000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 553712,
+        "user_usec": 418503,
+        "system_usec": 135208,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 6,
+        "nr_throttled": 4,
+        "throttled_usec": 35338,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 316976,
+        "user_usec": 252555,
+        "system_usec": 64422,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 6,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "rt_short",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.1965626520104706,
+    "p50Ms": 1.036711,
+    "p95Ms": 1.668424,
+    "throughputRps": 835.727237783826,
+    "total": 7,
+    "returned": 7,
+    "rowsExamined": 152000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 616740,
+        "user_usec": 506970,
+        "system_usec": 109771,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 353899,
+        "user_usec": 282646,
+        "system_usec": 71252,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "fc_short",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.18079200014472,
+    "p50Ms": 1.083764,
+    "p95Ms": 1.292591,
+    "throughputRps": 846.8892064626439,
+    "total": 15,
+    "returned": 15,
+    "rowsExamined": 200000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 632339,
+        "user_usec": 508517,
+        "system_usec": 123822,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 379419,
+        "user_usec": 326242,
+        "system_usec": 53178,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "fc_long_last",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.8539241184480488,
+    "p50Ms": 1.796323,
+    "p95Ms": 1.87822,
+    "throughputRps": 539.3964025006142,
+    "total": 369,
+    "returned": 9,
+    "rowsExamined": 1973000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 1338275,
+        "user_usec": 1227798,
+        "system_usec": 110477,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 19,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 369373,
+        "user_usec": 316616,
+        "system_usec": 52757,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 19,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "fc_cycle",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.0847817808389664,
+    "p50Ms": 1.036033,
+    "p95Ms": 1.092919,
+    "throughputRps": 921.8443908844077,
+    "total": 3,
+    "returned": 3,
+    "rowsExamined": 128000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 595020,
+        "user_usec": 492944,
+        "system_usec": 102077,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 354998,
+        "user_usec": 301599,
+        "system_usec": 53398,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "fc_lead",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.025816957000643,
+    "p50Ms": 4.142295,
+    "p95Ms": 5.671813,
+    "throughputRps": 974.8327839343498,
+    "total": 123,
+    "returned": 20,
+    "rowsExamined": 436000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 781932,
+        "user_usec": 636572,
+        "system_usec": 145359,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 1,
+        "throttled_usec": 17754,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 394756,
+        "user_usec": 296890,
+        "system_usec": 97865,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 10,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "empty_range",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.0552564249373972,
+    "p50Ms": 0.930871,
+    "p95Ms": 1.639318,
+    "throughputRps": 947.6369689569289,
+    "total": 0,
+    "returned": 0,
+    "rowsExamined": 110000,
+    "selectStatements": 4000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 549233,
+        "user_usec": 434940,
+        "system_usec": 114292,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 316639,
+        "user_usec": 255066,
+        "system_usec": 61572,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "rt_long_last",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.3525491748005152,
+    "p50Ms": 1.221118,
+    "p95Ms": 1.659512,
+    "throughputRps": 739.3446527720429,
+    "total": 123,
+    "returned": 3,
+    "rowsExamined": 731000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 839391,
+        "user_usec": 720862,
+        "system_usec": 118528,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 13,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 346310,
+        "user_usec": 293382,
+        "system_usec": 52928,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 13,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "rt_long_first",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.2444215081632137,
+    "p50Ms": 1.209609,
+    "p95Ms": 1.266668,
+    "throughputRps": 803.5862394214129,
+    "total": 123,
+    "returned": 20,
+    "rowsExamined": 436000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 737265,
+        "user_usec": 619438,
+        "system_usec": 117826,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 383376,
+        "user_usec": 322123,
+        "system_usec": 61252,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "rt_long_first",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.9216062519699335,
+    "p50Ms": 3.348563,
+    "p95Ms": 5.814315,
+    "throughputRps": 1085.062083576907,
+    "total": 123,
+    "returned": 20,
+    "rowsExamined": 436000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 773382,
+        "user_usec": 631853,
+        "system_usec": 141529,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 9,
+        "nr_throttled": 4,
+        "throttled_usec": 81693,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 393955,
+        "user_usec": 320766,
+        "system_usec": 73190,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 9,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "fc_lead",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.3585430909879506,
+    "p50Ms": 1.234896,
+    "p95Ms": 1.513474,
+    "throughputRps": 736.0826510646687,
+    "total": 123,
+    "returned": 20,
+    "rowsExamined": 436000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 758271,
+        "user_usec": 660383,
+        "system_usec": 97888,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 13,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 396431,
+        "user_usec": 325868,
+        "system_usec": 70564,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 13,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "rt_short",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.7846955601125956,
+    "p50Ms": 3.023298,
+    "p95Ms": 4.592807,
+    "throughputRps": 1274.3795821356637,
+    "total": 7,
+    "returned": 7,
+    "rowsExamined": 152000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 632521,
+        "user_usec": 493853,
+        "system_usec": 138669,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 8,
+        "nr_throttled": 2,
+        "throttled_usec": 28562,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 360918,
+        "user_usec": 277339,
+        "system_usec": 83579,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 8,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 1,
+    "case": "fc_long_first",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.9659243170171976,
+    "p50Ms": 3.052792,
+    "p95Ms": 5.707746,
+    "throughputRps": 1035.2777980453263,
+    "total": 369,
+    "returned": 20,
+    "rowsExamined": 928000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 966873,
+        "user_usec": 828619,
+        "system_usec": 138253,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 9,
+        "nr_throttled": 9,
+        "throttled_usec": 300850,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 396684,
+        "user_usec": 320037,
+        "system_usec": 76648,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 9,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "empty_range",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.5861950209364295,
+    "p50Ms": 2.115755,
+    "p95Ms": 3.626455,
+    "throughputRps": 1705.9169120927181,
+    "total": 0,
+    "returned": 0,
+    "rowsExamined": 110000,
+    "selectStatements": 4000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 581232,
+        "user_usec": 457800,
+        "system_usec": 123433,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 6,
+        "nr_throttled": 4,
+        "throttled_usec": 48526,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 327070,
+        "user_usec": 257130,
+        "system_usec": 69941,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 6,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "empty_range",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.1105883112177253,
+    "p50Ms": 0.930715,
+    "p95Ms": 2.709696,
+    "throughputRps": 900.4236672575199,
+    "total": 0,
+    "returned": 0,
+    "rowsExamined": 110000,
+    "selectStatements": 4000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 552257,
+        "user_usec": 419543,
+        "system_usec": 132715,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 326792,
+        "user_usec": 262362,
+        "system_usec": 64431,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "fc_cycle",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.6629086807370186,
+    "p50Ms": 2.424479,
+    "p95Ms": 4.464436,
+    "throughputRps": 1508.5034018384024,
+    "total": 3,
+    "returned": 3,
+    "rowsExamined": 128000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 645568,
+        "user_usec": 500991,
+        "system_usec": 144578,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 7,
+        "nr_throttled": 5,
+        "throttled_usec": 30972,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 369144,
+        "user_usec": 282381,
+        "system_usec": 86762,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 7,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "fc_lead",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.8010046491399407,
+    "p50Ms": 2.733962,
+    "p95Ms": 4.818756,
+    "throughputRps": 1248.4322045742501,
+    "total": 123,
+    "returned": 20,
+    "rowsExamined": 436000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 803698,
+        "user_usec": 653568,
+        "system_usec": 150130,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 8,
+        "nr_throttled": 6,
+        "throttled_usec": 132874,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 393720,
+        "user_usec": 313429,
+        "system_usec": 80291,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 8,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "rt_long_first",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.4552149320952594,
+    "p50Ms": 1.188958,
+    "p95Ms": 4.091506,
+    "throughputRps": 687.1837128280232,
+    "total": 123,
+    "returned": 20,
+    "rowsExamined": 436000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 747918,
+        "user_usec": 636784,
+        "system_usec": 111134,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 14,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 387919,
+        "user_usec": 329621,
+        "system_usec": 58299,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 14,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "fc_long_first",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.0348772178404033,
+    "p50Ms": 3.328684,
+    "p95Ms": 6.17853,
+    "throughputRps": 966.2982069378379,
+    "total": 369,
+    "returned": 20,
+    "rowsExamined": 928000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 947642,
+        "user_usec": 800028,
+        "system_usec": 147615,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 10,
+        "nr_throttled": 6,
+        "throttled_usec": 233942,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 394011,
+        "user_usec": 308573,
+        "system_usec": 85438,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 10,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "rt_short",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.1489670420996845,
+    "p50Ms": 0.990951,
+    "p95Ms": 1.796905,
+    "throughputRps": 870.3469841680976,
+    "total": 7,
+    "returned": 7,
+    "rowsExamined": 152000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 597063,
+        "user_usec": 512330,
+        "system_usec": 84732,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 355092,
+        "user_usec": 295632,
+        "system_usec": 59461,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "fc_cycle",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.0959466360509396,
+    "p50Ms": 0.988648,
+    "p95Ms": 1.169526,
+    "throughputRps": 912.453186227509,
+    "total": 3,
+    "returned": 3,
+    "rowsExamined": 128000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 592336,
+        "user_usec": 473668,
+        "system_usec": 118669,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 356377,
+        "user_usec": 295807,
+        "system_usec": 60570,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "fc_short",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.9958715760149062,
+    "p50Ms": 3.90948,
+    "p95Ms": 5.017278,
+    "throughputRps": 1004.1455385257748,
+    "total": 15,
+    "returned": 15,
+    "rowsExamined": 200000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 624237,
+        "user_usec": 505182,
+        "system_usec": 119055,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 10,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 375338,
+        "user_usec": 315531,
+        "system_usec": 59807,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 10,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "fc_long_first",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.4660616451874375,
+    "p50Ms": 1.377449,
+    "p95Ms": 1.488682,
+    "throughputRps": 682.0995578751049,
+    "total": 369,
+    "returned": 20,
+    "rowsExamined": 928000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 893817,
+        "user_usec": 787022,
+        "system_usec": 106794,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 15,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 394900,
+        "user_usec": 334263,
+        "system_usec": 60638,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 15,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "fc_long_last",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.4713565623387694,
+    "p50Ms": 4.028663,
+    "p95Ms": 9.24846,
+    "throughputRps": 679.6449110951511,
+    "total": 369,
+    "returned": 9,
+    "rowsExamined": 1973000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 1459086,
+        "user_usec": 1284722,
+        "system_usec": 174363,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 15,
+        "nr_throttled": 13,
+        "throttled_usec": 749535,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 376206,
+        "user_usec": 310379,
+        "system_usec": 65828,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 15,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "fc_long_last",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 2.2233734508045018,
+    "p50Ms": 1.824245,
+    "p95Ms": 4.974347,
+    "throughputRps": 449.76699692000085,
+    "total": 369,
+    "returned": 9,
+    "rowsExamined": 1973000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 1392228,
+        "user_usec": 1242240,
+        "system_usec": 149988,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 22,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 377072,
+        "user_usec": 309282,
+        "system_usec": 67791,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 22,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "rt_long_first",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.7863020170480013,
+    "p50Ms": 2.734821,
+    "p95Ms": 4.582899,
+    "throughputRps": 1271.775956717345,
+    "total": 123,
+    "returned": 20,
+    "rowsExamined": 436000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 783878,
+        "user_usec": 639123,
+        "system_usec": 144756,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 8,
+        "nr_throttled": 7,
+        "throttled_usec": 156934,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 387801,
+        "user_usec": 307452,
+        "system_usec": 80349,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 8,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "rt_short",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.6533554247580469,
+    "p50Ms": 2.351739,
+    "p95Ms": 4.355008,
+    "throughputRps": 1530.5604914359194,
+    "total": 7,
+    "returned": 7,
+    "rowsExamined": 152000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 644832,
+        "user_usec": 522754,
+        "system_usec": 122078,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 6,
+        "nr_throttled": 4,
+        "throttled_usec": 42796,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 360126,
+        "user_usec": 283230,
+        "system_usec": 76896,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 6,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "rt_long_last",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.9151757056824863,
+    "p50Ms": 3.025072,
+    "p95Ms": 5.892868,
+    "throughputRps": 1092.6863484146538,
+    "total": 123,
+    "returned": 3,
+    "rowsExamined": 731000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 897419,
+        "user_usec": 731466,
+        "system_usec": 165952,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 10,
+        "nr_throttled": 8,
+        "throttled_usec": 221077,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 353347,
+        "user_usec": 288184,
+        "system_usec": 65164,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 9,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "rt_long_last",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.5102459229528904,
+    "p50Ms": 1.301162,
+    "p95Ms": 3.429301,
+    "throughputRps": 662.1438169783381,
+    "total": 123,
+    "returned": 3,
+    "rowsExamined": 731000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 859235,
+        "user_usec": 715129,
+        "system_usec": 144105,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 15,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 365137,
+        "user_usec": 300966,
+        "system_usec": 64170,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 15,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "fc_lead",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.3390160682611167,
+    "p50Ms": 1.236515,
+    "p95Ms": 1.452333,
+    "throughputRps": 746.8170275944691,
+    "total": 123,
+    "returned": 20,
+    "rowsExamined": 436000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 761568,
+        "user_usec": 638201,
+        "system_usec": 123367,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 13,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 394630,
+        "user_usec": 326494,
+        "system_usec": 68135,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 13,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 2,
+    "case": "fc_short",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.1629388090223074,
+    "p50Ms": 1.100779,
+    "p95Ms": 1.157564,
+    "throughputRps": 859.8904707984666,
+    "total": 15,
+    "returned": 15,
+    "rowsExamined": 200000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 634895,
+        "user_usec": 527958,
+        "system_usec": 106937,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 377853,
+        "user_usec": 312721,
+        "system_usec": 65132,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "rt_long_first",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.2416315651498735,
+    "p50Ms": 1.207165,
+    "p95Ms": 1.247497,
+    "throughputRps": 805.3918956862965,
+    "total": 123,
+    "returned": 20,
+    "rowsExamined": 436000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 734092,
+        "user_usec": 615567,
+        "system_usec": 118526,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 383188,
+        "user_usec": 325408,
+        "system_usec": 57779,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "rt_short",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.0905829551629722,
+    "p50Ms": 1.041689,
+    "p95Ms": 1.101747,
+    "throughputRps": 916.9407932389372,
+    "total": 7,
+    "returned": 7,
+    "rowsExamined": 152000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 604226,
+        "user_usec": 499080,
+        "system_usec": 105145,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 354177,
+        "user_usec": 293896,
+        "system_usec": 60280,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "empty_range",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.9506391207687557,
+    "p50Ms": 0.926478,
+    "p95Ms": 0.973309,
+    "throughputRps": 1051.9238879958227,
+    "total": 0,
+    "returned": 0,
+    "rowsExamined": 110000,
+    "selectStatements": 4000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 530686,
+        "user_usec": 415748,
+        "system_usec": 114939,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 10,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 317323,
+        "user_usec": 256030,
+        "system_usec": 61294,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 10,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "rt_long_first",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.0723201069049537,
+    "p50Ms": 4.232781,
+    "p95Ms": 5.518944,
+    "throughputRps": 932.5573525673301,
+    "total": 123,
+    "returned": 20,
+    "rowsExamined": 436000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 724558,
+        "user_usec": 612828,
+        "system_usec": 111731,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 370866,
+        "user_usec": 318618,
+        "system_usec": 52248,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 10,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "fc_long_last",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 2.0483560459688306,
+    "p50Ms": 1.753677,
+    "p95Ms": 4.62232,
+    "throughputRps": 488.19637678127407,
+    "total": 369,
+    "returned": 9,
+    "rowsExamined": 1973000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 1360311,
+        "user_usec": 1239354,
+        "system_usec": 120958,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 21,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 367296,
+        "user_usec": 314283,
+        "system_usec": 53013,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 21,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "fc_lead",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.1287970570847392,
+    "p50Ms": 4.417947,
+    "p95Ms": 5.648576,
+    "throughputRps": 885.8988369287798,
+    "total": 123,
+    "returned": 20,
+    "rowsExamined": 436000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 739807,
+        "user_usec": 600753,
+        "system_usec": 139054,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 387559,
+        "user_usec": 332629,
+        "system_usec": 54929,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "fc_long_first",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.4082892499864101,
+    "p50Ms": 1.369533,
+    "p95Ms": 1.418213,
+    "throughputRps": 710.081398412755,
+    "total": 369,
+    "returned": 20,
+    "rowsExamined": 928000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 889321,
+        "user_usec": 784930,
+        "system_usec": 104391,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 15,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 389297,
+        "user_usec": 327728,
+        "system_usec": 61570,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 15,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "fc_cycle",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.0769538530148566,
+    "p50Ms": 1.039949,
+    "p95Ms": 1.14132,
+    "throughputRps": 928.5448928016464,
+    "total": 3,
+    "returned": 3,
+    "rowsExamined": 128000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 595648,
+        "user_usec": 501492,
+        "system_usec": 94156,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 355433,
+        "user_usec": 299286,
+        "system_usec": 56148,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 11,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "fc_long_first",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.2560761757194996,
+    "p50Ms": 4.89266,
+    "p95Ms": 6.702433,
+    "throughputRps": 796.1300590923037,
+    "total": 369,
+    "returned": 20,
+    "rowsExamined": 928000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 877302,
+        "user_usec": 763251,
+        "system_usec": 114052,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 13,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 379998,
+        "user_usec": 319465,
+        "system_usec": 60532,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 13,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "fc_lead",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.2456345451064408,
+    "p50Ms": 1.217598,
+    "p95Ms": 1.257646,
+    "throughputRps": 802.8036826118603,
+    "total": 123,
+    "returned": 20,
+    "rowsExamined": 436000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 746909,
+        "user_usec": 649553,
+        "system_usec": 97355,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 384681,
+        "user_usec": 330743,
+        "system_usec": 53938,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "fc_short",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.19732925016433,
+    "p50Ms": 1.096679,
+    "p95Ms": 1.531747,
+    "throughputRps": 835.1921577650867,
+    "total": 15,
+    "returned": 15,
+    "rowsExamined": 200000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 635634,
+        "user_usec": 540228,
+        "system_usec": 95407,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 386630,
+        "user_usec": 326893,
+        "system_usec": 59738,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "rt_long_last",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.1811034167185426,
+    "p50Ms": 4.631252,
+    "p95Ms": 5.969821,
+    "throughputRps": 846.6659107449694,
+    "total": 123,
+    "returned": 3,
+    "rowsExamined": 731000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 826885,
+        "user_usec": 701347,
+        "system_usec": 125538,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 348728,
+        "user_usec": 291785,
+        "system_usec": 56943,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 12,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "rt_long_last",
+    "concurrency": 1,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.4530721907503903,
+    "p50Ms": 1.273883,
+    "p95Ms": 2.385377,
+    "throughputRps": 688.1970533642816,
+    "total": 123,
+    "returned": 3,
+    "rowsExamined": 731000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 846349,
+        "user_usec": 725487,
+        "system_usec": 120862,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 15,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 362366,
+        "user_usec": 294897,
+        "system_usec": 67469,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 15,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "fc_cycle",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.8726002043113112,
+    "p50Ms": 3.364751,
+    "p95Ms": 5.362703,
+    "throughputRps": 1146.0001900747175,
+    "total": 3,
+    "returned": 3,
+    "rowsExamined": 128000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 624489,
+        "user_usec": 479694,
+        "system_usec": 144795,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 9,
+        "nr_throttled": 1,
+        "throttled_usec": 18371,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 364527,
+        "user_usec": 300088,
+        "system_usec": 64439,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 9,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "empty_range",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.5901435161940753,
+    "p50Ms": 2.120555,
+    "p95Ms": 4.29219,
+    "throughputRps": 1694.503070116149,
+    "total": 0,
+    "returned": 0,
+    "rowsExamined": 110000,
+    "selectStatements": 4000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 571150,
+        "user_usec": 435024,
+        "system_usec": 136126,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 6,
+        "nr_throttled": 5,
+        "throttled_usec": 48303,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 323504,
+        "user_usec": 247484,
+        "system_usec": 76021,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 6,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "rt_short",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.6730572520755231,
+    "p50Ms": 2.542306,
+    "p95Ms": 4.063139,
+    "throughputRps": 1485.7577077080375,
+    "total": 7,
+    "returned": 7,
+    "rowsExamined": 152000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 640106,
+        "user_usec": 480088,
+        "system_usec": 160017,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 7,
+        "nr_throttled": 4,
+        "throttled_usec": 24153,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 356020,
+        "user_usec": 271474,
+        "system_usec": 84546,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 7,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "fc_short",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 0.6886409400030971,
+    "p50Ms": 2.538766,
+    "p95Ms": 4.482416,
+    "throughputRps": 1452.1355642833298,
+    "total": 15,
+    "returned": 15,
+    "rowsExamined": 200000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 680543,
+        "user_usec": 542559,
+        "system_usec": 137984,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 7,
+        "nr_throttled": 4,
+        "throttled_usec": 41983,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 366438,
+        "user_usec": 287071,
+        "system_usec": 79367,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 7,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  },
+  {
+    "round": 3,
+    "case": "fc_long_last",
+    "concurrency": 4,
+    "requests": 1000,
+    "errors": 0,
+    "errorRate": 0.0,
+    "elapsedSeconds": 1.4543830389156938,
+    "p50Ms": 4.116574,
+    "p95Ms": 26.220268,
+    "throughputRps": 687.5767753352953,
+    "total": 369,
+    "returned": 9,
+    "rowsExamined": 1973000,
+    "selectStatements": 5000,
+    "cpuDelta": {
+      "dayu-perf-db.service": {
+        "usage_usec": 1475794,
+        "user_usec": 1311901,
+        "system_usec": 163893,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 14,
+        "nr_throttled": 14,
+        "throttled_usec": 708962,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      },
+      "dayu-perf-backend.service": {
+        "usage_usec": 382187,
+        "user_usec": 292414,
+        "system_usec": 89773,
+        "core_sched.force_idle_usec": 0,
+        "nr_periods": 14,
+        "nr_throttled": 0,
+        "throttled_usec": 0,
+        "nr_bursts": 0,
+        "burst_usec": 0
+      }
+    }
+  }
+]

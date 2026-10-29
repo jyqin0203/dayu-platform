@@ -1,0 +1,16 @@
+{
+  "action": "add",
+  "statement": "CREATE INDEX idx_assets_type_mode_status_lead_time ON dayu_perf.data_assets(asset_type,data_mode,status,lead_minutes,valid_time,id)",
+  "elapsedSeconds": 0.04905629297718406,
+  "before": {
+    "checksums": "dayu_perf.data_assets\t1186088056\ndayu_perf.data_asset_products\t1316820065\n",
+    "sizes": "data_asset_products\t9762\t393216\t393216\ndata_assets\t9157\t2637824\t5095424\n",
+    "indexPages": "PRIMARY\t161\nidx_assets_forecast_cycle\t97\nidx_assets_status_last_seen\t20\nidx_assets_timeline\t97\nuq_data_assets_storage_path\t97\n"
+  },
+  "after": {
+    "checksums": "dayu_perf.data_assets\t1186088056\ndayu_perf.data_asset_products\t1316820065\n",
+    "sizes": "data_asset_products\t9762\t393216\t393216\ndata_assets\t9157\t2637824\t5586944\n",
+    "indexPages": "PRIMARY\t161\nidx_assets_forecast_cycle\t97\nidx_assets_status_last_seen\t20\nidx_assets_timeline\t97\nidx_assets_type_mode_status_lead_time\t30\nuq_data_assets_storage_path\t97\n"
+  },
+  "rowChecksumsUnchanged": true
+}

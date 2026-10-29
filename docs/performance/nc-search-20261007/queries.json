@@ -1,0 +1,139 @@
+[
+  {
+    "name": "rt_short",
+    "params": {
+      "productCode": "PRECIP",
+      "from": "2026-09-02T06:00:00Z",
+      "to": "2026-09-02T12:00:00Z",
+      "pageSize": 20,
+      "page": 1,
+      "dataMode": "REALTIME"
+    },
+    "sql": {
+      "list": "SELECT a.* FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='REALTIME' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-02 12:00:00' ORDER BY a.valid_time DESC,a.id DESC LIMIT 20 OFFSET 0",
+      "count": "SELECT COUNT(*) FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='REALTIME' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-02 12:00:00'"
+    }
+  },
+  {
+    "name": "rt_long_first",
+    "params": {
+      "productCode": "PRECIP",
+      "from": "2026-09-02T06:00:00Z",
+      "to": "2026-09-08T06:00:00Z",
+      "pageSize": 20,
+      "page": 1,
+      "dataMode": "REALTIME"
+    },
+    "sql": {
+      "list": "SELECT a.* FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='REALTIME' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-08 06:00:00' ORDER BY a.valid_time DESC,a.id DESC LIMIT 20 OFFSET 0",
+      "count": "SELECT COUNT(*) FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='REALTIME' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-08 06:00:00'"
+    }
+  },
+  {
+    "name": "rt_long_last",
+    "params": {
+      "productCode": "PRECIP",
+      "from": "2026-09-02T06:00:00Z",
+      "to": "2026-09-08T06:00:00Z",
+      "pageSize": 20,
+      "page": 7,
+      "dataMode": "REALTIME"
+    },
+    "sql": {
+      "list": "SELECT a.* FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='REALTIME' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-08 06:00:00' ORDER BY a.valid_time DESC,a.id DESC LIMIT 20 OFFSET 120",
+      "count": "SELECT COUNT(*) FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='REALTIME' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-08 06:00:00'"
+    }
+  },
+  {
+    "name": "fc_short",
+    "params": {
+      "productCode": "PRECIP",
+      "from": "2026-09-02T06:00:00Z",
+      "to": "2026-09-02T12:00:00Z",
+      "pageSize": 20,
+      "page": 1,
+      "dataMode": "FORECAST"
+    },
+    "sql": {
+      "list": "SELECT a.* FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='FORECAST' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-02 12:00:00' ORDER BY a.valid_time DESC,a.id DESC LIMIT 20 OFFSET 0",
+      "count": "SELECT COUNT(*) FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='FORECAST' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-02 12:00:00'"
+    }
+  },
+  {
+    "name": "fc_long_first",
+    "params": {
+      "productCode": "PRECIP",
+      "from": "2026-09-02T06:00:00Z",
+      "to": "2026-09-08T06:00:00Z",
+      "pageSize": 20,
+      "page": 1,
+      "dataMode": "FORECAST"
+    },
+    "sql": {
+      "list": "SELECT a.* FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='FORECAST' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-08 06:00:00' ORDER BY a.valid_time DESC,a.id DESC LIMIT 20 OFFSET 0",
+      "count": "SELECT COUNT(*) FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='FORECAST' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-08 06:00:00'"
+    }
+  },
+  {
+    "name": "fc_long_last",
+    "params": {
+      "productCode": "PRECIP",
+      "from": "2026-09-02T06:00:00Z",
+      "to": "2026-09-08T06:00:00Z",
+      "pageSize": 20,
+      "page": 19,
+      "dataMode": "FORECAST"
+    },
+    "sql": {
+      "list": "SELECT a.* FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='FORECAST' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-08 06:00:00' ORDER BY a.valid_time DESC,a.id DESC LIMIT 20 OFFSET 360",
+      "count": "SELECT COUNT(*) FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='FORECAST' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-08 06:00:00'"
+    }
+  },
+  {
+    "name": "fc_cycle",
+    "params": {
+      "productCode": "PRECIP",
+      "from": "2026-09-02T06:00:00Z",
+      "to": "2026-09-08T06:00:00Z",
+      "pageSize": 20,
+      "page": 1,
+      "dataMode": "FORECAST",
+      "cycleTime": "2026-09-02T06:00:00Z"
+    },
+    "sql": {
+      "list": "SELECT a.* FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='FORECAST' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-08 06:00:00' AND a.cycle_time='2026-09-02 06:00:00' ORDER BY a.valid_time DESC,a.id DESC LIMIT 20 OFFSET 0",
+      "count": "SELECT COUNT(*) FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='FORECAST' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-08 06:00:00' AND a.cycle_time='2026-09-02 06:00:00'"
+    }
+  },
+  {
+    "name": "fc_lead",
+    "params": {
+      "productCode": "PRECIP",
+      "from": "2026-09-02T06:00:00Z",
+      "to": "2026-09-08T06:00:00Z",
+      "pageSize": 20,
+      "page": 1,
+      "dataMode": "FORECAST",
+      "leadMinutes": 60
+    },
+    "sql": {
+      "list": "SELECT a.* FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='FORECAST' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-08 06:00:00' AND a.lead_minutes=60 ORDER BY a.valid_time DESC,a.id DESC LIMIT 20 OFFSET 0",
+      "count": "SELECT COUNT(*) FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='FORECAST' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-09-02 06:00:00' AND a.valid_time<='2026-09-08 06:00:00' AND a.lead_minutes=60"
+    }
+  },
+  {
+    "name": "empty_range",
+    "params": {
+      "productCode": "PRECIP",
+      "from": "2026-10-01T00:00:00Z",
+      "to": "2026-10-02T00:00:00Z",
+      "pageSize": 20,
+      "page": 1,
+      "dataMode": "REALTIME"
+    },
+    "sql": {
+      "list": "SELECT a.* FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='REALTIME' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-10-01 00:00:00' AND a.valid_time<='2026-10-02 00:00:00' ORDER BY a.valid_time DESC,a.id DESC LIMIT 20 OFFSET 0",
+      "count": "SELECT COUNT(*) FROM data_assets a WHERE a.asset_type='NETCDF' AND a.data_mode='REALTIME' AND a.status='AVAILABLE' AND EXISTS (SELECT 1 FROM data_asset_products ap WHERE ap.asset_id=a.id AND ap.product_id=17) AND a.valid_time>='2026-10-01 00:00:00' AND a.valid_time<='2026-10-02 00:00:00'"
+    }
+  }
+]

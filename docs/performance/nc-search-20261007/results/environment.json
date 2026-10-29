@@ -1,0 +1,31 @@
+{
+  "recordedUtc": "2026-10-07T06:00:23Z",
+  "baseCommit": "5e3f775dc8bb5c6eb3f68d0cf2de919ded5ad47a",
+  "includesUncommittedPreviouslyReviewedChanges": true,
+  "jarSha256": "0c653b8dee8f4d93c65ef694d546498640196e9b8f5b58578927fc6527d4bfe7",
+  "sourceSha256": {
+    "backend/pom.xml": "2055cbd96042085c5c0502a072b37676f3bc71579311beb4404b0e0102e60694",
+    "backend/src/main/java/cn/edu/fudan/dayu/assetindex/infrastructure/JdbcAssetIndexStore.java": "022a3962184572e3d0f9e32b07eba9abc66a439c4e5e4b14a112da8c31c84815",
+    "backend/src/main/java/cn/edu/fudan/dayu/assetindex/application/IndexedAssetQueries.java": "b737fef4838c68f7266a893d6d2cb5a4839699cf4fe724cd73af678de6146c20",
+    "backend/src/main/java/cn/edu/fudan/dayu/discovery/application/IndexedDiscovery.java": "568bc17b95110c1101459af58c45f87bd9bd8ca31ac4092122721c9733d0a660"
+  },
+  "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+  "cpu": "Architecture:                            x86_64\nCPU op-mode(s):                          32-bit, 64-bit\nAddress sizes:                           46 bits physical, 48 bits virtual\nByte Order:                              Little Endian\nCPU(s):                                  20\nOn-line CPU(s) list:                     0-19\nVendor ID:                               GenuineIntel\nModel name:                              Intel(R) Core(TM) Ultra 7 265K\nCPU family:                              6\nModel:                                   198\nThread(s) per core:                      1\nCore(s) per socket:                      1\nSocket(s):                               20\nStepping:                                2\nCPU max MHz:                             5000.0000\nCPU min MHz:                             800.0000\nBogoMIPS:                                7756.80\nFlags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault intel_ppin ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdt_a rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk avx_vnni lam wbnoinvd dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req hfi vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq tme rdpid bus_lock_detect movdiri movdir64b fsrm md_clear serialize arch_lbr ibt flush_l1d arch_capabilities ibpb_exit_to_user\nVirtualization:                          VT-x\nL1d cache:                               704 KiB (18 instances)\nL1i cache:                               1.1 MiB (18 instances)\nL2 cache:                                36 MiB (11 instances)\nL3 cache:                                30 MiB (1 instance)\nNUMA node(s):                            1\nNUMA node0 CPU(s):                       0-19\nVulnerability Gather data sampling:      Not affected\nVulnerability Indirect target selection: Not affected\nVulnerability Itlb multihit:             Not affected\nVulnerability L1tf:                      Not affected\nVulnerability Mds:                       Not affected\nVulnerability Meltdown:                  Not affected\nVulnerability Mmio stale data:           Not affected\nVulnerability Reg file data sampling:    Not affected\nVulnerability Retbleed:                  Not affected\nVulnerability Spec rstack overflow:      Not affected\nVulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; PBRSB-eIBRS Not affected; BHI BHI_DIS_S\nVulnerability Srbds:                     Not affected\nVulnerability Tsa:                       Not affected\nVulnerability Tsx async abort:           Not affected\nVulnerability Vmscape:                   Mitigation; IBPB before exit to userspace\n",
+  "mariadb": "mariadb  Ver 15.1 Distrib 10.6.23-MariaDB, for debian-linux-gnu (x86_64) using  EditLine wrapper",
+  "jvmArgs": "-Xms128m -Xmx512m -XX:ActiveProcessorCount=2",
+  "dbBufferPoolBytes": 134217728,
+  "hikariMaximumPoolSize": 5,
+  "tomcatMaxThreads": 24,
+  "affinity": "2,3 for both services",
+  "cpuQuota": "100% per service (combined at most 2 CPU equivalents)",
+  "memoryMax": "DB 512MiB; backend 768MiB",
+  "instrumentation": "performance_schema ON, SELECT digest delta; no slow/general log during measured load",
+  "datasetFrozen": true,
+  "redis": "Disabled, historical NC path bypasses Redis in original code too",
+  "mediaAndIndexingAndCopilot": "Disabled in performance instance",
+  "noScientificFileCopiesOrUsers": true,
+  "sampling": "warm pool/JVM, 1800 global warm-ups + 20 before each batch; 9 cases x concurrency 1/4 x 1000 requests x 3 rounds; closed-loop HTTP keep-alive on local loopback, not public HTTPS/Nginx or capacity benchmark",
+  "percentile": "nearest-rank, ceil(n*0.95); elapsed includes HTTP request+body, excludes post-read correctness check; throughput includes client validation and pool setup",
+  "orderedCases": "seed 20261007+round; all requests verify exact values/ordering/page/total against independent snapshot",
+  "pilot": "pilot files retained (200 requests/case and only 180 global warm-ups); first-round JIT noise; never compare pilot to formal as optimization"
+}

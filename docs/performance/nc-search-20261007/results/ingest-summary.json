@@ -1,0 +1,90 @@
+[
+  {
+    "phase": "insert",
+    "operationsPerRound": 9270,
+    "aSeconds": [
+      19.763667576,
+      19.517664409,
+      18.93868006
+    ],
+    "bSeconds": [
+      19.754670456,
+      18.953710127,
+      18.860803241
+    ],
+    "aMedianSeconds": 19.517664409,
+    "bMedianSeconds": 18.953710127,
+    "bVsAMedianTimeChangePct": -2.8894557780179353,
+    "pairedChangesPct": [
+      -0.04552353436123591,
+      -2.8894557780179353,
+      -0.4112051038048903
+    ]
+  },
+  {
+    "phase": "unchanged",
+    "operationsPerRound": 9270,
+    "aSeconds": [
+      20.108907919,
+      18.770793538,
+      19.72904801
+    ],
+    "bSeconds": [
+      19.364097562,
+      18.778696983,
+      18.775338815
+    ],
+    "aMedianSeconds": 19.72904801,
+    "bMedianSeconds": 18.778696983,
+    "bVsAMedianTimeChangePct": -4.817014112988616,
+    "pairedChangesPct": [
+      -3.7038826772699096,
+      0.04210501268366862,
+      -4.8340355526358625
+    ]
+  },
+  {
+    "phase": "metadata-update-10pct",
+    "operationsPerRound": 927,
+    "aSeconds": [
+      2.001952557,
+      1.901733519,
+      2.011050616
+    ],
+    "bSeconds": [
+      1.942347302,
+      1.882954094,
+      1.881085076
+    ],
+    "aMedianSeconds": 2.001952557,
+    "bMedianSeconds": 1.882954094,
+    "bVsAMedianTimeChangePct": -5.944120033409961,
+    "pairedChangesPct": [
+      -2.977356021329536,
+      -0.9874898250662789,
+      -6.462569314068423
+    ]
+  },
+  {
+    "phase": "missing-10pct",
+    "operationsPerRound": 927,
+    "aSeconds": [
+      2.004496061,
+      1.867728008,
+      2.004714742
+    ],
+    "bSeconds": [
+      1.902722211,
+      1.873738688,
+      1.872904495
+    ],
+    "aMedianSeconds": 2.004496061,
+    "bMedianSeconds": 1.873738688,
+    "bVsAMedianTimeChangePct": -6.523204287803297,
+    "pairedChangesPct": [
+      -5.077278622798964,
+      0.32181773653630064,
+      -6.575012605958075
+    ]
+  }
+]

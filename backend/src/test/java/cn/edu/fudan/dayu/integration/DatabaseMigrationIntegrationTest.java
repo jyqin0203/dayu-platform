@@ -55,7 +55,7 @@ class DatabaseMigrationIntegrationTest {
                 .load()
                 .migrate();
 
-        assertThat(result.migrationsExecuted).isEqualTo(4);
+        assertThat(result.migrationsExecuted).isEqualTo(5);
     }
 
     /** 验证全部业务表和容易遗漏的关键索引确实由 Flyway 创建。 */
@@ -73,6 +73,7 @@ class DatabaseMigrationIntegrationTest {
                 "uq_data_assets_storage_path",
                 "idx_assets_timeline",
                 "idx_assets_forecast_cycle",
+                "idx_assets_type_mode_status_lead_time",
                 "idx_download_events_time_id",
                 "idx_download_events_status_time_id"
         );

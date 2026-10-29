@@ -1,0 +1,53 @@
+{
+  "capturedUtc": "2026-10-07T05:53:22.076843+00:00",
+  "snapshotSha256": "06cc7bc1bc4c4757010735312d771cd7690192b7b87eaccf3e0bdda8223d50e4",
+  "tableRows": {
+    "products": 17,
+    "product_mode_policies": 29,
+    "data_assets": 9270,
+    "data_asset_products": 9762,
+    "flyway_schema_history": 4
+  },
+  "groups": {
+    "WEBP/FORECAST/AVAILABLE": {
+      "indexRows": 6710,
+      "indexedBytes": 1626409072,
+      "existingFiles": 6710,
+      "existingBytes": 1626409072,
+      "missingPaths": 0,
+      "sizeMismatch": 0
+    },
+    "WEBP/REALTIME/AVAILABLE": {
+      "indexRows": 2068,
+      "indexedBytes": 1012367578,
+      "existingFiles": 2068,
+      "existingBytes": 1012367578,
+      "missingPaths": 0,
+      "sizeMismatch": 0
+    },
+    "NETCDF/REALTIME/AVAILABLE": {
+      "indexRows": 123,
+      "indexedBytes": 2538796341,
+      "existingFiles": 123,
+      "existingBytes": 2538796341,
+      "missingPaths": 0,
+      "sizeMismatch": 0
+    },
+    "NETCDF/FORECAST/AVAILABLE": {
+      "indexRows": 369,
+      "indexedBytes": 7597394353,
+      "existingFiles": 369,
+      "existingBytes": 7597394353,
+      "missingPaths": 0,
+      "sizeMismatch": 0
+    }
+  },
+  "uniqueIndexedPaths": 9270,
+  "uniqueExistingPhysicalFiles": 9270,
+  "uniqueExistingPhysicalBytes": 12774967344,
+  "netcdfTimeMin": "2026-09-02 06:00:00.000000",
+  "netcdfTimeMax": "2026-09-08 06:00:00.000000",
+  "syntheticAssetRows": 0,
+  "classificationBasis": "All indexed paths use previously approved real-data roots; exact-path stat only, no recursive discovery or scientific contents read. No synthetic records added. Tests from temporary test databases excluded.",
+  "capacityMeaning": "Bytes of indexed physical files, not database storage and not all files present on server; each inode counted once; stat occurs after DB snapshot so rolling WebP retention can race."
+}

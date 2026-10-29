@@ -1,0 +1,3020 @@
+[
+  {
+    "round": 1,
+    "case": "rt_long_last",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 143369600000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 386112647000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 369000,
+        "rowsSent": 3000,
+        "timerPs": 462454993000,
+        "noIndex": 0,
+        "sortRows": 123000,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 6000,
+        "timerPs": 110559867000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 246000,
+        "rowsSent": 1000,
+        "timerPs": 319474574000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "fc_cycle",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 122075318000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 335424271000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 6000,
+        "timerPs": 83303658000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 3000,
+        "timerPs": 187497792000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "07bbdf3423142df0ddf2a22b2bfac386",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `cycle_time` = ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 1000,
+        "timerPs": 177646237000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "570da4b7612318ec8dc7780d00792ee6",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `cycle_time` = ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "fc_long_last",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 168955622000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 373497226000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 1107000,
+        "rowsSent": 9000,
+        "timerPs": 989940036000,
+        "noIndex": 0,
+        "sortRows": 369000,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 18000,
+        "rowsSent": 18000,
+        "timerPs": 217420643000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 738000,
+        "rowsSent": 1000,
+        "timerPs": 678070123000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "fc_short",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 123986282000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 349228348000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 15000,
+        "timerPs": 213270227000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 30000,
+        "timerPs": 116087250000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 1000,
+        "timerPs": 183660551000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "fc_long_first",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 94331810000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 234187741000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 20000,
+        "timerPs": 162005319000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 80722091000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 738000,
+        "rowsSent": 1000,
+        "timerPs": 398799704000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "empty_range",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 122636124000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 353791228000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 0,
+        "rowsSent": 0,
+        "timerPs": 176331578000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 0,
+        "rowsSent": 1000,
+        "timerPs": 171533734000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "rt_short",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 106394166000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 244397220000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 7000,
+        "timerPs": 145031830000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 14000,
+        "timerPs": 57695912000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 1000,
+        "timerPs": 162009565000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "fc_short",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 95134119000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 219437302000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 15000,
+        "timerPs": 138563302000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 30000,
+        "timerPs": 65113146000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 1000,
+        "timerPs": 163155476000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "fc_long_last",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 104706769000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 229119720000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 1107000,
+        "rowsSent": 9000,
+        "timerPs": 618193698000,
+        "noIndex": 0,
+        "sortRows": 369000,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 18000,
+        "rowsSent": 18000,
+        "timerPs": 60183739000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 738000,
+        "rowsSent": 1000,
+        "timerPs": 407367425000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "fc_cycle",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 97398098000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 222821357000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 6000,
+        "timerPs": 44524489000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 3000,
+        "timerPs": 123715659000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "07bbdf3423142df0ddf2a22b2bfac386",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `cycle_time` = ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 1000,
+        "timerPs": 148832440000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "570da4b7612318ec8dc7780d00792ee6",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `cycle_time` = ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "fc_lead",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 152197204000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 441116551000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 195670635000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 81000,
+        "rowsSent": 20000,
+        "timerPs": 426874522000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "e10400b1e098d16f74c2b09452a035f0",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `lead_minutes` = ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 984000,
+        "rowsSent": 1000,
+        "timerPs": 794942857000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "19aff9db90b9a4d940418342436c3009",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `lead_minutes` = ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "empty_range",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 99050032000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 235043197000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 0,
+        "rowsSent": 0,
+        "timerPs": 111362826000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 0,
+        "rowsSent": 1000,
+        "timerPs": 117612447000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "rt_long_last",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 99047625000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 224288550000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 369000,
+        "rowsSent": 3000,
+        "timerPs": 293472598000,
+        "noIndex": 0,
+        "sortRows": 123000,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 6000,
+        "timerPs": 45048309000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 246000,
+        "rowsSent": 1000,
+        "timerPs": 211528986000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "rt_long_first",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 101959738000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 223211326000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 20000,
+        "timerPs": 164982541000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 71988650000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 246000,
+        "rowsSent": 1000,
+        "timerPs": 222720505000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "rt_long_first",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 205635869000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 600638600000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 20000,
+        "timerPs": 403273998000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 244338105000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 246000,
+        "rowsSent": 1000,
+        "timerPs": 585074499000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "fc_lead",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 101628882000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 221846112000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 72620837000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 81000,
+        "rowsSent": 20000,
+        "timerPs": 200101828000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "e10400b1e098d16f74c2b09452a035f0",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `lead_minutes` = ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 984000,
+        "rowsSent": 1000,
+        "timerPs": 379068321000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "19aff9db90b9a4d940418342436c3009",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `lead_minutes` = ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "rt_short",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 184092307000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 534932547000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 7000,
+        "timerPs": 295480774000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 14000,
+        "timerPs": 136782137000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 1000,
+        "timerPs": 280939567000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "case": "fc_long_first",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 179054496000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 456466760000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 20000,
+        "timerPs": 356595864000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 151442723000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 738000,
+        "rowsSent": 1000,
+        "timerPs": 723659961000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "empty_range",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 122631131000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 369416025000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 0,
+        "rowsSent": 0,
+        "timerPs": 181884466000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 0,
+        "rowsSent": 1000,
+        "timerPs": 185976412000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "empty_range",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 98186884000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 211116206000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 0,
+        "rowsSent": 0,
+        "timerPs": 109336324000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 0,
+        "rowsSent": 1000,
+        "timerPs": 117577642000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "fc_cycle",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 132015096000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 378824589000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 6000,
+        "timerPs": 100345461000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 3000,
+        "timerPs": 215419061000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "07bbdf3423142df0ddf2a22b2bfac386",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `cycle_time` = ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 1000,
+        "timerPs": 192552715000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "570da4b7612318ec8dc7780d00792ee6",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `cycle_time` = ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "fc_lead",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 188253215000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 525664422000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 194002576000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 81000,
+        "rowsSent": 20000,
+        "timerPs": 433555837000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "e10400b1e098d16f74c2b09452a035f0",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `lead_minutes` = ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 984000,
+        "rowsSent": 1000,
+        "timerPs": 792493101000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "19aff9db90b9a4d940418342436c3009",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `lead_minutes` = ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "rt_long_first",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 108240997000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 223825473000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 20000,
+        "timerPs": 165044493000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 73940326000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 246000,
+        "rowsSent": 1000,
+        "timerPs": 225447068000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "fc_long_first",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 204484830000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 541672086000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 20000,
+        "timerPs": 357931912000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 198832161000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 738000,
+        "rowsSent": 1000,
+        "timerPs": 888505661000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "rt_short",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 112468334000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 238913184000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 7000,
+        "timerPs": 128987757000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 14000,
+        "timerPs": 55128981000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 1000,
+        "timerPs": 146074506000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "fc_cycle",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 94759578000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 212678830000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 6000,
+        "timerPs": 43961091000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 3000,
+        "timerPs": 124061022000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "07bbdf3423142df0ddf2a22b2bfac386",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `cycle_time` = ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 1000,
+        "timerPs": 138359180000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "570da4b7612318ec8dc7780d00792ee6",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `cycle_time` = ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "fc_short",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 209690353000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 600938942000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 15000,
+        "timerPs": 347746402000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 30000,
+        "timerPs": 212084529000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 1000,
+        "timerPs": 393187062000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "fc_long_first",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 103087999000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 232489859000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 20000,
+        "timerPs": 154034265000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 75586166000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 738000,
+        "rowsSent": 1000,
+        "timerPs": 386572663000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "fc_long_last",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 193374250000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 455528577000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 1107000,
+        "rowsSent": 9000,
+        "timerPs": 1558829235000,
+        "noIndex": 0,
+        "sortRows": 369000,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 18000,
+        "rowsSent": 18000,
+        "timerPs": 224308512000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 738000,
+        "rowsSent": 1000,
+        "timerPs": 833437161000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "fc_long_last",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 105422884000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 227747697000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 1107000,
+        "rowsSent": 9000,
+        "timerPs": 611391301000,
+        "noIndex": 0,
+        "sortRows": 369000,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 18000,
+        "rowsSent": 18000,
+        "timerPs": 58855439000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 738000,
+        "rowsSent": 1000,
+        "timerPs": 381823968000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "rt_long_first",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 143980579000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 380092704000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 20000,
+        "timerPs": 297846892000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 151635193000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 246000,
+        "rowsSent": 1000,
+        "timerPs": 353595726000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "rt_short",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 130529010000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 369293737000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 7000,
+        "timerPs": 197088847000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 14000,
+        "timerPs": 102911323000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 1000,
+        "timerPs": 177418834000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "rt_long_last",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 150466855000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 436718668000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 369000,
+        "rowsSent": 3000,
+        "timerPs": 573682598000,
+        "noIndex": 0,
+        "sortRows": 123000,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 6000,
+        "timerPs": 136482695000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 246000,
+        "rowsSent": 1000,
+        "timerPs": 356248650000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "rt_long_last",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 96429817000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 216516245000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 369000,
+        "rowsSent": 3000,
+        "timerPs": 286658746000,
+        "noIndex": 0,
+        "sortRows": 123000,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 6000,
+        "timerPs": 44735398000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 246000,
+        "rowsSent": 1000,
+        "timerPs": 214491618000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "fc_lead",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 92661241000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 206751287000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 74080702000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 81000,
+        "rowsSent": 20000,
+        "timerPs": 195008454000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "e10400b1e098d16f74c2b09452a035f0",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `lead_minutes` = ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 984000,
+        "rowsSent": 1000,
+        "timerPs": 376507414000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "19aff9db90b9a4d940418342436c3009",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `lead_minutes` = ? "
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "case": "fc_short",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 96059755000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 215190454000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 15000,
+        "timerPs": 138652142000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 30000,
+        "timerPs": 64792855000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 1000,
+        "timerPs": 155313865000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "rt_long_first",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 111870151000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 221625417000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 20000,
+        "timerPs": 165058047000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 76838734000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 246000,
+        "rowsSent": 1000,
+        "timerPs": 234739317000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "rt_short",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 108893606000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 230983499000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 7000,
+        "timerPs": 130200936000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 14000,
+        "timerPs": 52303040000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 1000,
+        "timerPs": 145066828000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "empty_range",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 106025294000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 210233799000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 0,
+        "rowsSent": 0,
+        "timerPs": 109828436000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 0,
+        "rowsSent": 1000,
+        "timerPs": 119392320000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "rt_long_first",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 131642865000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 387037879000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 20000,
+        "timerPs": 281082656000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 173754742000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 246000,
+        "rowsSent": 1000,
+        "timerPs": 368896085000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "fc_long_last",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 106472950000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 222857230000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 1107000,
+        "rowsSent": 9000,
+        "timerPs": 623037578000,
+        "noIndex": 0,
+        "sortRows": 369000,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 18000,
+        "rowsSent": 18000,
+        "timerPs": 59841553000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 738000,
+        "rowsSent": 1000,
+        "timerPs": 394661522000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "fc_lead",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 217142644000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 599251577000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 257674624000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 81000,
+        "rowsSent": 20000,
+        "timerPs": 523428539000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "e10400b1e098d16f74c2b09452a035f0",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `lead_minutes` = ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 984000,
+        "rowsSent": 1000,
+        "timerPs": 1031616037000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "19aff9db90b9a4d940418342436c3009",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `lead_minutes` = ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "fc_long_first",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 102496850000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 227080205000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 20000,
+        "timerPs": 167164639000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 76048187000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 738000,
+        "rowsSent": 1000,
+        "timerPs": 400541984000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "fc_cycle",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 94622749000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 212563950000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 6000,
+        "timerPs": 43307625000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 3000,
+        "timerPs": 121808962000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "07bbdf3423142df0ddf2a22b2bfac386",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `cycle_time` = ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 1000,
+        "timerPs": 135576195000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "570da4b7612318ec8dc7780d00792ee6",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `cycle_time` = ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "fc_long_first",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 166807430000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 500968270000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 20000,
+        "timerPs": 304499030000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 138603643000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 738000,
+        "rowsSent": 1000,
+        "timerPs": 650300374000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "fc_lead",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 92800219000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 206723411000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 40000,
+        "rowsSent": 40000,
+        "timerPs": 73473813000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 81000,
+        "rowsSent": 20000,
+        "timerPs": 196018896000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "e10400b1e098d16f74c2b09452a035f0",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `lead_minutes` = ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 984000,
+        "rowsSent": 1000,
+        "timerPs": 370198666000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "19aff9db90b9a4d940418342436c3009",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `lead_minutes` = ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "fc_short",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 95721352000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 218232014000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 15000,
+        "timerPs": 139024551000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 30000,
+        "timerPs": 65658166000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 1000,
+        "timerPs": 149714421000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "rt_long_last",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 153804507000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 502700856000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 369000,
+        "rowsSent": 3000,
+        "timerPs": 614782004000,
+        "noIndex": 0,
+        "sortRows": 123000,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 6000,
+        "timerPs": 153340482000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 246000,
+        "rowsSent": 1000,
+        "timerPs": 447563904000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "rt_long_last",
+    "concurrency": 1,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 102898509000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 230586924000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 369000,
+        "rowsSent": 3000,
+        "timerPs": 297749165000,
+        "noIndex": 0,
+        "sortRows": 123000,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 6000,
+        "timerPs": 50857852000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 246000,
+        "rowsSent": 1000,
+        "timerPs": 217324576000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "fc_cycle",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 118108115000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 382457194000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 6000,
+        "timerPs": 85444127000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 3000,
+        "timerPs": 203366014000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "07bbdf3423142df0ddf2a22b2bfac386",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `cycle_time` = ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 1000,
+        "timerPs": 190750885000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "570da4b7612318ec8dc7780d00792ee6",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? AND `a` . `cycle_time` = ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "empty_range",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 113940809000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 366116406000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 0,
+        "rowsSent": 0,
+        "timerPs": 174896096000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 0,
+        "rowsSent": 1000,
+        "timerPs": 165127224000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "rt_short",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 116863021000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 360434197000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 999,
+        "rowsExamined": 14000,
+        "rowsSent": 7000,
+        "timerPs": 218930947000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 14000,
+        "rowsSent": 14000,
+        "timerPs": 92807206000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 999,
+        "rowsExamined": 14000,
+        "rowsSent": 999,
+        "timerPs": 171663535000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "fc_short",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 121077567000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 392042151000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 15000,
+        "timerPs": 228507809000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 30000,
+        "timerPs": 125768015000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 30000,
+        "rowsSent": 1000,
+        "timerPs": 197434799000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "case": "fc_long_last",
+    "concurrency": 4,
+    "digests": [
+      {
+        "count": 1000,
+        "rowsExamined": 6000,
+        "rowsSent": 2000,
+        "timerPs": 198557226000,
+        "noIndex": 0,
+        "sortRows": 2000,
+        "digest": "be135a4665187d6c388c9074b6197f09",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE `p` . `code` = ? ORDER BY `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 104000,
+        "rowsSent": 29000,
+        "timerPs": 483948928000,
+        "noIndex": 1000,
+        "sortRows": 29000,
+        "digest": "e1aee177bdc48cf0ee69ff80f615ff68",
+        "sql": "SELECT `p` . * , `m` . `data_mode` , `m` . `enabled` , `m` . `stale_after_minutes` FROM `products` `p` LEFT JOIN `product_mode_policies` `m` ON `m` . `product_id` = `p` . `id` WHERE ? = ? ORDER BY `p` . `sort_order` , `p` . `id` , `m` . `data_mode` "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 1107000,
+        "rowsSent": 9000,
+        "timerPs": 1406206349000,
+        "noIndex": 0,
+        "sortRows": 369000,
+        "digest": "f0d0678a2151b110484c5cd719e2bf2a",
+        "sql": "SELECT `a` . * FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? ORDER BY `a` . `valid_time` DESC , `a` . `id` DESC LIMIT ? OFFSET ? "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 18000,
+        "rowsSent": 18000,
+        "timerPs": 204517080000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "607c0f61972fafd7d588b0c029f3bc80",
+        "sql": "SELECT `asset_id` , `product_id` FROM `data_asset_products` WHERE `asset_id` IN (...) "
+      },
+      {
+        "count": 1000,
+        "rowsExamined": 738000,
+        "rowsSent": 1000,
+        "timerPs": 892172186000,
+        "noIndex": 0,
+        "sortRows": 0,
+        "digest": "3e46b546d5fa3e9085ecd89810b5736b",
+        "sql": "SELECT COUNT ( * ) FROM `data_assets` `a` WHERE `a` . `asset_type` = ? AND `a` . `data_mode` = ? AND `a` . `status` = ? AND EXISTS ( SELECT ? FROM `data_asset_products` `ap` WHERE `ap` . `asset_id` = `a` . `id` AND `ap` . `product_id` = ? ) AND `a` . `valid_time` >= ? AND `a` . `valid_time` <= ? "
+      }
+    ]
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "utc": "2026-10-07T06:53:35.755116+00:00",
+  "measuredHttpRequests": 162000,
+  "httpOrContentErrors": 0,
+  "ingestionMeasuredPhases": 24,
+  "ingestionValidation": "all passed",
+  "finalQueryDatabaseAssetCount": 9270,
+  "candidateIndexRemovedFromQueryDatabase": true,
+  "finalChecksums": {
+    "data_assets": 1186088056,
+    "data_asset_products": 1316820065
+  },
+  "productionPidsAndStartTimesUnchanged": true,
+  "normalTestServices": "all four active",
+  "temporaryPortsClosed": [
+    13307,
+    18081
+  ],
+  "temporaryUnits": "MainPID=0\nResult=exit-code\nExecMainStatus=143\nId=dayu-perf-backend.service\nActiveState=failed\n\nMainPID=0\nResult=success\nExecMainStatus=0\nId=dayu-perf-db.service\nActiveState=inactive\n\nMainPID=0\nResult=success\nExecMainStatus=0\nId=dayu-perf-ingest.service\nActiveState=inactive\n",
+  "shutdownNote": "Backend terminated on requested stop with Java exit 143; systemd marks failed, process absent. Not a benchmark failure."
+}

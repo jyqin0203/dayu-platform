@@ -1,0 +1,26 @@
+{
+  "experiment": "Approved isolated single-index A/B/A; no business query change",
+  "snapshotSha256": "06cc7bc1bc4c4757010735312d771cd7690192b7b87eaccf3e0bdda8223d50e4",
+  "jarSha256": "0c653b8dee8f4d93c65ef694d546498640196e9b8f5b58578927fc6527d4bfe7",
+  "scriptsSha256": {
+    "candidate_index.py": "b8ca7c8121a5400b0aec33bd94cd2ea83f7aac7ae4b2b2494d5c8df1c4b1f6ba",
+    "benchmark.py": "dcc58ef4d5a6778b5d7f564a9ba5f0c8ef24489f8a0697ad0308d71c61b803f2",
+    "capture_actual_sql.py": "c016f829d394a916f2d9987fb164df226c1ccdcbcc15afa4b92895086303144a",
+    "compare_ab.py": "41b0adcf41651833e930f297142b115683239465396275e780e4eb07af8a0a36",
+    "IngestCostProbe.java": "dd18a79d856c37274e6dc6d59475b15e05c5a2d6418f5d406b67834d1eb5aaa5",
+    "prepare_ingest.py": "e7299c05fe28840e36451b643b17d6889ed484e1a7b54f31837e67afef1fc286",
+    "summarize_ingest.py": "bd072ac46c6d933ead82c51ca7a5996482649a9a282cea58edf379b46ea094db"
+  },
+  "ingestionProbeClassSha256": "c8662d5710112c21a913ef4826e6018caab93357719f5492b1d3314c93fa1deb",
+  "httpVariants": [
+    "ab-a-before",
+    "ab-b-indexed",
+    "ab-a-return"
+  ],
+  "requestsEach": 54000,
+  "newIndex": "idx_assets_type_mode_status_lead_time(asset_type,data_mode,status,lead_minutes,valid_time,id)",
+  "allExistingIndexesRetainedDuringB": true,
+  "liveOrProductionIndexesChanged": false,
+  "writeReplay": "Production JDBC store + real frozen metadata + real isolated MariaDB; no filesystem scan or scientific file content",
+  "writeReplayUnit": "[Unit]\nDescription=Temporary metadata ingestion index cost replay\n[Service]\nType=oneshot\nUser=ubuntu\nGroup=ubuntu\nUMask=0077\nNice=10\nIOSchedulingClass=idle\nCPUAffinity=2 3\nCPUQuota=100%\nCPUWeight=10\nMemoryMax=512M\nMemorySwapMax=0\nTasksMax=128\nTimeoutStartSec=1800\nNoNewPrivileges=true\nPrivateTmp=true\nPrivateDevices=true\nProtectSystem=strict\nProtectHome=read-only\nReadWritePaths=/home/ubuntu/dayu-test/performance/nc-search-20261007\nInaccessiblePaths=/home/user/FDU-CRIAS /datapool /var/lib/mysql /home/ubuntu/dayu-test/db\nRestrictAddressFamilies=AF_UNIX AF_INET AF_INET6\nIPAddressDeny=any\nIPAddressAllow=localhost\nEnvironmentFile=/home/ubuntu/dayu-test/performance/nc-search-20261007/config/backend.env\nExecStart=/home/ubuntu/dayu-test/tools/jdk17/bin/java -Xms128m -Xmx384m -XX:ActiveProcessorCount=2 -cp /home/ubuntu/dayu-test/performance/nc-search-20261007/probe/classes:/home/ubuntu/dayu-test/performance/nc-search-20261007/probe/lib/* IngestCostProbe\nStandardOutput=append:/home/ubuntu/dayu-test/performance/nc-search-20261007/logs/ingest-console.log\nStandardError=append:/home/ubuntu/dayu-test/performance/nc-search-20261007/logs/ingest-console.log\n"
+}

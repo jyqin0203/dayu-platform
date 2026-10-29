@@ -1,0 +1,20 @@
+{
+  "productionPidAndStartTimesUnchanged": true,
+  "performanceServices": {
+    "dayu-perf-backend.service": "MainPID=0\nExecMainStatus=143\nActiveState=failed\n",
+    "dayu-perf-db.service": "MainPID=0\nExecMainStatus=0\nActiveState=inactive\n"
+  },
+  "performanceProcessesStopped": true,
+  "shutdownNote": "JVM exited 143 on requested SIGTERM; unit lacks SuccessExitStatus=143, so systemd records failed after stop. MainPID=0 and both isolated ports closed. No benchmark request failed.",
+  "testServices": [
+    "active",
+    "active",
+    "active",
+    "active"
+  ],
+  "formalRequests": 54000,
+  "correctnessErrors": 0,
+  "candidateIndexCreated": false,
+  "businessSqlChanged": false,
+  "pilotRequests": 10800
+}

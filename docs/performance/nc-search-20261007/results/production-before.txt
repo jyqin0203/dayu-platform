@@ -1,0 +1,11 @@
+MainPID=263909
+Id=nginx.service
+ActiveEnterTimestamp=Wed 2026-09-16 06:10:05 GMT
+
+MainPID=1342
+Id=mariadb.service
+ActiveEnterTimestamp=Fri 2026-08-21 11:28:49 GMT
+
+MainPID=1199
+Id=php8.3-fpm.service
+ActiveEnterTimestamp=Fri 2026-08-21 11:28:49 GMT
