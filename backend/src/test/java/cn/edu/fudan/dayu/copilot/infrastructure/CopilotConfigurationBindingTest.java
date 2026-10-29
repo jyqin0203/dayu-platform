@@ -21,7 +21,7 @@ class CopilotConfigurationBindingTest {
                 .run(context -> {
                     assertThat(context).hasNotFailed();
                     assertThat(context.getBean(ChatClient.class)).isInstanceOf(RateLimitedChatClient.class);
-                    var provider=context.getBean(AiClient.class);
+                    var provider=context.getBean("qwenAiClient",AiClient.class);
                     assertThat(ReflectionTestUtils.getField(provider,"model")).isEqualTo("qwen3.8-flash");
                     assertThat(ReflectionTestUtils.getField(provider,"key")).isEqualTo("configuration-test-only");
                 });

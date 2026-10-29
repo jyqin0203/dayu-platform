@@ -133,7 +133,7 @@ public class CopilotApplicationService implements CopilotService {
                 java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started));
     }
 
-    private CopilotResponse execute(JsonNode result, ZoneId defaultZone) {
+    CopilotResponse execute(JsonNode result, ZoneId defaultZone) {
         String intent = text(result, "intent");
         if (intent == null || !INTENTS.contains(intent)) throw new IllegalArgumentException();
         return switch (intent) {
@@ -150,6 +150,14 @@ public class CopilotApplicationService implements CopilotService {
                     "这个问题超出了当前大禹助手的范围。我暂时只介绍大禹平台和公开产品，并协助检索平台已有的预览与科学数据。", List.of());
             default -> throw new IllegalArgumentException();
         };
+    }
+
+    /** Exact public cycle timestamps for composing a subsequent scientific query. */
+    List<ForecastCycleSummary> scientificCycles(JsonNode input) {
+        var code=new ProductCode(text(input,"productCode"));
+        if(published(code).isEmpty())throw new IllegalArgumentException();
+        return discovery.listForecastCycles(new ForecastCycleQuery(code,AssetType.NETCDF,text(input,"from")==null?Instant.EPOCH:utc(text(input,"from")),text(input,"to")==null?Instant.now().plus(Duration.ofDays(1)):utc(text(input,"to")))).stream()
+                .sorted(java.util.Comparator.comparing(ForecastCycleSummary::cycleTime).reversed()).limit(10).toList();
     }
 
     private CopilotResponse about(String topic) {
@@ -266,8 +274,8 @@ public class CopilotApplicationService implements CopilotService {
         if (product == null) return clarify("该产品不在当前公开目录中，请从产品目录选择。");
         if (product.modePolicies().stream().noneMatch(policy -> policy.dataMode() == DataMode.FORECAST && policy.enabled()))
             return clarify("该产品当前没有启用预报模式。");
-        Instant from = text(result, "from") == null ? null : utc(text(result, "from"));
-        Instant to = text(result, "to") == null ? null : utc(text(result, "to"));
+        Instant from = text(result, "from") == null ? Instant.EPOCH : utc(text(result, "from"));
+        Instant to = text(result, "to") == null ? Instant.now().plus(Duration.ofDays(1)) : utc(text(result, "to"));
         if (from != null && to != null && from.isAfter(to)) throw new IllegalArgumentException();
         ZoneId zone = interpretedZone(result, defaultZone);
         var webp = discovery.listForecastCycles(new ForecastCycleQuery(productCode, AssetType.WEBP, from, to));

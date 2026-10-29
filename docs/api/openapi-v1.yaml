@@ -260,6 +260,61 @@ paths:
         '429': {$ref: '#/components/responses/RateLimited'}
         '503': {$ref: '#/components/responses/AiUnavailable'}
 
+  /api/v1/copilot/conversations:
+    post:
+      tags: [Copilot]
+      summary: 创建当前 Session 专属的短期对话
+      description: 需开启 conversations；30 分钟不活动后过期，进程重启后清空。
+      security: [{csrfToken: []}]
+      responses:
+        '200':
+          description: 服务端生成的会话标识
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [conversationId]
+                properties:
+                  conversationId: {type: string, format: uuid}
+        '429': {$ref: '#/components/responses/RateLimited'}
+  /api/v1/copilot/conversations/{conversationId}:
+    delete:
+      tags: [Copilot]
+      summary: 清空当前 Session 的对话及已确认条件
+      security: [{csrfToken: []}]
+      parameters:
+        - {name: conversationId, in: path, required: true, schema: {type: string}}
+      responses:
+        '204': {description: 已清空}
+        '404': {description: 不存在、过期或不属于当前 Session}
+  /api/v1/copilot/conversations/{conversationId}/stream:
+    post:
+      tags: [Copilot]
+      summary: 提交一轮对话并流式返回查询事实及模型解释
+      description: |
+        客户端使用 fetch POST，携带同源 Cookie 和 CSRF Token。服务端维护历史，忽略 recentMessages。
+        SSE 依次包含 status、一个或多个 result、answer_delta、done。
+        result 使用 CopilotResponse；answer_delta 为 {text: string}；done 为 {completed: true}。
+        失败发送 error {code, message}，不会发送 done。未收到 done 的连接结束不能当成成功。
+        每 2 秒发送心跳注释；Cache-Control 为 no-store，X-Accel-Buffering 为 no。
+        同一会话仅允许一轮在途；全实例最多两轮并行；关闭客户端连接会取消请求。
+      security: [{csrfToken: []}]
+      parameters:
+        - {name: conversationId, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CopilotRequest'}
+      responses:
+        '200':
+          description: SSE 数据流，业务错误在 error 事件中返回
+          content:
+            text/event-stream:
+              schema: {type: string}
+        '422': {$ref: '#/components/responses/ValidationFailed'}
+        '429': {$ref: '#/components/responses/RateLimited'}
+
   /api/v1/admin/products:
     get:
       tags: [Catalog, Operations]

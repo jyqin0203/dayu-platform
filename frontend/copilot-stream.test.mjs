@@ -1,0 +1,8 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readEvents} from './public/flat-20260925/copilot-stream.js';
+function stream(text){const bytes=new TextEncoder().encode(text);return new ReadableStream({start(c){for(const byte of bytes)c.enqueue(new Uint8Array([byte]));c.close();}});}
+test('UTF-8 and SSE split at every byte preserve Chinese and completion',async()=>{const events=[];await readEvents(stream('event: answer_delta\ndata: {"text":"降水预报"}\n\nevent: done\ndata: {"completed":true}\n\n'),(e,d)=>events.push([e,d]));assert.equal(events[0][1].text,'降水预报');assert.equal(events[1][0],'done');});
+test('truncated stream is a retryable failure',async()=>{await assert.rejects(readEvents(stream('event: answer_delta\ndata: {"text":"partial"}\n\n'),()=>{}),e=>e.retryable);});
+test('error event never becomes success',async()=>{await assert.rejects(readEvents(stream('event: error\ndata: {"message":"失败","code":"AI_UNAVAILABLE"}\n\n'),()=>{}),/失败/);});
+
+test('CRLF heartbeat and multiline events decode across byte boundaries',async()=>{const events=[];await readEvents(stream(' :heartbeat\r\n\r\nevent: answer_delta\r\ndata: {\r\ndata: "text":"测试"}\r\n\r\nevent: done\r\ndata: {"completed":true}\r\n\r\n'),(e,d)=>events.push([e,d]));assert.equal(events[0][1].text,'测试');});
+test('false completion and events after completion fail',async()=>{await assert.rejects(readEvents(stream('event: done\ndata: {"completed":false}\n\n'),()=>{}));await assert.rejects(readEvents(stream('event: done\ndata: {"completed":true}\n\nevent: answer_delta\ndata: {"text":"late"}\n\n'),()=>{}));});

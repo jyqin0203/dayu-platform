@@ -26,6 +26,14 @@ public class CopilotClientConfiguration {
                 apiKey != null && !apiKey.isBlank(), model != null && !model.isBlank(), baseUrl.getHost());
         return new QwenAiClient(mapper, baseUrl, apiKey, model, timeout, maxResponseBytes);
     }
+    @Bean SpringAiQwenClient springAiQwenClient(
+            @Value("${dayu.copilot.qwen.base-url:https://dashscope.aliyuncs.com/compatible-mode/v1}") URI base,
+            @Value("${dayu.copilot.qwen.api-key:${DASHSCOPE_API_KEY:}}") String key,
+            @Value("${dayu.copilot.qwen.model:qwen-plus}") String model,
+            @Value("${dayu.copilot.timeout:10s}") Duration timeout,
+            @Value("${dayu.copilot.max-response-bytes:65536}") int limit) {
+        return new SpringAiQwenClient(base,key,model,timeout,limit);
+    }
     @Bean @Primary ChatClient chatClient(List<AiClient> clients,
             @Value("${dayu.copilot.enabled:false}") boolean enabled,
             @Value("${dayu.copilot.provider:qwen}") String provider,

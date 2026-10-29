@@ -51,7 +51,7 @@ public class CopilotController {
                 response.suggestedActions(), response.degraded());
     }
 
-    private static ZoneId zone(String value) {
+    static ZoneId zone(String value) {
         try {
             if (!ZoneId.getAvailableZoneIds().contains(value)) throw new IllegalArgumentException();
             return ZoneId.of(value);

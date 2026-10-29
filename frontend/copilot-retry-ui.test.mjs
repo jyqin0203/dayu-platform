@@ -14,6 +14,7 @@ test('失败保留问题，按钮手动重试，成功清空；不自动提交',
   let calls=0,fail=true;
   const context=vm.createContext({document:{getElementById:get,createElement:element,body:element(),querySelector:()=>null},
     window:{addEventListener(){}},publicProductDescription:x=>x,safeAction:x=>x,openScientificSearch(){},
+    createStreamingCopilot:()=>({query:async()=>null,cancel(){},reset:async()=>{}}),
     createCopilotClient:()=>createCopilotClient(async text=>{calls++;assert.equal(text,'有多少NC？');
       if(fail)throw Object.assign(Error('failed'),{retryable:true});return {answer:'结果',suggestedActions:[],degraded:true};})});
   const code=(await readFile(new URL('./public/flat-20260925/copilot.js',import.meta.url),'utf8')).replace(/^import .*;\n/gm,'');

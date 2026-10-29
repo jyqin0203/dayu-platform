@@ -89,7 +89,7 @@ async function showFrame(i,token=generation){
     const provider=new Cesium.UrlTemplateImageryProvider({url:textureUrl,rectangle,tilingScheme:new Cesium.GeographicTilingScheme({rectangle,numberOfLevelZeroTilesX:1,numberOfLevelZeroTilesY:1}),tileWidth:texture.width,tileHeight:texture.height,minimumLevel:0,maximumLevel:0,enablePickFeatures:false});
     const previous=currentLayer,previousURL=currentURL;
     currentLayer=viewer.imageryLayers.addImageryProvider(provider);currentLayer.alpha=Number($('opacity').value)/100;currentURL=url;
-    index=i;$('timeline').value=i;$('data-time').textContent=displayDate(frames[i]);$('selected-time').textContent=shortDate(frames[i])+' UTC';$('frame-count').textContent=`${i+1} / ${frames.length} 帧`;
+    index=i;window.dispatchEvent(new CustomEvent('dayu:visible-time',{detail:dateOf(stamp(frames[i])).toISOString()}));$('timeline').value=i;$('data-time').textContent=displayDate(frames[i]);$('selected-time').textContent=shortDate(frames[i])+' UTC';$('frame-count').textContent=`${i+1} / ${frames.length} 帧`;
     [...$('forecast-leads').children].forEach((b,j)=>b.classList.toggle('active',j===i));updatePoint();
     viewer.scene.requestRender();
     // Keep the previous frame until Cesium has uploaded the replacement texture.

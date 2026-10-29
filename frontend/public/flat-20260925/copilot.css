@@ -94,7 +94,7 @@
 #copilot-form label { display: block; margin: 0 0 7px; color: var(--muted); font-size: 11px; }
 #copilot-form textarea { width: 100%; min-width: 0; padding: 10px; resize: none; border: 1px solid #ffffff26; border-radius: 9px; background: #08121b; color: var(--text); font: inherit; line-height: 1.5; }
 #copilot-form small { display: block; margin-top: 8px; color: var(--muted); font-size: 10px; }
-.copilot-form-actions { display: flex; align-items: center; gap: 3px; margin-top: 5px; }
+.copilot-form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; margin-top: 5px; }
 .copilot-form-actions button { padding: 8px 10px; color: var(--muted); }
 .copilot-form-actions #copilot-search { margin-left: auto; }
 .copilot-form-actions #copilot-send { background: #69d9d22b; color: var(--accent); }
@@ -106,4 +106,20 @@
 @media (max-width: 800px) {
   .copilot-launch { right: 12px; padding: 9px 12px; font-size: 12px; }
   #copilot { inset: auto 12px 12px 12px; width: auto; height: min(72dvh, 620px); }
+}
+
+/* Keep the composer visible while factual results and streamed messages grow. */
+#copilot { grid-template-rows: auto minmax(0, 1fr) auto auto auto auto; }
+#copilot .drawer-heading { grid-row: 1; }
+#copilot-messages { grid-row: 2; min-height: 0; }
+#copilot-messages .copilot-message { flex-shrink: 0; }
+#copilot-summary { grid-row: 3; max-height: 140px; overflow: auto; }
+#copilot-actions { grid-row: 4; }
+#copilot-status { grid-row: 5; max-height: 48px; overflow: auto; }
+#copilot-form { grid-row: 6; }
+.copilot-result-card p { margin: 0; font-size: 12px; line-height: 1.5; white-space: pre-line; }
+@media (max-height: 750px) {
+  #copilot-summary { max-height: 100px; }
+  #copilot-form textarea { height: 58px; }
+  #copilot .drawer-heading { padding-top: 10px; padding-bottom: 8px; }
 }

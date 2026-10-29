@@ -1,3 +1,4 @@
+import {createStreamingCopilot} from './copilot-stream.js';
 import {publicProductDescription,createCopilotClient,safeAction} from './copilot-client.js';
 import {openScientificSearch} from './scientific-search.js';
 
@@ -24,12 +25,14 @@ dialog.innerHTML=`<div class="drawer-heading"><div><span class="eyebrow">DAYU CO
 <div id="copilot-summary" hidden></div>
 <div id="copilot-actions"></div>
 <p id="copilot-status" role="status" aria-live="polite"></p>
-<form id="copilot-form"><label for="copilot-question">消息</label><textarea id="copilot-question" rows="3" required maxlength="2000" placeholder="问问大禹是什么、有哪些产品，或帮你查找平台数据"></textarea><div class="copilot-form-actions"><button id="copilot-clear" type="button">清空</button><button id="copilot-search" type="button">普通检索</button><button id="copilot-send">发送</button></div><small>未说明的自然语言时间默认按北京时间理解</small></form>`;
+<form id="copilot-form"><label for="copilot-question">消息</label><textarea id="copilot-question" rows="3" required maxlength="2000" placeholder="问问大禹是什么、有哪些产品，或帮你查找平台数据"></textarea><div class="copilot-form-actions"><button id="copilot-cancel" type="button" hidden>停止回答</button><button id="copilot-clear" type="button">清空</button><button id="copilot-search" type="button">普通检索</button><button id="copilot-send">发送</button></div><small>未说明的自然语言时间默认按北京时间理解</small></form>`;
 document.body.append(dialog);
 
 const $=id=>document.getElementById(id);
-let history=[],generation=0,busy=false;
+let history=[],generation=0,busy=false,visibleTime=null;
+window.addEventListener("dayu:visible-time",event=>{visibleTime=event.detail;});
 const copilot=createCopilotClient();
+const streaming=createStreamingCopilot();
 
 function message(who,text){
   const item=document.createElement('article'),label=document.createElement('small'),content=document.createElement('p');
@@ -37,6 +40,7 @@ function message(who,text){
   item.append(label,content);$('copilot-messages').append(item);
   while($('copilot-messages').children.length>24)$('copilot-messages').firstChild.remove();
   $('copilot-messages').scrollTop=$('copilot-messages').scrollHeight;
+  return content;
 }
 
 function welcome(){
@@ -48,7 +52,7 @@ function resetResult(){
 }
 
 function clearConversation(){
-  ++generation;history=[];copilot.reset();$('copilot-messages').replaceChildren();resetResult();$('copilot-question').value='';$('copilot-send').textContent='发送';welcome();
+  ++generation;history=[];copilot.reset();streaming.reset().catch(()=>{});$('copilot-messages').replaceChildren();resetResult();$('copilot-question').value='';$('copilot-send').textContent='发送';welcome();
 }
 
 function open(){
@@ -59,9 +63,10 @@ function close(){if(dialog.open)dialog.close();}
 
 launcher.onclick=()=>dialog.open?close():open();
 $('copilot-close').onclick=close;
+$('copilot-cancel').onclick=()=>streaming.cancel();
 $('copilot-clear').onclick=clearConversation;
 $('copilot-search').onclick=()=>{close();openScientificSearch();};
-dialog.addEventListener('close',()=>{++generation;launcher.hidden=false;launcher.setAttribute('aria-expanded','false');launcher.focus();});
+dialog.addEventListener('close',()=>{streaming.cancel();++generation;launcher.hidden=false;launcher.setAttribute('aria-expanded','false');launcher.focus();});
 
 function renderSummary(result){
   const criteria=result.criteria;if(!criteria)return;
@@ -73,6 +78,7 @@ function renderSummary(result){
   if(!labels.length)return;
   const card=document.createElement('section'),eyebrow=document.createElement('small'),title=document.createElement('strong');
   card.className='copilot-result-card';eyebrow.textContent='已确认条件';title.textContent=labels.join(' · ');card.append(eyebrow,title);
+  if(result.answer){const facts=document.createElement('p');facts.textContent=result.answer;card.append(facts);}
   if(criteria.from&&criteria.to){const time=document.createElement('span');time.textContent=`UTC ${new Date(criteria.from).toISOString().slice(0,16).replace('T',' ')} — ${new Date(criteria.to).toISOString().slice(0,16).replace('T',' ')}`;card.append(time);}
   $('copilot-summary').append(card);$('copilot-summary').hidden=false;
 }
@@ -110,7 +116,7 @@ async function performAction(item){
     if(type==='APPLY_PREVIEW_FILTER'){applyPreview(parameters);return;}
     if(type==='APPLY_SCIENTIFIC_SEARCH'){close();const {displayZone,...criteria}=parameters;await openScientificSearch(criteria,displayZone);return;}
     await productDetails(parameters,token);
-  }catch(error){if(token===generation)$('copilot-status').textContent=error.message;}
+  }catch(error){if(token===generation)$('copilot-status').textContent=error.name==='AbortError'?'已停止，回答未完成':error.message;}
 }
 
 function renderActions(actions){
@@ -130,13 +136,23 @@ $('copilot-form').onsubmit=async event=>{
   const text=$('copilot-question').value.trim();if(!text)return;
   busy=true;const token=++generation;$('copilot-send').disabled=true;$('copilot-question').disabled=true;resetResult();$('copilot-status').textContent='大禹助手正在整理…';message('你',text);
   try{
-    const result=await copilot.query(text,history);if(token!==generation)return;
+    $('copilot-cancel').hidden=false;
+    let partial=null;
+    const pageContext={selectedProduct:document.querySelector('#product-list [aria-pressed="true"]')?.dataset.id||null,visibleTime,displayZone:'Asia/Shanghai'};
+    let result=await streaming.query(text,pageContext,(event,value)=>{
+      if(token!==generation)return;
+      if(event==='status')$('copilot-status').textContent=value.message;
+      if(event==='answer_delta'){if(!partial)partial=message('大禹助手','');partial.textContent+=value.text;}
+      if(event==='result'){resetResult();renderSummary(value);renderActions(value.suggestedActions);}
+    });
+    if(result===null)result=await copilot.query(text,history);
+    if(token!==generation)return;
     $('copilot-question').value='';$('copilot-send').textContent='发送';
     history.push({role:'USER',content:text},{role:'ASSISTANT',content:result.answer});history=history.slice(-12);
-    message('大禹助手',result.answer);$('copilot-status').textContent=result.degraded?'已返回查询结果，回答整理未完成':'';
-    renderSummary(result);renderActions(result.suggestedActions);
-  }catch(error){if(token===generation){$('copilot-status').textContent=error.message;$('copilot-send').textContent=error.retryable?'重试':'发送';}}
-  finally{busy=false;$('copilot-send').disabled=false;$('copilot-question').disabled=false;}
+    if(!partial)message('大禹助手',result.answer);$('copilot-status').textContent=result.degraded?'已返回查询结果，回答整理未完成':'';
+    if(!partial){renderSummary(result);renderActions(result.suggestedActions);}
+  }catch(error){if(token===generation){$('copilot-status').textContent=error.name==='AbortError'?'已停止，回答未完成':error.message;$('copilot-send').textContent=error.retryable?'重试':'发送';}}
+  finally{$('copilot-cancel').hidden=true;busy=false;$('copilot-send').disabled=false;$('copilot-question').disabled=false;}
 };
 
 welcome();
