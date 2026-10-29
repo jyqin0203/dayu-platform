@@ -1,0 +1,24 @@
+{
+  "productionServices": [
+    "active",
+    "active",
+    "active",
+    "active"
+  ],
+  "productionJarSha256": "12a7faae8d53c67bd47e3dcfabda3dc048cc31d38434d821be2151c6931afb2f",
+  "businessCodeModified": false,
+  "productionRedisModified": false,
+  "testDataRetained": true,
+  "isolatedProcesses": "stopped",
+  "isolatedPortsClosed": [
+    13309,
+    16389,
+    18580,
+    18581,
+    18582,
+    18583
+  ],
+  "isolatedDatabase": "dayu_cache_eval retained",
+  "redisSnapshot": "private dump.rdb retained",
+  "cleanupApproved": false
+}

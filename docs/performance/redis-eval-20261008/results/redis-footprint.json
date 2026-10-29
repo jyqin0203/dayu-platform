@@ -1,0 +1,22 @@
+{
+  "keys": 164,
+  "keyMemoryBytes": 313496,
+  "ttl": {
+    "*:generation": {
+      "keys": 4,
+      "minMs": -1,
+      "maxMs": -1
+    },
+    "*:timeline:*": {
+      "keys": 80,
+      "minMs": 118776,
+      "maxMs": 119956
+    },
+    "*:latest-cycles:*": {
+      "keys": 80,
+      "minMs": 118711,
+      "maxMs": 119896
+    }
+  },
+  "infoMemory": "# Memory\r\nused_memory:1373888\r\nused_memory_human:1.31M\r\nused_memory_rss:9875456\r\nused_memory_rss_human:9.42M\r\nused_memory_peak:4206536\r\nused_memory_peak_human:4.01M\r\nused_memory_peak_time:1791446564\r\nused_memory_peak_perc:32.66%\r\nused_memory_overhead:841936\r\nused_memory_startup:740808\r\nused_memory_dataset:531952\r\nused_memory_dataset_perc:84.03%\r\nallocator_allocated:1373656\r\nallocator_active:9875456\r\nallocator_resident:9875456\r\nallocator_muzzy:0\r\ntotal_system_memory:201841606656\r\ntotal_system_memory_human:187.98G\r\nused_memory_lua:32768\r\nused_memory_vm_eval:32768\r\nused_memory_lua_human:32.00K\r\nused_memory_scripts_eval:0\r\nnumber_of_cached_scripts:0\r\nnumber_of_functions:0\r\nnumber_of_libraries:0\r\nused_memory_vm_functions:34816\r\nused_memory_vm_total:67584\r\nused_memory_vm_total_human:66.00K\r\nused_memory_functions:232\r\nused_memory_hash_templates:72\r\nused_memory_scripts:232\r\nused_memory_scripts_human:232B\r\nmaxmemory:67108864\r\nmaxmemory_human:64.00M\r\nmaxmemory_policy:allkeys-lru\r\nallocator_frag_ratio:1.00\r\nallocator_frag_bytes:0\r\nallocator_rss_ratio:1.00\r\nallocator_rss_bytes:0\r\nrss_overhead_ratio:1.00\r\nrss_overhead_bytes:0\r\nmem_fragmentation_ratio:7.19\r\nmem_fragmentation_bytes:8501800\r\nmem_not_counted_for_evict:0\r\nmem_replication_backlog:0\r\nmem_total_replication_buffers:0\r\nmem_replica_full_sync_buffer:0\r\nmem_clients_slaves:0\r\nmem_clients_normal:20712\r\nmem_clients_normal_shared:0\r\nmem_clients_normal_unshared:0\r\nmem_cluster_slot_migration_output_buffer:0\r\nmem_cluster_slot_migration_input_buffer:0\r\nmem_cluster_slot_migration_input_buffer_peak:0\r\nmem_cluster_links:0\r\nmem_aof_buffer:0\r\nmem_allocator:libc\r\nmem_overhead_db_hashtable_rehashing:0\r\nactive_defrag_running:0\r\nlazyfree_pending_objects:0\r\nlazyfreed_objects:6200\r\n"
+}

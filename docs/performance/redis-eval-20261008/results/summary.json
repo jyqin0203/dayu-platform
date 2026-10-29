@@ -1,0 +1,24 @@
+{
+  "off": {
+    "medianRoundP95Ms": 91.16493258625269,
+    "medianRoundThroughputRps": 61.46469383301439,
+    "selectsPer800": 25600,
+    "hitRate": null
+  },
+  "cold": {
+    "medianRoundP95Ms": 94.88587081432343,
+    "medianRoundThroughputRps": 56.77749225382311,
+    "selectsPer800": 25600,
+    "hitRate": 0.0
+  },
+  "warm": {
+    "medianRoundP95Ms": 18.97609420120716,
+    "medianRoundThroughputRps": 477.0834230243576,
+    "selectsPer800": 800,
+    "hitRate": 1.0
+  },
+  "warmP95ReductionPct": 79.18487551860629,
+  "warmThroughputMultiple": 7.7619100213935,
+  "selectReductionPct": 96.875,
+  "sameResponseAcrossConditions": 84
+}

@@ -1,0 +1,562 @@
+[
+  {
+    "id": 0,
+    "product": "BT855",
+    "cycle": "2026-10-07 00:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610070000%2FBT855&number=200"
+  },
+  {
+    "id": 1,
+    "product": "BT855",
+    "cycle": "2026-10-06 23:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062345%2FBT855&number=200"
+  },
+  {
+    "id": 2,
+    "product": "BT855",
+    "cycle": "2026-10-06 23:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062330%2FBT855&number=200"
+  },
+  {
+    "id": 3,
+    "product": "BT855",
+    "cycle": "2026-10-06 23:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062315%2FBT855&number=200"
+  },
+  {
+    "id": 4,
+    "product": "BT855",
+    "cycle": "2026-10-06 23:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062300%2FBT855&number=200"
+  },
+  {
+    "id": 5,
+    "product": "BT855",
+    "cycle": "2026-10-06 22:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062245%2FBT855&number=200"
+  },
+  {
+    "id": 6,
+    "product": "BT855",
+    "cycle": "2026-10-06 22:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062230%2FBT855&number=200"
+  },
+  {
+    "id": 7,
+    "product": "BT855",
+    "cycle": "2026-10-06 22:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062215%2FBT855&number=200"
+  },
+  {
+    "id": 8,
+    "product": "BT855",
+    "cycle": "2026-10-06 19:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061945%2FBT855&number=200"
+  },
+  {
+    "id": 9,
+    "product": "BT855",
+    "cycle": "2026-10-06 19:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061930%2FBT855&number=200"
+  },
+  {
+    "id": 10,
+    "product": "BT855",
+    "cycle": "2026-10-06 19:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061915%2FBT855&number=200"
+  },
+  {
+    "id": 11,
+    "product": "BT855",
+    "cycle": "2026-10-06 19:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061900%2FBT855&number=200"
+  },
+  {
+    "id": 12,
+    "product": "BT855",
+    "cycle": "2026-10-06 18:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061845%2FBT855&number=200"
+  },
+  {
+    "id": 13,
+    "product": "BT855",
+    "cycle": "2026-10-06 18:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061830%2FBT855&number=200"
+  },
+  {
+    "id": 14,
+    "product": "BT855",
+    "cycle": "2026-10-06 18:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061815%2FBT855&number=200"
+  },
+  {
+    "id": 15,
+    "product": "BT855",
+    "cycle": "2026-10-06 14:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061430%2FBT855&number=200"
+  },
+  {
+    "id": 16,
+    "product": "BT855",
+    "cycle": "2026-10-06 14:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061415%2FBT855&number=200"
+  },
+  {
+    "id": 17,
+    "product": "BT855",
+    "cycle": "2026-10-06 14:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061400%2FBT855&number=200"
+  },
+  {
+    "id": 18,
+    "product": "BT855",
+    "cycle": "2026-10-06 13:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061345%2FBT855&number=200"
+  },
+  {
+    "id": 19,
+    "product": "BT855",
+    "cycle": "2026-10-06 13:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061330%2FBT855&number=200"
+  },
+  {
+    "id": 20,
+    "product": "BT108",
+    "cycle": "2026-10-07 00:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610070000%2FBT108&number=200"
+  },
+  {
+    "id": 21,
+    "product": "BT108",
+    "cycle": "2026-10-06 23:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062345%2FBT108&number=200"
+  },
+  {
+    "id": 22,
+    "product": "BT108",
+    "cycle": "2026-10-06 23:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062330%2FBT108&number=200"
+  },
+  {
+    "id": 23,
+    "product": "BT108",
+    "cycle": "2026-10-06 23:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062315%2FBT108&number=200"
+  },
+  {
+    "id": 24,
+    "product": "BT108",
+    "cycle": "2026-10-06 23:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062300%2FBT108&number=200"
+  },
+  {
+    "id": 25,
+    "product": "BT108",
+    "cycle": "2026-10-06 22:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062245%2FBT108&number=200"
+  },
+  {
+    "id": 26,
+    "product": "BT108",
+    "cycle": "2026-10-06 22:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062230%2FBT108&number=200"
+  },
+  {
+    "id": 27,
+    "product": "BT108",
+    "cycle": "2026-10-06 22:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062215%2FBT108&number=200"
+  },
+  {
+    "id": 28,
+    "product": "BT108",
+    "cycle": "2026-10-06 19:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061945%2FBT108&number=200"
+  },
+  {
+    "id": 29,
+    "product": "BT108",
+    "cycle": "2026-10-06 19:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061930%2FBT108&number=200"
+  },
+  {
+    "id": 30,
+    "product": "BT108",
+    "cycle": "2026-10-06 19:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061915%2FBT108&number=200"
+  },
+  {
+    "id": 31,
+    "product": "BT108",
+    "cycle": "2026-10-06 19:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061900%2FBT108&number=200"
+  },
+  {
+    "id": 32,
+    "product": "BT108",
+    "cycle": "2026-10-06 18:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061845%2FBT108&number=200"
+  },
+  {
+    "id": 33,
+    "product": "BT108",
+    "cycle": "2026-10-06 18:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061830%2FBT108&number=200"
+  },
+  {
+    "id": 34,
+    "product": "BT108",
+    "cycle": "2026-10-06 18:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061815%2FBT108&number=200"
+  },
+  {
+    "id": 35,
+    "product": "BT108",
+    "cycle": "2026-10-06 14:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061430%2FBT108&number=200"
+  },
+  {
+    "id": 36,
+    "product": "BT108",
+    "cycle": "2026-10-06 14:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061415%2FBT108&number=200"
+  },
+  {
+    "id": 37,
+    "product": "BT108",
+    "cycle": "2026-10-06 14:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061400%2FBT108&number=200"
+  },
+  {
+    "id": 38,
+    "product": "BT108",
+    "cycle": "2026-10-06 13:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061345%2FBT108&number=200"
+  },
+  {
+    "id": 39,
+    "product": "BT108",
+    "cycle": "2026-10-06 13:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061330%2FBT108&number=200"
+  },
+  {
+    "id": 40,
+    "product": "BT120",
+    "cycle": "2026-10-07 00:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610070000%2FBT120&number=200"
+  },
+  {
+    "id": 41,
+    "product": "BT120",
+    "cycle": "2026-10-06 23:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062345%2FBT120&number=200"
+  },
+  {
+    "id": 42,
+    "product": "BT120",
+    "cycle": "2026-10-06 23:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062330%2FBT120&number=200"
+  },
+  {
+    "id": 43,
+    "product": "BT120",
+    "cycle": "2026-10-06 23:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062315%2FBT120&number=200"
+  },
+  {
+    "id": 44,
+    "product": "BT120",
+    "cycle": "2026-10-06 23:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062300%2FBT120&number=200"
+  },
+  {
+    "id": 45,
+    "product": "BT120",
+    "cycle": "2026-10-06 22:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062245%2FBT120&number=200"
+  },
+  {
+    "id": 46,
+    "product": "BT120",
+    "cycle": "2026-10-06 22:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062230%2FBT120&number=200"
+  },
+  {
+    "id": 47,
+    "product": "BT120",
+    "cycle": "2026-10-06 22:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062215%2FBT120&number=200"
+  },
+  {
+    "id": 48,
+    "product": "BT120",
+    "cycle": "2026-10-06 19:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061945%2FBT120&number=200"
+  },
+  {
+    "id": 49,
+    "product": "BT120",
+    "cycle": "2026-10-06 19:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061930%2FBT120&number=200"
+  },
+  {
+    "id": 50,
+    "product": "BT120",
+    "cycle": "2026-10-06 19:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061915%2FBT120&number=200"
+  },
+  {
+    "id": 51,
+    "product": "BT120",
+    "cycle": "2026-10-06 19:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061900%2FBT120&number=200"
+  },
+  {
+    "id": 52,
+    "product": "BT120",
+    "cycle": "2026-10-06 18:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061845%2FBT120&number=200"
+  },
+  {
+    "id": 53,
+    "product": "BT120",
+    "cycle": "2026-10-06 18:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061830%2FBT120&number=200"
+  },
+  {
+    "id": 54,
+    "product": "BT120",
+    "cycle": "2026-10-06 18:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061815%2FBT120&number=200"
+  },
+  {
+    "id": 55,
+    "product": "BT120",
+    "cycle": "2026-10-06 14:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061430%2FBT120&number=200"
+  },
+  {
+    "id": 56,
+    "product": "BT120",
+    "cycle": "2026-10-06 14:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061415%2FBT120&number=200"
+  },
+  {
+    "id": 57,
+    "product": "BT120",
+    "cycle": "2026-10-06 14:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061400%2FBT120&number=200"
+  },
+  {
+    "id": 58,
+    "product": "BT120",
+    "cycle": "2026-10-06 13:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061345%2FBT120&number=200"
+  },
+  {
+    "id": 59,
+    "product": "BT120",
+    "cycle": "2026-10-06 13:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061330%2FBT120&number=200"
+  },
+  {
+    "id": 60,
+    "product": "BT133",
+    "cycle": "2026-10-07 00:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610070000%2FBT133&number=200"
+  },
+  {
+    "id": 61,
+    "product": "BT133",
+    "cycle": "2026-10-06 23:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062345%2FBT133&number=200"
+  },
+  {
+    "id": 62,
+    "product": "BT133",
+    "cycle": "2026-10-06 23:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062330%2FBT133&number=200"
+  },
+  {
+    "id": 63,
+    "product": "BT133",
+    "cycle": "2026-10-06 23:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062315%2FBT133&number=200"
+  },
+  {
+    "id": 64,
+    "product": "BT133",
+    "cycle": "2026-10-06 23:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062300%2FBT133&number=200"
+  },
+  {
+    "id": 65,
+    "product": "BT133",
+    "cycle": "2026-10-06 22:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062245%2FBT133&number=200"
+  },
+  {
+    "id": 66,
+    "product": "BT133",
+    "cycle": "2026-10-06 22:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062230%2FBT133&number=200"
+  },
+  {
+    "id": 67,
+    "product": "BT133",
+    "cycle": "2026-10-06 22:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610062215%2FBT133&number=200"
+  },
+  {
+    "id": 68,
+    "product": "BT133",
+    "cycle": "2026-10-06 19:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061945%2FBT133&number=200"
+  },
+  {
+    "id": 69,
+    "product": "BT133",
+    "cycle": "2026-10-06 19:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061930%2FBT133&number=200"
+  },
+  {
+    "id": 70,
+    "product": "BT133",
+    "cycle": "2026-10-06 19:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061915%2FBT133&number=200"
+  },
+  {
+    "id": 71,
+    "product": "BT133",
+    "cycle": "2026-10-06 19:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061900%2FBT133&number=200"
+  },
+  {
+    "id": 72,
+    "product": "BT133",
+    "cycle": "2026-10-06 18:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061845%2FBT133&number=200"
+  },
+  {
+    "id": 73,
+    "product": "BT133",
+    "cycle": "2026-10-06 18:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061830%2FBT133&number=200"
+  },
+  {
+    "id": 74,
+    "product": "BT133",
+    "cycle": "2026-10-06 18:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061815%2FBT133&number=200"
+  },
+  {
+    "id": 75,
+    "product": "BT133",
+    "cycle": "2026-10-06 14:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061430%2FBT133&number=200"
+  },
+  {
+    "id": 76,
+    "product": "BT133",
+    "cycle": "2026-10-06 14:15:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061415%2FBT133&number=200"
+  },
+  {
+    "id": 77,
+    "product": "BT133",
+    "cycle": "2026-10-06 14:00:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061400%2FBT133&number=200"
+  },
+  {
+    "id": 78,
+    "product": "BT133",
+    "cycle": "2026-10-06 13:45:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061345%2FBT133&number=200"
+  },
+  {
+    "id": 79,
+    "product": "BT133",
+    "cycle": "2026-10-06 13:30:00.000000",
+    "expectedFiles": 12,
+    "url": "/api/files.php?path=WebP%2FWebP_V2_Dpi500_4KM%2Fforecast%2F202610061330%2FBT133&number=200"
+  }
+]

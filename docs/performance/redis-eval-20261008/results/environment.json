@@ -1,0 +1,52 @@
+{
+  "timestampUtc": "2026-10-08T08:08:46.045782+00:00",
+  "cpu": "Intel Core Ultra 7 265K",
+  "logicalCpus": 20,
+  "memoryTotalKiB": 197110944,
+  "databaseVersion": "MariaDB 10.6.23",
+  "redisVersion": "Redis server v=8.10.2 sha=00000000:1 malloc=libc bits=64 build=cf0e6424f4800090",
+  "jvm": "Amazon Corretto 17.0.20.1",
+  "baselineJarSha256": "12a7faae8d53c67bd47e3dcfabda3dc048cc31d38434d821be2151c6931afb2f",
+  "snapshotSha256": "06cc7bc1bc4c4757010735312d771cd7690192b7b87eaccf3e0bdda8223d50e4",
+  "databasePort": 13309,
+  "redisPort": 16389,
+  "httpPorts": [
+    18580,
+    18581
+  ],
+  "controlPorts": [
+    18582,
+    18583
+  ],
+  "bindings": "127.0.0.1 only",
+  "cpuAffinity": {
+    "database": 2,
+    "apps": 3,
+    "client": 4,
+    "redis": 5
+  },
+  "limits": {
+    "dbBufferPoolMiB": 128,
+    "dbMaxConnections": 20,
+    "appXmxMiBEach": 384,
+    "appTomcatThreadsEach": 8,
+    "appJdbcPoolEach": 6,
+    "redisMaxmemoryMiB": 64,
+    "nice": 15,
+    "dbAndAppIoClass": "idle"
+  },
+  "cacheSettings": {
+    "enabledOnProduction": true,
+    "catalogTtlSeconds": 300,
+    "previewTtlSeconds": 120,
+    "forecastCycleTtlSeconds": 120,
+    "redisConnectTimeoutMs": 250,
+    "redisCommandTimeoutMs": 250
+  },
+  "productionServices": [
+    "active",
+    "active",
+    "active",
+    "active"
+  ]
+}

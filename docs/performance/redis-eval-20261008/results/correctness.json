@@ -1,0 +1,53 @@
+[
+  {
+    "test": "actual scanner insert + AssetIndexChanged invalidates fixed preview key",
+    "pass": true,
+    "beforeItems": 1,
+    "afterItems": 2,
+    "firstRequestMs": 87.24407525733113,
+    "scanAndFirstReadMs": 158.99949707090855,
+    "generationChanged": true
+  },
+  {
+    "test": "malformed payload falls back and repairs",
+    "pass": true,
+    "items": 2,
+    "requestMs": 25.246968027204275
+  },
+  {
+    "test": "Redis unresponsive + scan update + HTTP fallback",
+    "pass": true,
+    "requests": 12,
+    "concurrency": 4,
+    "http200": 12,
+    "items": 3,
+    "p95Ms": 1561.953738797456,
+    "sql": 120,
+    "cacheReads": 12,
+    "cacheHits": 0,
+    "cacheMisses": 12,
+    "selects": 120
+  },
+  {
+    "test": "resume retries pending invalidation before stale payload read; hit restored",
+    "pass": true,
+    "items": 3,
+    "requestMs": 9.804848115891218,
+    "generationChanged": true,
+    "sql": 0,
+    "cacheReads": 1,
+    "cacheHits": 1,
+    "cacheMisses": 0,
+    "selects": 0
+  },
+  {
+    "test": "CatalogService AFTER_COMMIT invalidates catalog and product previews",
+    "pass": true,
+    "catalogueTtlBeforeMs": [
+      299967
+    ],
+    "publicListExcludesDisabled": true,
+    "previewStatus": 404,
+    "previewMs": 10.821659117937088
+  }
+]
