@@ -78,8 +78,14 @@ export async function createDevServer({ publicRoot=PUBLIC, backendUrl='http://12
       }
       const info = await stat(file);
       if (!info.isFile()) { fail(response,404,'Resource not found.'); return; }
-      response.writeHead(200, { 'Content-Type':type, 'Content-Length':info.size,
-        'Cache-Control':'no-store', 'X-Content-Type-Options':'nosniff' });
+      const immutable=isVendor || /\/assets\/world-basemap\.[a-f0-9]{16}\.png$/.test(path);
+      const html=extname(filePath)==='.html';
+      const etag=`W/"${info.size.toString(16)}-${info.mtimeMs.toString(16)}"`;
+      const staticHeaders={'Content-Type':type,'X-Content-Type-Options':'nosniff',
+        'Cache-Control':immutable?'public, max-age=2592000, immutable':html?'no-store':'no-cache',
+        ETag:etag};
+      if(!html && request.headers['if-none-match']===etag){response.writeHead(304,staticHeaders);response.end();return;}
+      response.writeHead(200, { ...staticHeaders, 'Content-Length':info.size });
       if (request.method === 'HEAD') response.end();
       else createReadStream(file).on('error', () => response.destroy()).pipe(response);
     } catch { fail(response,404,'Resource not found.'); }
@@ -90,8 +96,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   const port = Number(process.env.DAYU_FRONTEND_PORT || 15173);
   if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Invalid frontend port.');
   const backendUrl = process.env.DAYU_BACKEND_URL || 'http://127.0.0.1:18080';
+  const host = process.env.DAYU_FRONTEND_HOST || '127.0.0.1';
+  if (!['127.0.0.1','0.0.0.0'].includes(host)) throw new Error('Invalid frontend host.');
   const server = await createDevServer({ backendUrl });
   server.on('error', error => { console.error(`Frontend server failed: ${error.code || 'startup error'}`); process.exitCode=1; });
-  server.listen(port,'127.0.0.1', () => console.log(`Frontend: http://127.0.0.1:${port} | Backend proxy: ${backendUrl}`));
+  server.listen(port,host, () => console.log(`Frontend: http://${host}:${port} | Backend proxy: ${backendUrl}`));
   for (const signal of ['SIGINT','SIGTERM']) process.on(signal, () => server.close(() => process.exit(0)));
 }

@@ -30,3 +30,16 @@ export async function loadColorbar(code, fetcher = fetch) {
   }
   return url;
 }
+
+/** Short-lived colorbar metadata cache; explicit refresh bypasses it and failed requests are retryable. */
+export function createColorbarCache(ttl=180000){
+  const entries=new Map();
+  return (code,refresh=false)=>{
+    const cached=entries.get(code);
+    if(!refresh&&cached&&Date.now()-cached.at<ttl)return cached.promise;
+    const entry={at:Date.now()};
+    entry.promise=loadColorbar(code,(url)=>fetch(url,{cache:'no-cache',signal:AbortSignal.timeout(15000)}))
+      .catch(error=>{if(entries.get(code)===entry)entries.delete(code);throw error;});
+    entries.set(code,entry);return entry.promise;
+  };
+}

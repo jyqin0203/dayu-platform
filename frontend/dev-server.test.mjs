@@ -22,7 +22,10 @@ test('original entry, base path, module and GeoJSON are served without rewriting
     assert.match(await page.text(), /<base href="\/flat-20260925\/">/);
     const module = await fetch(base+'/flat-20260925/app.js');
     assert.match(module.headers.get('content-type'),/javascript/);
-    assert.match(await module.text(),/image\.decode\(\)/);
+    assert.match(await module.text(),/prepareFrame/);
+    const cache = await fetch(base+'/flat-20260925/frame-cache.js');
+    assert.equal(cache.status,200);
+    assert.match(await cache.text(),/image\.decode\(\)/);
     const world = await fetch(base+'/flat-20260925/assets/world-boundaries.geojson');
     assert.equal(world.status,200);
     assert.equal((await world.json()).type,'FeatureCollection');
@@ -103,4 +106,16 @@ test('local Cesium script, widgets and worker support assets resolve without a C
     assert.equal((await fetch(base+'/node_modules/cesium/package.json')).status,404);
     assert.equal((await fetch(base+'/vendor/cesium/wrong-version/Cesium.js')).status,404);
   } finally { await close(server); }
+});
+
+test('versioned Cesium caches persist, editable modules revalidate, and HTML stays uncached',async()=>{
+  const server=await createDevServer();const base=await listen(server);
+  try{
+    const vendor=await fetch(base+CESIUM_PREFIX+'Cesium.js',{method:'HEAD'});
+    assert.match(vendor.headers.get('cache-control'),/immutable/);
+    const module=await fetch(base+'/flat-20260925/app.js');assert.equal(module.headers.get('cache-control'),'no-cache');
+    const repeated=await fetch(base+'/flat-20260925/app.js',{headers:{'If-None-Match':module.headers.get('etag')}});
+    assert.equal(repeated.status,304);assert.equal(await repeated.text(),'');
+    assert.equal((await fetch(base)).headers.get('cache-control'),'no-store');
+  }finally{await close(server);}
 });
